@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visitor Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Visitor Dashboard</h1>
+    </header>
+    
+    <div class="dashboard">
+      <div class="stats-cards">
+        <div class="stat-card">
+          <h3>Total Visitors</h3>
+          <p id="total-count">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Active Now</h3>
+          <p id="active-count">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Released</h3>
+          <p id="released-count">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Security Pending</h3>
+          <p id="security-pending-count">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Scheduled</h3>
+          <p id="scheduled-count">0</p>
+        </div>
+      </div>
+
+      <!-- ✅ Download Buttons -->
+      <div style="margin-bottom: 20px;">
+        <button onclick="downloadExcel('day')" class="btn btn-primary">Download Daily Report</button>
+        <button onclick="downloadExcel('week')" class="btn btn-primary">Download Weekly Report</button>
+        <button onclick="downloadExcel('month')" class="btn btn-primary">Download Monthly Report</button>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" data-status="all">All Visitors</div>
+        <div class="tab" data-status="active">Active</div>
+        <div class="tab" data-status="released">Released</div>
+        <div class="tab" data-status="security-pending">Security Pending</div>
+        <div class="tab" data-status="scheduled">Scheduled</div>
+      </div>
+      
+      <table class="visitor-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Department</th>
+            <th>Host</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="visitor-list">
+          <!-- Visitor data will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.tab');
+      let currentStatus = 'all';
+      
+      const eventSource = new EventSource('/api/visitors/updates');
+      eventSource.onmessage = () => {
+        loadStats();
+        loadVisitors();
+      };
+
+      function loadStats() {
+        fetch('/api/visitors/stats')
+          .then(res => res.json())
+          .then(stats => {
+            document.getElementById('total-count').textContent = stats.total;
+            document.getElementById('active-count').textContent = stats.active;
+            document.getElementById('released-count').textContent = stats.released;
+            document.getElementById('security-pending-count').textContent = stats.security_pending;
+            document.getElementById('scheduled-count').textContent = stats.scheduled;
+          });
+      }
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentStatus = tab.dataset.status;
+          loadVisitors();
+        });
+      });
+
+      function loadVisitors() {
+        let url = '/api/visitors';
+        if (currentStatus !== 'all') {
+          url += `?status=${currentStatus}`;
+        }
+
+        fetch(url)
+          .then(res => {
+            if (!res.ok) throw new Error('Error loading visitors');
+            return res.json();
+          })
+          .then(visitors => {
+            const tbody = document.getElementById('visitor-list');
+            tbody.innerHTML = '';
+            if (visitors.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="8" class="no-data">No visitors found</td></tr>`;
+              return;
+            }
+
+            visitors.forEach(visitor => {
+              const row = document.createElement('tr');
+
+              let status;
+              if (visitor.scheduled) {
+                status = '<span class="badge badge-scheduled">Scheduled</span>';
+              } else if (visitor.security_confirmed) {
+                status = '<span class="badge badge-released">Security Checked Out</span>';
+              } else if (visitor.out_time) {
+                status = '<span class="badge badge-security-pending">Released (Pending Security)</span>';
+              } else {
+                status = '<span class="badge badge-active">Active</span>';
+              }
+
+
+              let actions = '';
+              if (visitor.scheduled) {
+                actions = `<button class="action-btn allow-btn" data-id="${visitor.id}">Allow Entry</button>`;
+              } else if (!visitor.out_time && visitor.approved) {
+                actions = `<button class="action-btn release-btn" data-id="${visitor.id}">Release</button>`;
+              } else if (!visitor.out_time) {
+                actions = `<button class="action-btn checkout-btn" data-id="${visitor.id}">Check Out</button>`;
+              } else if (!visitor.security_confirmed) {
+                actions = `<button class="action-btn security-btn" data-id="${visitor.id}">Security Confirm</button>`;
+              }
+
+
+
+              row.innerHTML = `
+                <td>${visitor.full_name}</td>
+                <td>${visitor.contact_number}</td>
+                <td>${visitor.department_visiting}</td>
+                <td>${visitor.person_to_visit}</td>
+                <td>${new Date(visitor.in_time).toLocaleString()}</td>
+                <td>${visitor.out_time ? new Date(visitor.out_time).toLocaleString() : '-'}</td>
+                <td>${status}</td>
+                <td>${actions}</td>
+              `;
+
+              tbody.appendChild(row);
+            });
+
+            document.querySelectorAll('.checkout-btn').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const visitorId = e.target.dataset.id;
+                updateVisitorStatus(visitorId, 'checkout');
+              });
+            });
+
+            document.querySelectorAll('.security-btn').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const visitorId = e.target.dataset.id;
+                updateVisitorStatus(visitorId, 'security-confirm');
+              });
+            });
+
+            document.querySelectorAll('.allow-btn').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+              const visitorId = e.target.dataset.id;
+              fetch(`/api/visitors/${visitorId}/allow-entry`, { method: 'POST' })
+                .then(res => {
+                  if (!res.ok) throw new Error('Failed to allow entry');
+                  return res.json(); // Get visitor details
+                })
+                .then(visitor => {
+                  loadVisitors();
+                  loadStats();
+                  showBadge(visitor); // ⬅️ Display badge for printing
+                })
+                .catch(err => alert(err.message));
+            });
+
+          });
+
+          document.querySelectorAll('.release-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const visitorId = e.target.dataset.id;
+            if (confirm('Release this visitor?')) {
+              fetch(`/api/visitors/${visitorId}/release`, { method: 'POST' })
+                .then(res => {
+                  if (!res.ok) throw new Error('Failed to release');
+                  loadVisitors();
+                  loadStats();
+                })
+                .catch(err => alert(err.message));
+            }
+          });
+        });
+
+
+          })
+          .catch(error => {
+            document.getElementById('visitor-list').innerHTML = `
+              <tr><td colspan="8" class="error-message">Error loading data: ${error}</td></tr>
+            `;
+          });
+      }
+
+      function updateVisitorStatus(visitorId, action) {
+        const endpoint = action === 'checkout' 
+          ? `/api/visitors/${visitorId}/checkout`
+          : `/api/visitors/${visitorId}/security-checkout`;
+
+        if (confirm(`Confirm ${action.replace('-', ' ')}?`)) {
+          fetch(endpoint, { method: 'POST' })
+            .then(response => {
+              if (!response.ok) throw new Error('Update failed');
+              loadVisitors();
+              loadStats();
+            })
+            .catch(error => {
+              alert(`Failed to ${action}: ${error.message}`);
+            });
+        }
+      }
+
+      function showBadge(visitor) {
+      const badgeWindow = window.open('', 'Visitor Badge', 'width=400,height=600');
+      badgeWindow.document.write(`
+        <html>
+        <head>
+          <title>Visitor Badge</title>
+          <style>
+            body { font-family: Arial; text-align: center; padding: 20px; }
+            .badge-photo {
+              width: 150px; height: 150px; border-radius: 50%;
+              border: 3px solid #3498db; object-fit: cover; margin-bottom: 20px;
+            }
+            .badge-info p { margin: 6px 0; font-size: 16px; }
+          </style>
+        </head>
+        <body>
+          <h2>Visitor Badge</h2>
+          ${visitor.qr_code_path ? `<img src="/${visitor.qr_code_path}" class="badge-photo" alt="QR Code">` : ''}
+          <div class="badge-info">
+            <p><strong>Name:</strong> ${visitor.full_name}</p>
+            <p><strong>Contact:</strong> ${visitor.contact_number}</p>
+            <p><strong>Department:</strong> ${visitor.department_visiting}</p>
+            <p><strong>Host:</strong> ${visitor.person_to_visit}</p>
+            <p><strong>Check-in:</strong> ${new Date(visitor.in_time).toLocaleString()}</p>
+          </div>
+          <button onclick="window.print()">Print Badge</button>
+        </body>
+        </html>
+      `);
+      badgeWindow.document.close();
+    }
+
+
+      loadStats();
+      loadVisitors();
+    });
+
+    // ✅ Excel Export Function
+    function downloadExcel(period) {
+      const url = `/api/visitors/export?period=${period}`;
+      console.log('Downloading:', url);
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            console.error('Failed response:', response.status);
+            throw new Error('Failed to download file');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          console.log('Received blob:', blob);
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `visitors_${period}_${new Date().toISOString().split('T')[0]}.xlsx`;
+          link.click();
+        })
+        .catch(err => {
+          console.error('Download error:', err);
+          alert('Error downloading report: ' + err.message);
+        });
+    }
+  </script>
+</body>
+</html>

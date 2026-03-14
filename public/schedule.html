@@ -1,0 +1,64 @@
+<!-- public/schedule.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Schedule Visit</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Schedule Your Visit</h1>
+    <form id="schedule-form">
+      <label for="full_name">Full Name:</label>
+      <input required type="text" placeholder="Full Name" id="full_name" />
+      <label for="contact_number">Contact Number:</label>
+      <input required type="tel" placeholder="Contact Number" id="contact_number" />
+      <div class="form-group">
+        <label for="department_visiting">Department Visiting:</label>
+        <select id="department_visiting" required aria-required="true">
+          <option value="">Select Department</option>
+          <option value="HR">Human Resources</option>
+          <option value="IT">ITMS</option>
+          <option value="Finance">Finance</option>
+          <option value="Production">Production</option>
+          <option value="Quality">Quality</option>
+          <option value="Purchase">Purchase</option>
+          <option value="Engineering">Engineering & Development</option>
+          <option value="Business">Business Development</option>
+          <option value="Sales">Sales</option>
+        </select>
+      </div>
+      <label for="person_to_visit">Person to Visit:</label>
+      <input required type="text" placeholder="Person to Visit" id="person_to_visit" />
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('schedule-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = {
+        full_name: document.getElementById('full_name').value,
+        contact_number: document.getElementById('contact_number').value,
+        department_visiting: document.getElementById('department_visiting').value,
+        person_to_visit: document.getElementById('person_to_visit').value
+      };
+  
+      try {
+        const response = await fetch('/api/schedule', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+  
+        const result = await response.json();
+        alert(result.message || 'Scheduled successfully!');
+      } catch (err) {
+        alert('Submission failed: ' + err.message);
+      }
+    });
+  </script>
+  
+</body>
+</html>
