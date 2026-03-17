@@ -23,9 +23,7 @@ async function sendWhatsApp(to, message) {
   });
 }
 
-
 const dashboardClients = new Set();
-
 
 app.get('/api/visitors/updates', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
@@ -46,13 +44,10 @@ function notifyDashboardUpdate() {
   });
 }
 
-
-
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/visitor-management';
 mongoose.connect(mongoUri)
   .then(() => console.log('Connected to MongoDB at:', mongoUri))
   .catch(err => console.error('MongoDB connection error:', err));
-
 
 app.use(cors());
 app.use(bodyParser.json());

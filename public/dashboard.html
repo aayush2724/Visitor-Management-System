@@ -3,75 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Visitor Dashboard</title>
+  <title>RSB | Admin Dashboard</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Visitor Dashboard</h1>
+      <h1>Admin Intelligence</h1>
     </header>
+    
+    <nav>
+      <a href="/index.html">
+        <i data-lucide="user-plus"></i> New Registration
+      </a>
+    </nav>
     
     <div class="dashboard">
       <div class="stats-cards">
         <div class="stat-card">
+          <i data-lucide="users" style="color: var(--primary); margin-bottom: 10px;"></i>
           <h3>Total Visitors</h3>
           <p id="total-count">0</p>
         </div>
         <div class="stat-card">
+          <i data-lucide="zap" style="color: var(--success); margin-bottom: 10px;"></i>
           <h3>Active Now</h3>
           <p id="active-count">0</p>
         </div>
         <div class="stat-card">
+          <i data-lucide="check-circle" style="color: var(--secondary); margin-bottom: 10px;"></i>
           <h3>Released</h3>
           <p id="released-count">0</p>
         </div>
         <div class="stat-card">
+          <i data-lucide="shield-alert" style="color: var(--warning); margin-bottom: 10px;"></i>
           <h3>Security Pending</h3>
           <p id="security-pending-count">0</p>
         </div>
         <div class="stat-card">
+          <i data-lucide="calendar" style="color: var(--primary); margin-bottom: 10px;"></i>
           <h3>Scheduled</h3>
           <p id="scheduled-count">0</p>
         </div>
       </div>
 
-      <div style="margin-bottom: 20px;">
-        <button onclick="downloadExcel('day')" class="btn btn-primary">Download Daily Report</button>
-        <button onclick="downloadExcel('week')" class="btn btn-primary">Download Weekly Report</button>
-        <button onclick="downloadExcel('month')" class="btn btn-primary">Download Monthly Report</button>
+      <div class="card" style="margin-bottom: 30px;">
+        <h2 style="font-size: 1.2rem; margin-bottom: 15px;">Reports & Exports</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button onclick="downloadExcel('day')" class="btn btn-primary" style="width: auto;">
+            <i data-lucide="download"></i> Daily
+          </button>
+          <button onclick="downloadExcel('week')" class="btn btn-primary" style="width: auto;">
+            <i data-lucide="download"></i> Weekly
+          </button>
+          <button onclick="downloadExcel('month')" class="btn btn-primary" style="width: auto;">
+            <i data-lucide="download"></i> Monthly
+          </button>
+        </div>
       </div>
       
       <div class="tabs">
-        <div class="tab active" data-status="all">All Visitors</div>
-        <div class="tab" data-status="active">Active</div>
-        <div class="tab" data-status="released">Released</div>
-        <div class="tab" data-status="security-pending">Security Pending</div>
+        <div class="tab active" data-status="all">Total History</div>
+        <div class="tab" data-status="active">On-Site</div>
+        <div class="tab" data-status="released">Completed</div>
+        <div class="tab" data-status="security-pending">Pending Check-out</div>
         <div class="tab" data-status="scheduled">Scheduled</div>
       </div>
       
-      <table class="visitor-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Contact</th>
-            <th>Department</th>
-            <th>Host</th>
-            <th>Check-in</th>
-            <th>Check-out</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="visitor-list">
-          <!-- Visitor data will be inserted here -->
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="visitor-table">
+          <thead>
+            <tr>
+              <th>Visitor</th>
+              <th>Contact</th>
+              <th>Dept / Host</th>
+              <th>Timeline</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="visitor-list">
+            <!-- Visitor data will be inserted here -->
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
       const tabs = document.querySelectorAll('.tab');
       let currentStatus = 'all';
       
@@ -117,91 +140,99 @@
             const tbody = document.getElementById('visitor-list');
             tbody.innerHTML = '';
             if (visitors.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="8" class="no-data">No visitors found</td></tr>`;
+              tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">No records found for this view.</td></tr>`;
               return;
             }
 
             visitors.forEach(visitor => {
               const row = document.createElement('tr');
 
-              let status;
+              let statusHtml;
               if (visitor.scheduled) {
-                status = '<span class="badge badge-scheduled">Scheduled</span>';
+                statusHtml = '<span class="badge badge-scheduled">Scheduled</span>';
               } else if (visitor.security_confirmed) {
-                status = '<span class="badge badge-released">Security Checked Out</span>';
+                statusHtml = '<span class="badge badge-released">Checked Out</span>';
               } else if (visitor.out_time) {
-                status = '<span class="badge badge-security-pending">Released (Pending Security)</span>';
+                statusHtml = '<span class="badge badge-security-pending">Exit Initiated</span>';
               } else {
-                status = '<span class="badge badge-active">Active</span>';
+                statusHtml = '<span class="badge badge-active">On-Site</span>';
               }
-
 
               let actions = '';
               if (visitor.scheduled) {
-                actions = `<button class="action-btn allow-btn" data-id="${visitor.id}">Allow Entry</button>`;
+                actions = `<button class="btn btn-primary allow-btn" data-id="${visitor.id}" style="padding: 8px 12px; font-size: 0.8rem;">Allow Entry</button>`;
               } else if (!visitor.out_time && visitor.approved) {
-                actions = `<button class="action-btn release-btn" data-id="${visitor.id}">Release</button>`;
+                actions = `<button class="btn btn-primary release-btn" data-id="${visitor.id}" style="padding: 8px 12px; font-size: 0.8rem; background: var(--accent);">Release</button>`;
               } else if (!visitor.out_time) {
-                actions = `<button class="action-btn checkout-btn" data-id="${visitor.id}">Check Out</button>`;
+                actions = `<button class="btn btn-primary checkout-btn" data-id="${visitor.id}" style="padding: 8px 12px; font-size: 0.8rem;">Check Out</button>`;
               } else if (!visitor.security_confirmed) {
-                actions = `<button class="action-btn security-btn" data-id="${visitor.id}">Security Confirm</button>`;
+                actions = `<button class="btn btn-primary security-btn" data-id="${visitor.id}" style="padding: 8px 12px; font-size: 0.8rem; background: var(--warning);">Confirm Exit</button>`;
               }
 
-
-
               row.innerHTML = `
-                <td>${visitor.full_name}</td>
+                <td>
+                  <div style="font-weight: 500;">${visitor.full_name}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">ID: ${visitor.id.slice(-6)}</div>
+                </td>
                 <td>${visitor.contact_number}</td>
-                <td>${visitor.department_visiting}</td>
-                <td>${visitor.person_to_visit}</td>
-                <td>${new Date(visitor.in_time).toLocaleString()}</td>
-                <td>${visitor.out_time ? new Date(visitor.out_time).toLocaleString() : '-'}</td>
-                <td>${status}</td>
+                <td>
+                  <div>${visitor.department_visiting}</div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted);">host: ${visitor.person_to_visit}</div>
+                </td>
+                <td>
+                  <div style="font-size: 0.85rem;">In: ${new Date(visitor.in_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted);">Out: ${visitor.out_time ? new Date(visitor.out_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--:--'}</div>
+                </td>
+                <td>${statusHtml}</td>
                 <td>${actions}</td>
               `;
 
               tbody.appendChild(row);
             });
 
-            document.querySelectorAll('.checkout-btn').forEach(btn => {
-              btn.addEventListener('click', (e) => {
-                const visitorId = e.target.dataset.id;
-                updateVisitorStatus(visitorId, 'checkout');
-              });
-            });
-
-            document.querySelectorAll('.security-btn').forEach(btn => {
-              btn.addEventListener('click', (e) => {
-                const visitorId = e.target.dataset.id;
-                updateVisitorStatus(visitorId, 'security-confirm');
-              });
-            });
-
-            document.querySelectorAll('.allow-btn').forEach(btn => {
-              btn.addEventListener('click', (e) => {
-              const visitorId = e.target.dataset.id;
-              fetch(`/api/visitors/${visitorId}/allow-entry`, { method: 'POST' })
-                .then(res => {
-                  if (!res.ok) throw new Error('Failed to allow entry');
-                  return res.json(); // Get visitor details
-                })
-                .then(visitor => {
-                  loadVisitors();
-                  loadStats();
-                  showBadge(visitor);
-                })
-                .catch(err => alert(err.message));
-            });
-
+            // Re-bind events
+            attachTableEvents();
+          })
+          .catch(error => {
+            document.getElementById('visitor-list').innerHTML = `
+              <tr><td colspan="6" style="color: var(--error); text-align: center; padding: 20px;">System Error: ${error.message}</td></tr>
+            `;
           });
+      }
 
-          document.querySelectorAll('.release-btn').forEach(btn => {
+      function attachTableEvents() {
+        document.querySelectorAll('.checkout-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => updateVisitorStatus(e.target.dataset.id, 'checkout'));
+        });
+
+        document.querySelectorAll('.security-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => updateVisitorStatus(e.target.dataset.id, 'security-confirm'));
+        });
+
+        document.querySelectorAll('.allow-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const visitorId = e.target.dataset.id;
-            if (confirm('Release this visitor?')) {
+            fetch(`/api/visitors/${visitorId}/allow-entry`, { method: 'POST' })
+              .then(res => {
+                if (!res.ok) throw new Error('Authorization failed');
+                return res.json();
+              })
+              .then(visitor => {
+                loadVisitors();
+                loadStats();
+                showBadge(visitor);
+              })
+              .catch(err => alert(err.message));
+          });
+        });
+
+        document.querySelectorAll('.release-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const visitorId = e.target.dataset.id;
+            if (confirm('Initiate visitor release?')) {
               fetch(`/api/visitors/${visitorId}/release`, { method: 'POST' })
                 .then(res => {
-                  if (!res.ok) throw new Error('Failed to release');
+                  if (!res.ok) throw new Error('Release failed');
                   loadVisitors();
                   loadStats();
                 })
@@ -209,14 +240,6 @@
             }
           });
         });
-
-
-          })
-          .catch(error => {
-            document.getElementById('visitor-list').innerHTML = `
-              <tr><td colspan="8" class="error-message">Error loading data: ${error}</td></tr>
-            `;
-          });
       }
 
       function updateVisitorStatus(visitorId, action) {
@@ -224,79 +247,58 @@
           ? `/api/visitors/${visitorId}/checkout`
           : `/api/visitors/${visitorId}/security-checkout`;
 
-        if (confirm(`Confirm ${action.replace('-', ' ')}?`)) {
+        if (confirm(`Authorize final ${action.replace('-', ' ')}?`)) {
           fetch(endpoint, { method: 'POST' })
             .then(response => {
               if (!response.ok) throw new Error('Update failed');
               loadVisitors();
               loadStats();
             })
-            .catch(error => {
-              alert(`Failed to ${action}: ${error.message}`);
-            });
+            .catch(error => alert(`Error: ${error.message}`));
         }
       }
 
       function showBadge(visitor) {
-      const badgeWindow = window.open('', 'Visitor Badge', 'width=400,height=600');
-      badgeWindow.document.write(`
-        <html>
-        <head>
-          <title>Visitor Badge</title>
-          <style>
-            body { font-family: Arial; text-align: center; padding: 20px; }
-            .badge-photo {
-              width: 150px; height: 150px; border-radius: 50%;
-              border: 3px solid #3498db; object-fit: cover; margin-bottom: 20px;
-            }
-            .badge-info p { margin: 6px 0; font-size: 16px; }
-          </style>
-        </head>
-        <body>
-          <h2>Visitor Badge</h2>
-          ${visitor.qr_code_path ? `<img src="/${visitor.qr_code_path}" class="badge-photo" alt="QR Code">` : ''}
-          <div class="badge-info">
-            <p><strong>Name:</strong> ${visitor.full_name}</p>
-            <p><strong>Contact:</strong> ${visitor.contact_number}</p>
-            <p><strong>Department:</strong> ${visitor.department_visiting}</p>
-            <p><strong>Host:</strong> ${visitor.person_to_visit}</p>
-            <p><strong>Check-in:</strong> ${new Date(visitor.in_time).toLocaleString()}</p>
-          </div>
-          <button onclick="window.print()">Print Badge</button>
-        </body>
-        </html>
-      `);
-      badgeWindow.document.close();
-    }
-
+        const badgeWindow = window.open('', 'Visitor Pass', 'width=450,height=650');
+        badgeWindow.document.write(`
+          <html>
+          <head>
+            <title>RSB Visitor Pass</title>
+            <link rel="stylesheet" href="styles.css">
+          </head>
+          <body style="background: white; padding: 40px; display: flex; align-items: center; justify-content: center;">
+            <div class="visitor-badge" style="display: block; width: 350px;">
+              <h2>Visitor Pass</h2>
+              ${visitor.qr_code_path ? `<img src="/${visitor.qr_code_path}" alt="QR Pass">` : ''}
+              <div class="badge-info">
+                <p><strong>Name</strong> <span>${visitor.full_name}</span></p>
+                <p><strong>Contact</strong> <span>${visitor.contact_number}</span></p>
+                <p><strong>Dept</strong> <span>${visitor.department_visiting}</span></p>
+                <p><strong>Host</strong> <span>${visitor.person_to_visit}</span></p>
+                <p><strong>Verified</strong> <span>${new Date().toLocaleDateString()}</span></p>
+              </div>
+              <button onclick="window.print()" class="btn btn-primary" style="width: 100%;">Print Pass</button>
+            </div>
+          </body>
+          </html>
+        `);
+        badgeWindow.document.close();
+      }
 
       loadStats();
       loadVisitors();
     });
 
     function downloadExcel(period) {
-      const url = `/api/visitors/export?period=${period}`;
-      console.log('Downloading:', url);
-
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            console.error('Failed response:', response.status);
-            throw new Error('Failed to download file');
-          }
-          return response.blob();
-        })
+      fetch(`/api/visitors/export?period=${period}`)
+        .then(res => res.blob())
         .then(blob => {
-          console.log('Received blob:', blob);
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
-          link.download = `visitors_${period}_${new Date().toISOString().split('T')[0]}.xlsx`;
+          link.download = `RSB_VisitorLOG_${period.toUpperCase()}_${new Date().toISOString().split('T')[0]}.xlsx`;
           link.click();
         })
-        .catch(err => {
-          console.error('Download error:', err);
-          alert('Error downloading report: ' + err.message);
-        });
+        .catch(err => alert('Export Error: ' + err.message));
     }
   </script>
 </body>

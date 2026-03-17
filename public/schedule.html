@@ -2,41 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Schedule Visit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSB | Schedule Visit</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Schedule Your Visit</h1>
-    <form id="schedule-form">
-      <label for="full_name">Full Name:</label>
-      <input required type="text" placeholder="Full Name" id="full_name" />
-      <label for="contact_number">Contact Number:</label>
-      <input required type="tel" placeholder="Contact Number" id="contact_number" />
-      <div class="form-group">
-        <label for="department_visiting">Department Visiting:</label>
-        <select id="department_visiting" required aria-required="true">
-          <option value="">Select Department</option>
-          <option value="HR">Human Resources</option>
-          <option value="IT">ITMS</option>
-          <option value="Finance">Finance</option>
-          <option value="Production">Production</option>
-          <option value="Quality">Quality</option>
-          <option value="Purchase">Purchase</option>
-          <option value="Engineering">Engineering & Development</option>
-          <option value="Business">Business Development</option>
-          <option value="Sales">Sales</option>
-        </select>
-      </div>
-      <label for="person_to_visit">Person to Visit:</label>
-      <input required type="text" placeholder="Person to Visit" id="person_to_visit" />
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    <header>
+      <h1>Pre-Schedule Visit</h1>
+    </header>
+
+    <nav>
+      <a href="/index.html">
+        <i data-lucide="arrow-left"></i> Registration Home
+      </a>
+    </nav>
+    
+    <main>
+      <section class="card" style="max-width: 600px; margin: 0 auto;">
+        <h2>Schedule Details</h2>
+        <form id="schedule-form" class="visitor-form">
+          <div class="form-group">
+            <label for="full_name">Full Name</label>
+            <input required type="text" placeholder="John Doe" id="full_name" />
+          </div>
+          
+          <div class="form-group">
+            <label for="contact_number">Contact Number</label>
+            <input required type="tel" placeholder="10-digit mobile" id="contact_number" pattern="[0-9]{10}" />
+          </div>
+          
+          <div class="form-group">
+            <label for="department_visiting">Department Visiting</label>
+            <select id="department_visiting" required>
+              <option value="">Select Department</option>
+              <option value="HR">Human Resources</option>
+              <option value="IT">ITMS</option>
+              <option value="Finance">Finance</option>
+              <option value="Production">Production</option>
+              <option value="Quality">Quality</option>
+              <option value="Purchase">Purchase</option>
+              <option value="Engineering">Engineering & Development</option>
+              <option value="Business">Business Development</option>
+              <option value="Sales">Sales</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="person_to_visit">Person to Visit</label>
+            <input required type="text" placeholder="Name of host" id="person_to_visit" />
+          </div>
+          
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="calendar-check"></i> Schedule Visit
+          </button>
+        </form>
+      </section>
+    </main>
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+
     document.getElementById('schedule-form').addEventListener('submit', async e => {
       e.preventDefault();
+      const btn = e.target.querySelector('button');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> Scheduling...';
+      lucide.createIcons();
+
       const data = {
         full_name: document.getElementById('full_name').value,
         contact_number: document.getElementById('contact_number').value,
@@ -53,11 +91,15 @@
   
         const result = await response.json();
         alert(result.message || 'Scheduled successfully!');
+        if (response.ok) e.target.reset();
       } catch (err) {
         alert('Submission failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+        lucide.createIcons();
       }
     });
   </script>
-  
 </body>
 </html>
