@@ -3,6 +3,10 @@
 **Live Website (Frontend):** [rsb-visitor-management-system.netlify.app](https://rsb-visitor-management-system.netlify.app/)
 **Backend API (Server):** [rsb-visitor-management-system.onrender.com](https://rsb-visitor-management-system.onrender.com/)
 
+**Local Development:**
+- **Visitor Registration:** [http://localhost:3000](http://localhost:3000)
+- **Admin Dashboard:** [http://localhost:3000/dashboard.html](http://localhost:3000/dashboard.html)
+
 A comprehensive Visitor Management System built with Node.js, Express, and MongoDB.
 
 ## Features
