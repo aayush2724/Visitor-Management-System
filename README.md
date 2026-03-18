@@ -1,6 +1,7 @@
 # RSB Visitor Management System
 
-**Live Demo:** [rsb-visitor-management-system.netlify.app](https://rsb-visitor-management-system.netlify.app/)
+**Live Website (Frontend):** [rsb-visitor-management-system.netlify.app](https://rsb-visitor-management-system.netlify.app/)
+**Backend API (Server):** [rsb-visitor-management-system.onrender.com](https://rsb-visitor-management-system.onrender.com/)
 
 A comprehensive Visitor Management System built with Node.js, Express, and MongoDB.
 
