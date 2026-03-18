@@ -1,6 +1,8 @@
-# Visitor Management System
+# RSB Visitor Management System
 
-A comprehensive Visitor Management System built with Node.js, Express, and MongoDB. This system streamlines the process of registering, scheduling, and managing visitors for your organization.
+**Live Demo:** [rsb-visitor-management-system.netlify.app](https://rsb-visitor-management-system.netlify.app/)
+
+A comprehensive Visitor Management System built with Node.js, Express, and MongoDB.
 
 ## Features
 

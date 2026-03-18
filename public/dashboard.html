@@ -1,67 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RSB | Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSB | Visitor Intelligence</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Admin Intelligence</h1>
-    </header>
-    
     <nav>
-      <a href="/index.html">
-        <i data-lucide="user-plus"></i> New Registration
-      </a>
+      <a href="/index.html">Registration Home</a>
+      <a href="/schedule.html">Schedule Visit</a>
+      <button onclick="downloadExcel()" class="btn btn-outline" style="border-radius: 40px; padding: 8px 20px;">
+        <i data-lucide="download" style="width: 14px;"></i> Export Data
+      </button>
     </nav>
-    
-    <div class="dashboard">
-      <div class="stats-cards">
+
+    <header>
+      <h1>Real-time visitor intelligence and analytics.</h1>
+      <p>Monitor your workplace traffic, manage security approvals, and extract actionable insights.</p>
+    </header>
+
+    <main>
+      <section class="stats-cards">
         <div class="stat-card">
-          <i data-lucide="users" style="color: var(--primary); margin-bottom: 10px;"></i>
-          <h3>Total Visitors</h3>
-          <p id="total-count">0</p>
+          <i data-lucide="users" style="color: var(--cta-green); margin-bottom: 12px; width: 20px;"></i>
+          <h3>Total Registry</h3>
+          <p id="total-visitors">0</p>
+        </div>
+        <div class="stat-card" style="border-color: rgba(0, 255, 163, 0.2);">
+          <i data-lucide="activity" style="color: var(--cta-green); margin-bottom: 12px; width: 20px;"></i>
+          <h3>On-Site Now</h3>
+          <p id="active-visitors">0</p>
         </div>
         <div class="stat-card">
-          <i data-lucide="zap" style="color: var(--success); margin-bottom: 10px;"></i>
-          <h3>Active Now</h3>
-          <p id="active-count">0</p>
-        </div>
-        <div class="stat-card">
-          <i data-lucide="check-circle" style="color: var(--secondary); margin-bottom: 10px;"></i>
-          <h3>Released</h3>
+          <i data-lucide="check-circle" style="color: #4facfe; margin-bottom: 12px; width: 20px;"></i>
+          <h3>Total Released</h3>
           <p id="released-count">0</p>
         </div>
         <div class="stat-card">
-          <i data-lucide="shield-alert" style="color: var(--warning); margin-bottom: 10px;"></i>
-          <h3>Security Pending</h3>
-          <p id="security-pending-count">0</p>
-        </div>
-        <div class="stat-card">
-          <i data-lucide="calendar" style="color: var(--primary); margin-bottom: 10px;"></i>
-          <h3>Scheduled</h3>
+          <i data-lucide="calendar" style="color: var(--text-muted); margin-bottom: 12px; width: 20px;"></i>
+          <h3>Pre-Scheduled</h3>
           <p id="scheduled-count">0</p>
         </div>
-      </div>
+      </section>
 
-      <div class="card" style="margin-bottom: 30px;">
-        <h2 style="font-size: 1.2rem; margin-bottom: 15px;">Reports & Exports</h2>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button onclick="downloadExcel('day')" class="btn btn-primary" style="width: auto;">
-            <i data-lucide="download"></i> Daily
+      <section class="card" style="margin-bottom: 32px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+          <div>
+            <h2 style="margin-bottom: 4px;">Reports & Exports</h2>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Generate and download visitor auditing logs.</p>
+          </div>
+          <i data-lucide="file-text" style="color: var(--cta-green); opacity: 0.5;"></i>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button onclick="downloadExcel('day')" class="btn btn-report" style="border-radius: 12px;">
+            <i data-lucide="calendar-days" style="width: 16px;"></i> Daily Log
           </button>
-          <button onclick="downloadExcel('week')" class="btn btn-primary" style="width: auto;">
-            <i data-lucide="download"></i> Weekly
+          <button onclick="downloadExcel('week')" class="btn btn-report" style="border-radius: 12px;">
+            <i data-lucide="calendar-range" style="width: 16px;"></i> Weekly Report
           </button>
-          <button onclick="downloadExcel('month')" class="btn btn-primary" style="width: auto;">
-            <i data-lucide="download"></i> Monthly
+          <button onclick="downloadExcel('month')" class="btn btn-report" style="border-radius: 12px;">
+            <i data-lucide="calendar-days" style="width: 16px;"></i> Monthly Audit
           </button>
         </div>
-      </div>
+      </section>
       
       <div class="tabs">
         <div class="tab active" data-status="all">Total History</div>
@@ -88,7 +93,7 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </main>
   </div>
 
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -108,12 +113,12 @@
         fetch('/api/visitors/stats')
           .then(res => res.json())
           .then(stats => {
-            document.getElementById('total-count').textContent = stats.total;
-            document.getElementById('active-count').textContent = stats.active;
+            document.getElementById('total-visitors').textContent = stats.total;
+            document.getElementById('active-visitors').textContent = stats.active;
             document.getElementById('released-count').textContent = stats.released;
-            document.getElementById('security-pending-count').textContent = stats.security_pending;
             document.getElementById('scheduled-count').textContent = stats.scheduled;
-          });
+          })
+          .catch(err => console.error('Stats error:', err));
       }
 
       tabs.forEach(tab => {
@@ -186,16 +191,15 @@
                 <td>${statusHtml}</td>
                 <td>${actions}</td>
               `;
-
               tbody.appendChild(row);
             });
 
-            // Re-bind events
             attachTableEvents();
+            lucide.createIcons();
           })
           .catch(error => {
             document.getElementById('visitor-list').innerHTML = `
-              <tr><td colspan="6" style="color: var(--error); text-align: center; padding: 20px;">System Error: ${error.message}</td></tr>
+              <tr><td colspan="6" style="color: #ff4d4d; text-align: center; padding: 20px;">System Error: ${error.message}</td></tr>
             `;
           });
       }
@@ -260,28 +264,19 @@
 
       function showBadge(visitor) {
         const badgeWindow = window.open('', 'Visitor Pass', 'width=450,height=650');
-        badgeWindow.document.write(`
-          <html>
-          <head>
-            <title>RSB Visitor Pass</title>
-            <link rel="stylesheet" href="styles.css">
-          </head>
-          <body style="background: white; padding: 40px; display: flex; align-items: center; justify-content: center;">
-            <div class="visitor-badge" style="display: block; width: 350px;">
-              <h2>Visitor Pass</h2>
-              ${visitor.qr_code_path ? `<img src="/${visitor.qr_code_path}" alt="QR Pass">` : ''}
-              <div class="badge-info">
-                <p><strong>Name</strong> <span>${visitor.full_name}</span></p>
-                <p><strong>Contact</strong> <span>${visitor.contact_number}</span></p>
-                <p><strong>Dept</strong> <span>${visitor.department_visiting}</span></p>
-                <p><strong>Host</strong> <span>${visitor.person_to_visit}</span></p>
-                <p><strong>Verified</strong> <span>${new Date().toLocaleDateString()}</span></p>
-              </div>
-              <button onclick="window.print()" class="btn btn-primary" style="width: 100%;">Print Pass</button>
-            </div>
-          </body>
-          </html>
-        `);
+        badgeWindow.document.write('<html><head><title>RSB Pass</title><link rel="stylesheet" href="styles.css"></head><body>' +
+          '<div class="visitor-badge" style="display: block; width: 350px;">' +
+          '<h2>Visitor Pass</h2>' +
+          (visitor.qr_code_path ? `<img src="/${visitor.qr_code_path}" alt="QR Pass">` : '') +
+          '<div class="badge-info">' +
+          `<p><strong>Name</strong> <span>${visitor.full_name}</span></p>` +
+          `<p><strong>Contact</strong> <span>${visitor.contact_number}</span></p>` +
+          `<p><strong>Dept</strong> <span>${visitor.department_visiting}</span></p>` +
+          `<p><strong>Host</strong> <span>${visitor.person_to_visit}</span></p>` +
+          `<p><strong>Verified</strong> <span>${new Date().toLocaleDateString()}</span></p>` +
+          '</div>' +
+          '<button onclick="window.print()" class="btn btn-primary" style="width: 100%;">Print Pass</button>' +
+          '</div></body></html>');
         badgeWindow.document.close();
       }
 
@@ -293,9 +288,10 @@
       fetch(`/api/visitors/export?period=${period}`)
         .then(res => res.blob())
         .then(blob => {
+          const fileName = `RSB_VisitorLOG_${period.toUpperCase()}_${new Date().toISOString().split('T')[0]}.xlsx`;
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
-          link.download = `RSB_VisitorLOG_${period.toUpperCase()}_${new Date().toISOString().split('T')[0]}.xlsx`;
+          link.download = fileName;
           link.click();
         })
         .catch(err => alert('Export Error: ' + err.message));
