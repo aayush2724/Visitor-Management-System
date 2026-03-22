@@ -3,88 +3,763 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RSB | Visitor Management</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>RSB | Secure Visitor Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0d12;
+      --bg-panel: #0d1117;
+      --bg-card: #111820;
+      --border: #1a2a1a;
+      --border-glow: #00ff88;
+      --green: #00ff88;
+      --green-dim: #00cc66;
+      --green-dark: rgba(0,255,136,0.08);
+      --green-glow: rgba(0,255,136,0.25);
+      --text: #e0ffe8;
+      --text-muted: #5a7a6a;
+      --text-label: #00cc66;
+      --red: #ff3333;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,255,136,0.015) 2px,
+        rgba(0,255,136,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      background: rgba(10,13,18,0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-brand .shield {
+      width: 32px; height: 32px;
+      border: 2px solid var(--green);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      color: var(--green);
+      box-shadow: 0 0 10px var(--green-glow);
+    }
+
+    .nav-brand .logo-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 2px;
+    }
+
+    .nav-brand .logo-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      letter-spacing: 4px;
+      display: block;
+      margin-top: -4px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-btn-active {
+      background: var(--green);
+      color: #000;
+      border: 1px solid var(--green);
+      box-shadow: 0 0 16px var(--green-glow);
+    }
+
+    .nav-btn-outline {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid #1e2e2e;
+    }
+
+    .nav-btn-outline:hover {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ── LEFT: BIOMETRIC ── */
+    .biometric-panel {
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      color: var(--green);
+      letter-spacing: 3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title::before {
+      content: '';
+      width: 12px; height: 12px;
+      border: 2px solid var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--green); }
+      50% { opacity: 0.4; box-shadow: 0 0 4px var(--green); }
+    }
+
+    /* Camera frame */
+    .cam-frame {
+      position: relative;
+      background: #040608;
+      border: 1px solid #1a2a1a;
+      border-radius: 4px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+
+    /* Corner brackets */
+    .cam-frame::before,
+    .cam-frame::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .cam-frame::before {
+      top: 8px; left: 8px;
+      border-top: 2px solid var(--green);
+      border-left: 2px solid var(--green);
+    }
+    .cam-frame::after {
+      bottom: 8px; right: 8px;
+      border-bottom: 2px solid var(--green);
+      border-right: 2px solid var(--green);
+    }
+
+    .cam-corner-tr, .cam-corner-bl {
+      position: absolute;
+      width: 20px; height: 20px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .cam-corner-tr {
+      top: 8px; right: 8px;
+      border-top: 2px solid var(--green);
+      border-right: 2px solid var(--green);
+    }
+    .cam-corner-bl {
+      bottom: 8px; left: 8px;
+      border-bottom: 2px solid var(--green);
+      border-left: 2px solid var(--green);
+    }
+
+    /* REC badge */
+    .rec-badge {
+      position: absolute;
+      top: 12px; right: 12px;
+      background: rgba(10,13,18,0.8);
+      border: 1px solid rgba(255,51,51,0.4);
+      border-radius: 3px;
+      padding: 3px 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--red);
+      display: flex; align-items: center; gap: 5px;
+      z-index: 6;
+    }
+
+    .rec-dot {
+      width: 6px; height: 6px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    /* Scan line animation */
+    .scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+      opacity: 0.5;
+      animation: scan 3s linear infinite;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      from { top: 0; }
+      to { top: 100%; }
+    }
+
+    #video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(1.2) contrast(1.05) saturate(0.9);
+      display: block;
+    }
+
+    #canvas { display: none; }
+
+    .capture-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 0 20px var(--green-glow);
+    }
+
+    .capture-btn:hover {
+      background: #00ffaa;
+      box-shadow: 0 0 30px rgba(0,255,136,0.5);
+      transform: translateY(-1px);
+    }
+
+    .capture-btn.captured {
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      box-shadow: 0 0 10px var(--green-glow);
+    }
+
+    .photo-status {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .photo-status.ok { color: var(--green); }
+
+    /* ── RIGHT: FORM ── */
+    .form-panel {
+      background: var(--bg);
+      padding: 40px 48px;
+    }
+
+    .form-header {
+      margin-bottom: 36px;
+    }
+
+    .form-header h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: 2px;
+    }
+
+    .form-header h2 span {
+      color: var(--green);
+    }
+
+    .form-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 6px;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-label);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg-card);
+      border: 1px solid #1a2a1a;
+      border-radius: 4px;
+      padding: 14px 16px;
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      outline: none;
+      width: 100%;
+    }
+
+    .form-group select option {
+      background: var(--bg-card);
+      color: var(--text);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 1px rgba(0,255,136,0.2), 0 0 20px rgba(0,255,136,0.05);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--text-muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+    }
+
+    .form-group textarea {
+      resize: none;
+      height: 90px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      margin-top: 28px;
+      background: transparent;
+      border: 1px solid var(--green);
+      border-radius: 4px;
+      color: var(--green);
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--green);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      z-index: 0;
+    }
+
+    .submit-btn:hover::before { transform: scaleX(1); }
+    .submit-btn:hover { color: #000; box-shadow: 0 0 30px var(--green-glow); }
+    .submit-btn span { position: relative; z-index: 1; }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── SUCCESS PANEL ── */
+    #pass-section {
+      display: none;
+      grid-column: 1 / -1;
+    }
+
+    .success-overlay {
+      background: var(--bg-panel);
+      border: 1px solid var(--green);
+      border-radius: 4px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(0,255,136,0.1);
+      margin-top: 32px;
+    }
+
+    .success-title {
+      font-family: 'Orbitron', monospace;
+      color: var(--green);
+      font-size: 1.1rem;
+      letter-spacing: 3px;
+      margin-bottom: 24px;
+    }
+
+    .badge-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .badge-info-item {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: left;
+    }
+
+    .badge-info-item strong {
+      color: var(--green);
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      margin-bottom: 2px;
+    }
+
+    .print-btn {
+      margin-top: 24px;
+      padding: 12px 32px;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .print-btn:hover {
+      background: var(--green);
+      color: #000;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .main { grid-template-columns: 1fr; }
+      .biometric-panel { border-right: none; border-bottom: 1px solid var(--border); }
+      .form-panel { padding: 28px 24px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body { background: white; }
+      .nav, .biometric-panel { display: none; }
+      #pass-section { display: block !important; }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <nav>
-      <a href="/dashboard.html">Admin Access</a>
-      <a href="/schedule.html">Schedule Visit</a>
-      <a href="#" class="btn btn-outline" style="border-radius: 40px; padding: 8px 20px;">Support</a>
-    </nav>
 
-    <header>
-      <h1>Identity-driven security for the modern workplace.</h1>
-      <p>Streamline your visitor check-in process with our enterprise-grade biometric registration system.</p>
-    </header>
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <div class="shield">&#9873;</div>
+      <div>
+        <span class="nav-brand logo-text">RSB | SECURE</span>
+        <span class="nav-brand logo-sub">VISITOR MANAGEMENT</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-btn nav-btn-active">&#10022; Registration</a>
+      <a href="/dashboard.html" class="nav-btn nav-btn-outline">&#9776; Dashboard</a>
+    </div>
+  </nav>
 
-    <main>
-      <section class="form-section">
-        <div class="card">
-          <h2>Capture Identity</h2>
-          <div class="camera-container">
-            <video id="video" autoplay playsinline></video>
-            <canvas id="canvas"></canvas>
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT: BIOMETRIC CAPTURE -->
+    <div class="biometric-panel">
+      <div class="panel-title">BIOMETRIC CAPTURE</div>
+
+      <div class="cam-frame" id="cam-frame">
+        <div class="cam-corner-tr"></div>
+        <div class="cam-corner-bl"></div>
+        <div class="rec-badge"><div class="rec-dot"></div> REC</div>
+        <div class="scan-line" id="scan-line"></div>
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="canvas"></canvas>
+      </div>
+
+      <p class="photo-status" id="photo-status">[ CAMERA NOT INITIALIZED ]</p>
+
+      <button class="capture-btn" id="capture-btn" type="button">
+        &#9654; CAPTURE IDENTITY
+      </button>
+    </div>
+
+    <!-- RIGHT: FORM -->
+    <div class="form-panel">
+      <div class="form-header">
+        <h2>VISITOR <span>DETAILS</span></h2>
+        <p>> Please enter your information to receive a security badge.</p>
+      </div>
+
+      <form id="visitor-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="full_name" placeholder="JOHN DOE" required>
           </div>
-          <button id="capture-btn" class="btn btn-primary" style="width: 100%;">
-            <i data-lucide="camera"></i> Initialize Camera
-          </button>
+          <div class="form-group">
+            <label>Contact Number</label>
+            <input type="tel" id="contact_number" placeholder="10-DIGIT MOBILE NUMBER" required pattern="[0-9]{10}" title="Enter 10-digit mobile number without spaces or country code">
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            <select id="department_visiting" required>
+              <option value="">SELECT DEPARTMENT</option>
+              <option value="HR">Human Resources</option>
+              <option value="IT">ITMS</option>
+              <option value="Finance">Finance</option>
+              <option value="Production">Production</option>
+              <option value="Engineering">Engineering</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Host Name</label>
+            <input type="text" id="person_to_visit" placeholder="JANE SMITH" required>
+          </div>
         </div>
 
-        <div class="card">
-          <h2>Registration Details</h2>
-          <form id="visitor-form" class="visitor-form">
-            <div class="form-group">
-              <label for="full_name">Full Name</label>
-              <input type="text" id="full_name" placeholder="e.g. Alexander Pierce" required>
-            </div>
-            
-            <div class="form-group">
-              <label for="contact_number">Contact Number</label>
-              <input type="tel" id="contact_number" placeholder="Mobile Number" required pattern="[0-9]{10}">
-            </div>
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span>&#9670; AUTHORIZE ENTRY</span>
+        </button>
+      </form>
 
-            <div class="form-group">
-              <label for="department_visiting">Department</label>
-              <select id="department_visiting" required>
-                <option value="">Select Department</option>
-                <option value="HR">Human Resources</option>
-                <option value="IT">ITMS</option>
-                <option value="Finance">Finance</option>
-                <option value="Production">Production</option>
-                <option value="Engineering">Engineering</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="person_to_visit">Host Name</label>
-              <input type="text" id="person_to_visit" placeholder="Person to Visit" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary" style="width: 100%;">
-              <i data-lucide="user-plus"></i> Complete Registration
-            </button>
-          </form>
+      <!-- SUCCESS -->
+      <div id="pass-section" style="display:none;">
+        <div class="success-overlay">
+          <div class="success-title">&#10003; ENTRY AUTHORIZED</div>
+          <div class="badge-grid" id="badge-display"></div>
+          <button class="print-btn" onclick="window.print()">&#9112; PRINT VISITOR PASS</button>
         </div>
-        <div class="card" id="pass-section" style="display: none; grid-column: 1 / -1; text-align: center;">
-          <h2>Registration Successful</h2>
-          <div id="badge-display"></div>
-          <button onclick="window.print()" class="btn btn-primary" style="margin-top: 20px;">
-            <i data-lucide="printer"></i> Print Visitor Pass
-          </button>
-        </div>
-      </section>
-    </main>
+      </div>
+    </div>
+
   </div>
-  
-  <script src="script.js" defer></script>
+
   <script>
-    // Initialize Lucide icons
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-    });
+    class VisitorSystem {
+      constructor() {
+        this.video = document.getElementById('video');
+        this.canvas = document.getElementById('canvas');
+        this.captureBtn = document.getElementById('capture-btn');
+        this.visitorForm = document.getElementById('visitor-form');
+        this.passSection = document.getElementById('pass-section');
+        this.badgeDisplay = document.getElementById('badge-display');
+        this.photoStatus = document.getElementById('photo-status');
+        this.stream = null;
+        this.capturedPhoto = null;
+        this.isCameraReady = false;
+
+        this.captureBtn.addEventListener('click', () => this.handleCameraClick());
+        this.visitorForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
+      }
+
+      async handleCameraClick() {
+        if (!this.isCameraReady) {
+          // First click: start camera
+          await this.setupCamera();
+        } else if (!this.capturedPhoto) {
+          // Camera running, no photo yet: capture
+          this.capturePhoto();
+        } else {
+          // Photo captured: retake
+          this.capturedPhoto = null;
+          this.video.style.opacity = '1';
+          this.captureBtn.textContent = '⊙ CAPTURE IDENTITY';
+          this.captureBtn.classList.remove('captured');
+          this.photoStatus.textContent = '[ CAMERA ACTIVE — POSITION AND CAPTURE ]';
+          this.photoStatus.className = 'photo-status';
+        }
+      }
+
+      async setupCamera() {
+        try {
+          this.photoStatus.textContent = '[ INITIALIZING BIOMETRIC SENSOR... ]';
+          this.stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+          });
+          this.video.srcObject = this.stream;
+          this.isCameraReady = true;
+          this.captureBtn.textContent = '⊙ CAPTURE IDENTITY';
+          this.photoStatus.textContent = '[ CAMERA ACTIVE — POSITION AND CAPTURE ]';
+          this.photoStatus.className = 'photo-status ok';
+        } catch (err) {
+          console.error('Camera error:', err);
+          this.photoStatus.textContent = '[ CAMERA ACCESS DENIED — PHOTO OPTIONAL ]';
+          this.photoStatus.className = 'photo-status';
+        }
+      }
+
+      capturePhoto() {
+        if (this.video.readyState !== 4) {
+          alert('Camera not ready. Wait a moment.');
+          return;
+        }
+        this.canvas.width = this.video.videoWidth;
+        this.canvas.height = this.video.videoHeight;
+        this.canvas.getContext('2d').drawImage(this.video, 0, 0);
+        this.capturedPhoto = this.canvas.toDataURL('image/jpeg', 0.85);
+        this.video.style.opacity = '0.4';
+        this.captureBtn.textContent = '↺ RETAKE PHOTO';
+        this.captureBtn.classList.add('captured');
+        this.photoStatus.textContent = '[ IDENTITY CAPTURED ✓ ]';
+        this.photoStatus.className = 'photo-status ok';
+      }
+
+      stopCamera() {
+        if (this.stream) {
+          this.stream.getTracks().forEach(t => t.stop());
+          this.stream = null;
+          this.video.srcObject = null;
+          this.isCameraReady = false;
+        }
+      }
+
+      async handleFormSubmit(e) {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.querySelector('span').textContent = '⧗ PROCESSING...';
+
+        const formData = new FormData();
+        formData.append('full_name', document.getElementById('full_name').value.trim());
+        formData.append('contact_number', document.getElementById('contact_number').value.trim());
+        formData.append('department_visiting', document.getElementById('department_visiting').value);
+        formData.append('person_to_visit', document.getElementById('person_to_visit').value.trim());
+
+        // Attach photo if captured
+        if (this.capturedPhoto) {
+          const blob = await (await fetch(this.capturedPhoto)).blob();
+          formData.append('photo', blob, 'visitor.jpg');
+        }
+
+        try {
+          const res = await fetch('/api/visitors', { method: 'POST', body: formData });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Registration failed');
+          }
+          const result = await res.json();
+          this.showSuccess(result);
+          this.visitorForm.reset();
+          this.stopCamera();
+          this.capturedPhoto = null;
+          this.captureBtn.textContent = '▶ CAPTURE IDENTITY';
+          this.captureBtn.classList.remove('captured');
+          this.photoStatus.textContent = '[ CAMERA NOT INITIALIZED ]';
+          this.photoStatus.className = 'photo-status';
+          this.video.style.opacity = '1';
+        } catch (err) {
+          alert('Error: ' + err.message);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.querySelector('span').textContent = '◆ AUTHORIZE ENTRY';
+        }
+      }
+
+      showSuccess(visitor) {
+        this.passSection.style.display = 'block';
+        this.badgeDisplay.innerHTML = `
+          ${this.capturedPhoto ? `<img src="${this.capturedPhoto}" style="width:90px;height:90px;border-radius:4px;object-fit:cover;border:1px solid #00ff88;">` : ''}
+          <div style="text-align:left">
+            <div class="badge-info-item"><strong>NAME</strong>${visitor.full_name || '—'}</div>
+            <div class="badge-info-item" style="margin-top:12px"><strong>HOST</strong>${visitor.person_to_visit || '—'}</div>
+            <div class="badge-info-item" style="margin-top:12px"><strong>DEPARTMENT</strong>${visitor.department_visiting || '—'}</div>
+            <div class="badge-info-item" style="margin-top:12px"><strong>DATE</strong>${new Date().toLocaleDateString()}</div>
+          </div>
+          ${visitor.qr_code_path ? `<img src="${visitor.qr_code_path}" style="width:90px;height:90px;border:1px solid #00ff88;border-radius:4px;" alt="QR Code">` : ''}
+        `;
+        this.passSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => new VisitorSystem());
   </script>
+
 </body>
 </html>

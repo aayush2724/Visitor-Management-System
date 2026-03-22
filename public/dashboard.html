@@ -1,381 +1,412 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RSB | Visitor Intelligence</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-  </head>
-  <body>
-    <div class="container">
-      <nav>
-        <a href="/index.html">Registration Home</a>
-        <a href="/schedule.html">Schedule Visit</a>
-        <button
-          onclick="downloadExcel()"
-          class="btn btn-outline"
-          style="border-radius: 40px; padding: 8px 20px"
-        >
-          <i data-lucide="download" style="width: 14px"></i> Export Data
-        </button>
-      </nav>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSB | Command Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0d12; --bg-panel: #0d1117; --bg-card: #111820;
+      --border: #1a2a1a; --green: #00ff88; --green-dim: #00cc66;
+      --green-glow: rgba(0,255,136,0.2); --green-dark: rgba(0,255,136,0.07);
+      --text: #e0ffe8; --text-muted: #5a7a6a; --text-label: #00cc66;
+      --red: #ff4444; --amber: #f59e0b; --blue: #4facfe; --purple: #a78bfa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); font-family: 'Rajdhani', sans-serif;
+      color: var(--text); min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.012) 2px, rgba(0,255,136,0.012) 4px);
+      z-index: 9999;
+    }
 
-      <header>
-        <h1>Real-time visitor intelligence and analytics.</h1>
-        <p>
-          Monitor your workplace traffic, manage security approvals, and extract
-          actionable insights.
-        </p>
-      </header>
+    /* NAV */
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 64px;
+      background: rgba(10,13,18,0.95); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .shield {
+      width: 32px; height: 32px; border: 2px solid var(--green); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--green); box-shadow: 0 0 10px var(--green-glow);
+    }
+    .logo-text { font-family: 'Orbitron', monospace; font-size: 0.95rem; font-weight: 600; letter-spacing: 2px; }
+    .logo-sub { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 4px; display: block; margin-top: -4px; }
+    .nav-links { display: flex; gap: 8px; align-items: center; }
+    .nav-btn { padding: 8px 20px; border-radius: 4px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; text-decoration: none; border: 1px solid #1e2e2e; background: transparent; color: var(--text-muted); }
+    .nav-btn:hover { color: var(--green); border-color: var(--green); }
+    .nav-btn-active { background: var(--green); color: #000; border-color: var(--green); box-shadow: 0 0 16px var(--green-glow); }
+    .logout-btn { background: transparent; border: 1px solid #2a1a1a; color: #ff6666; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 2px; padding: 8px 14px; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+    .logout-btn:hover { background: rgba(255,68,68,0.1); border-color: var(--red); }
 
-      <main>
-        <section class="stats-cards">
-          <div class="stat-card">
-            <i
-              data-lucide="users"
-              style="color: var(--cta-green); margin-bottom: 12px; width: 20px"
-            ></i>
-            <h3>Total Registry</h3>
-            <p id="total-visitors">0</p>
-          </div>
-          <div class="stat-card" style="border-color: rgba(0, 255, 163, 0.2)">
-            <i
-              data-lucide="activity"
-              style="color: var(--cta-green); margin-bottom: 12px; width: 20px"
-            ></i>
-            <h3>On-Site Now</h3>
-            <p id="active-visitors">0</p>
-          </div>
-          <div class="stat-card">
-            <i
-              data-lucide="check-circle"
-              style="color: #4facfe; margin-bottom: 12px; width: 20px"
-            ></i>
-            <h3>Total Released</h3>
-            <p id="released-count">0</p>
-          </div>
-          <div class="stat-card">
-            <i
-              data-lucide="calendar"
-              style="color: var(--text-muted); margin-bottom: 12px; width: 20px"
-            ></i>
-            <h3>Pre-Scheduled</h3>
-            <p id="scheduled-count">0</p>
-          </div>
-        </section>
+    /* CONTENT */
+    .content { padding: 32px 40px; max-width: 1600px; margin: 0 auto; }
 
-        <section class="card" style="margin-bottom: 32px">
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              margin-bottom: 24px;
-            "
-          >
-            <div>
-              <h2 style="margin-bottom: 4px">Reports & Exports</h2>
-              <p style="font-size: 0.875rem; color: var(--text-muted)">
-                Generate and download visitor auditing logs.
-              </p>
-            </div>
-            <i
-              data-lucide="file-text"
-              style="color: var(--cta-green); opacity: 0.5"
-            ></i>
-          </div>
-          <div style="display: flex; gap: 12px; flex-wrap: wrap">
-            <button
-              onclick="downloadExcel('day')"
-              class="btn btn-report"
-              style="border-radius: 12px"
-            >
-              <i data-lucide="calendar-days" style="width: 16px"></i> Daily Log
-            </button>
-            <button
-              onclick="downloadExcel('week')"
-              class="btn btn-report"
-              style="border-radius: 12px"
-            >
-              <i data-lucide="calendar-range" style="width: 16px"></i> Weekly
-              Report
-            </button>
-            <button
-              onclick="downloadExcel('month')"
-              class="btn btn-report"
-              style="border-radius: 12px"
-            >
-              <i data-lucide="calendar-days" style="width: 16px"></i> Monthly
-              Audit
-            </button>
-          </div>
-        </section>
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat-card {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px;
+      padding: 24px; position: relative; overflow: hidden; transition: all 0.2s;
+    }
+    .stat-card:hover { border-color: var(--green); box-shadow: 0 0 20px rgba(0,255,136,0.08); transform: translateY(-2px); }
+    .stat-label { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); letter-spacing: 3px; margin-bottom: 12px; }
+    .stat-value { font-family: 'Orbitron', monospace; font-size: 2rem; font-weight: 800; color: var(--green); }
+    .stat-accent { position: absolute; top: 0; right: 0; width: 3px; height: 100%; }
 
-        <div class="tabs">
-          <div class="tab active" data-status="all">Total History</div>
-          <div class="tab" data-status="active">On-Site</div>
-          <div class="tab" data-status="released">Completed</div>
-          <div class="tab" data-status="security-pending">
-            Pending Check-out
-          </div>
-          <div class="tab" data-status="scheduled">Scheduled</div>
-        </div>
+    /* TOOLBAR */
+    .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 360px; }
+    .search-wrap input {
+      width: 100%; background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 4px; padding: 10px 14px 10px 36px;
+      color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+      outline: none; transition: all 0.2s; letter-spacing: 1px;
+    }
+    .search-wrap input:focus { border-color: var(--green); box-shadow: 0 0 10px rgba(0,255,136,0.05); }
+    .search-wrap input::placeholder { color: var(--text-muted); }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem; }
+    
+    .export-btn {
+      padding: 10px 18px; background: transparent; border: 1px solid #1a2a2a;
+      color: var(--green-dim); font-family: 'Rajdhani', sans-serif; font-size: 0.85rem;
+      font-weight: 600; border-radius: 4px; cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
+    }
+    .export-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-dark); }
 
-        <div class="table-container">
-          <table class="visitor-table">
-            <thead>
-              <tr>
-                <th>Visitor</th>
-                <th>Contact</th>
-                <th>Dept / Host</th>
-                <th>Timeline</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="visitor-list">
-              <!-- Visitor data will be inserted here -->
-            </tbody>
-          </table>
-        </div>
-      </main>
+    /* TABS */
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; overflow-x: auto; }
+    .tab {
+      padding: 8px 18px; border-radius: 4px; font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 2px; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s; border: 1px solid transparent; white-space: nowrap;
+    }
+    .tab:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .tab.active { color: var(--green); background: var(--green-dark); border-color: rgba(0,255,136,0.2); }
+
+    /* TABLE */
+    .table-wrap { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 14px 16px; text-align: left;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td { padding: 14px 16px; font-size: 0.95rem; border-bottom: 1px solid rgba(26,42,26,0.5); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(0,255,136,0.02); }
+
+    /* VISITOR NAME + PHOTO */
+    .vis-name { display: flex; align-items: center; gap: 10px; }
+    .vis-thumb {
+      width: 36px; height: 36px; border-radius: 4px; object-fit: cover;
+      border: 1px solid var(--border); background: #1a2a1a; flex-shrink: 0;
+    }
+    .vis-thumb-placeholder {
+      width: 36px; height: 36px; border-radius: 4px; background: #1a2a1a;
+      border: 1px solid var(--border); display: flex; align-items: center;
+      justify-content: center; font-size: 0.7rem; color: var(--text-muted); flex-shrink: 0;
+    }
+    .vis-name-text { font-weight: 600; }
+    .vis-id { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* BADGES */
+    .badge { padding: 4px 10px; border-radius: 3px; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; }
+    .badge-active    { background: rgba(0,255,136,0.1);  color: var(--green); }
+    .badge-released  { background: rgba(79,172,254,0.1); color: var(--blue); }
+    .badge-pending   { background: rgba(245,158,11,0.1); color: var(--amber); }
+    .badge-scheduled { background: rgba(167,139,250,0.1); color: var(--purple); }
+
+    /* ACTION BUTTONS */
+    .act-btn {
+      padding: 6px 12px; border-radius: 3px; font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 1px; cursor: pointer; border: 1px solid;
+      transition: all 0.15s; background: transparent;
+    }
+    .act-checkout { border-color: rgba(0,255,136,0.3); color: var(--green); }
+    .act-checkout:hover { background: rgba(0,255,136,0.1); }
+    .act-release { border-color: rgba(79,172,254,0.3); color: var(--blue); }
+    .act-release:hover { background: rgba(79,172,254,0.1); }
+    .act-security { border-color: rgba(245,158,11,0.3); color: var(--amber); }
+    .act-security:hover { background: rgba(245,158,11,0.1); }
+    .act-allow { border-color: rgba(167,139,250,0.3); color: var(--purple); }
+    .act-allow:hover { background: rgba(167,139,250,0.1); }
+    .act-delete { border-color: rgba(255,68,68,0.2); color: #ff6666; margin-left: 4px; }
+    .act-delete:hover { background: rgba(255,68,68,0.1); border-color: var(--red); }
+
+    .actions-cell { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+
+    /* EMPTY STATE */
+    .empty-row td { text-align: center; color: var(--text-muted); padding: 40px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; letter-spacing: 2px; }
+
+    @media (max-width: 900px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .content { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-brand">
+      <div class="shield">&#9873;</div>
+      <div>
+        <span class="logo-text">RSB | SECURE</span>
+        <span class="logo-sub">COMMAND CENTER</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-btn">&#10022; Register</a>
+      <a href="/schedule.html" class="nav-btn">&#9776; Schedule</a>
+      <a href="/dashboard.html" class="nav-btn nav-btn-active">&#9685; Dashboard</a>
+      <button class="logout-btn" onclick="logout()">EXIT &#9670;</button>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">TOTAL REGISTRY</div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-accent" style="background:var(--green);opacity:0.4;"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">ON-SITE NOW</div>
+        <div class="stat-value" id="stat-active">0</div>
+        <div class="stat-accent" style="background:var(--green);"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">TOTAL RELEASED</div>
+        <div class="stat-value" id="stat-released" style="color:var(--blue)">0</div>
+        <div class="stat-accent" style="background:var(--blue);"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">PRE-SCHEDULED</div>
+        <div class="stat-value" id="stat-scheduled" style="color:var(--purple)">0</div>
+        <div class="stat-accent" style="background:var(--purple);"></div>
+      </div>
     </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        lucide.createIcons();
-        const tabs = document.querySelectorAll(".tab");
-        let currentStatus = "all";
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">&#9906;</span>
+        <input type="text" id="search-input" placeholder="SEARCH VISITOR NAME...">
+      </div>
+      <button class="export-btn" onclick="downloadExcel('day')">&#8659; Daily Log</button>
+      <button class="export-btn" onclick="downloadExcel('week')">&#8659; Weekly</button>
+      <button class="export-btn" onclick="downloadExcel('month')">&#8659; Monthly</button>
+    </div>
 
-        const BACKEND = "https://rsb-visitor-management-system-1.onrender.com";
-        const eventSource = new EventSource(`${BACKEND}/api/visitors/updates`);
-        eventSource.onmessage = () => {
-          loadStats();
-          loadVisitors();
-        };
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-status="all">ALL RECORDS</div>
+      <div class="tab" data-status="active">ON-SITE</div>
+      <div class="tab" data-status="released">COMPLETED</div>
+      <div class="tab" data-status="security-pending">PENDING EXIT</div>
+      <div class="tab" data-status="scheduled">SCHEDULED</div>
+    </div>
 
-        function loadStats() {
-          fetch("/api/visitors/stats")
-            .then((res) => res.json())
-            .then((stats) => {
-              document.getElementById("total-visitors").textContent =
-                stats.total;
-              document.getElementById("active-visitors").textContent =
-                stats.active;
-              document.getElementById("released-count").textContent =
-                stats.released;
-              document.getElementById("scheduled-count").textContent =
-                stats.scheduled;
-            })
-            .catch((err) => console.error("Stats error:", err));
-        }
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Visitor</th>
+            <th>Contact</th>
+            <th>Dept / Host</th>
+            <th>Timeline</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="visitor-tbody"></tbody>
+      </table>
+    </div>
+  </div>
 
-        tabs.forEach((tab) => {
-          tab.addEventListener("click", () => {
-            tabs.forEach((t) => t.classList.remove("active"));
-            tab.classList.add("active");
-            currentStatus = tab.dataset.status;
-            loadVisitors();
-          });
-        });
+  <script>
+    // — Auth guard —
+    if (!sessionStorage.getItem('rsb_auth')) {
+      window.location.href = '/login.html';
+    }
 
-        function loadVisitors() {
-          let url = `/api/visitors`;
-          if (currentStatus !== "all") {
-            url += `?status=${currentStatus}`;
-          }
+    function logout() {
+      sessionStorage.removeItem('rsb_auth');
+      window.location.href = '/login.html';
+    }
 
-          fetch(url)
-            .then(async (res) => {
-              const contentType = res.headers.get("content-type");
-              if (
-                !res.ok ||
-                !contentType ||
-                !contentType.includes("application/json")
-              ) {
-                throw new Error(
-                  "Backend unreachable or returning non-JSON. Are you running the local server?",
-                );
-              }
-              return res.json();
-            })
-            .then((visitors) => {
-              const tbody = document.getElementById("visitor-list");
-              tbody.innerHTML = "";
-              if (visitors.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">No records found for this view.</td></tr>`;
-                return;
-              }
+    let currentStatus = 'all';
+    let allVisitors = [];
+    let searchTerm = '';
 
-              visitors.forEach((visitor) => {
-                const row = document.createElement("tr");
+    // SSE for live updates
+    const es = new EventSource('/api/visitors/updates');
+    es.onmessage = () => { loadStats(); loadVisitors(); };
 
-                let statusHtml;
-                if (visitor.scheduled) {
-                  statusHtml =
-                    '<span class="badge badge-scheduled">Scheduled</span>';
-                } else if (visitor.security_confirmed) {
-                  statusHtml =
-                    '<span class="badge badge-released">Checked Out</span>';
-                } else if (visitor.out_time) {
-                  statusHtml =
-                    '<span class="badge badge-security-pending">Exit Initiated</span>';
-                } else {
-                  statusHtml =
-                    '<span class="badge badge-active">On-Site</span>';
-                }
-
-                let actions = "";
-                if (visitor.scheduled) {
-                  actions = `<button class="btn btn-primary allow-btn" data-id="${visitor.id}" style="padding: 8px 12px; font-size: 0.8rem;">Allow Entry</button>`;
-                } else if (!visitor.out_time && visitor.approved) {
-                  actions = `<button class="btn btn-primary release-btn" data-id="${visitor.id}" style="padding: 8px 12px; font-size: 0.8rem; background: var(--accent);">Release</button>`;
-                } else if (!visitor.out_time) {
-                  actions = `<button class="btn btn-primary checkout-btn" data-id="${visitor.id}" style="padding: 8px 12px; font-size: 0.8rem;">Check Out</button>`;
-                } else if (!visitor.security_confirmed) {
-                  actions = `<button class="btn btn-primary security-btn" data-id="${visitor.id}" style="padding: 8px 12px; font-size: 0.8rem; background: var(--warning);">Confirm Exit</button>`;
-                }
-
-                row.innerHTML = `
-                <td>
-                  <div style="font-weight: 500;">${visitor.full_name}</div>
-                  <div style="font-size: 0.75rem; color: var(--text-muted);">ID: ${visitor.id.slice(-6)}</div>
-                </td>
-                <td>${visitor.contact_number}</td>
-                <td>
-                  <div>${visitor.department_visiting}</div>
-                  <div style="font-size: 0.85rem; color: var(--text-muted);">host: ${visitor.person_to_visit}</div>
-                </td>
-                <td>
-                  <div style="font-size: 0.85rem;">In: ${new Date(visitor.in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
-                  <div style="font-size: 0.85rem; color: var(--text-muted);">Out: ${visitor.out_time ? new Date(visitor.out_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "--:--"}</div>
-                </td>
-                <td>${statusHtml}</td>
-                <td>${actions}</td>
-              `;
-                tbody.appendChild(row);
-              });
-
-              attachTableEvents();
-              lucide.createIcons();
-            })
-            .catch((error) => {
-              document.getElementById("visitor-list").innerHTML = `
-              <tr><td colspan="6" style="color: #ff4d4d; text-align: center; padding: 20px;">System Error: ${error.message}</td></tr>
-            `;
-            });
-        }
-
-        function attachTableEvents() {
-          document.querySelectorAll(".checkout-btn").forEach((btn) => {
-            btn.addEventListener("click", (e) =>
-              updateVisitorStatus(e.target.dataset.id, "checkout"),
-            );
-          });
-
-          document.querySelectorAll(".security-btn").forEach((btn) => {
-            btn.addEventListener("click", (e) =>
-              updateVisitorStatus(e.target.dataset.id, "security-confirm"),
-            );
-          });
-
-          document.querySelectorAll(".allow-btn").forEach((btn) => {
-            btn.addEventListener("click", (e) => {
-              const visitorId = e.target.dataset.id;
-              fetch(`/api/visitors/${visitorId}/allow-entry`, {
-                method: "POST",
-              })
-                .then((res) => {
-                  if (!res.ok) throw new Error("Authorization failed");
-                  return res.json();
-                })
-                .then((visitor) => {
-                  loadVisitors();
-                  loadStats();
-                  showBadge(visitor);
-                })
-                .catch((err) => alert(err.message));
-            });
-          });
-
-          document.querySelectorAll(".release-btn").forEach((btn) => {
-            btn.addEventListener("click", (e) => {
-              const visitorId = e.target.dataset.id;
-              if (confirm("Initiate visitor release?")) {
-                fetch(`/api/visitors/${visitorId}/release`, { method: "POST" })
-                  .then((res) => {
-                    if (!res.ok) throw new Error("Release failed");
-                    loadVisitors();
-                    loadStats();
-                  })
-                  .catch((err) => alert(err.message));
-              }
-            });
-          });
-        }
-
-        function updateVisitorStatus(visitorId, action) {
-          const endpoint =
-            action === "checkout"
-              ? `/api/visitors/${visitorId}/checkout`
-              : `/api/visitors/${visitorId}/security-checkout`;
-
-          if (confirm(`Authorize final ${action.replace("-", " ")}?`)) {
-            fetch(endpoint, { method: "POST" })
-              .then((response) => {
-                if (!response.ok) throw new Error("Update failed");
-                loadVisitors();
-                loadStats();
-              })
-              .catch((error) => alert(`Error: ${error.message}`));
-          }
-        }
-
-        function showBadge(visitor) {
-          const badgeWindow = window.open(
-            "",
-            "Visitor Pass",
-            "width=450,height=650",
-          );
-          badgeWindow.document.write(
-            '<html><head><title>RSB Pass</title><link rel="stylesheet" href="styles.css"></head><body>' +
-              '<div class="visitor-badge" style="display: block; width: 350px;">' +
-              "<h2>Visitor Pass</h2>" +
-              (visitor.qr_code_path
-                ? `<img src="/${visitor.qr_code_path}" alt="QR Pass">`
-                : "") +
-              '<div class="badge-info">' +
-              `<p><strong>Name</strong> <span>${visitor.full_name}</span></p>` +
-              `<p><strong>Contact</strong> <span>${visitor.contact_number}</span></p>` +
-              `<p><strong>Dept</strong> <span>${visitor.department_visiting}</span></p>` +
-              `<p><strong>Host</strong> <span>${visitor.person_to_visit}</span></p>` +
-              `<p><strong>Verified</strong> <span>${new Date().toLocaleDateString()}</span></p>` +
-              "</div>" +
-              '<button onclick="window.print()" class="btn btn-primary" style="width: 100%;">Print Pass</button>' +
-              "</div></body></html>",
-          );
-          badgeWindow.document.close();
-        }
-
-        loadStats();
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentStatus = tab.dataset.status;
         loadVisitors();
       });
+    });
 
-      function downloadExcel(period) {
-        fetch(`/api/visitors/export?period=${period}`)
-          .then((res) => res.blob())
-          .then((blob) => {
-            const fileName = `RSB_VisitorLOG_${period.toUpperCase()}_${new Date().toISOString().split("T")[0]}.xlsx`;
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = fileName;
-            link.click();
-          })
-          .catch((err) => alert("Export Error: " + err.message));
+    // Search
+    document.getElementById('search-input').addEventListener('input', e => {
+      searchTerm = e.target.value.trim().toLowerCase();
+      renderTable();
+    });
+
+    function loadStats() {
+      fetch('/api/visitors/stats').then(r => r.json()).then(s => {
+        document.getElementById('stat-total').textContent    = s.total    || 0;
+        document.getElementById('stat-active').textContent   = s.active   || 0;
+        document.getElementById('stat-released').textContent = s.released || 0;
+        document.getElementById('stat-scheduled').textContent = s.scheduled || 0;
+      }).catch(console.error);
+    }
+
+    function loadVisitors() {
+      const url = currentStatus === 'all' ? '/api/visitors' : `/api/visitors?status=${currentStatus}`;
+      fetch(url).then(r => {
+        if (!r.ok) throw new Error('Server error');
+        return r.json();
+      }).then(visitors => {
+        allVisitors = visitors;
+        renderTable();
+      }).catch(err => {
+        document.getElementById('visitor-tbody').innerHTML =
+          `<tr class="empty-row"><td colspan="6">[ ERROR: ${err.message} ]</td></tr>`;
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('visitor-tbody');
+      const filtered = searchTerm
+        ? allVisitors.filter(v => v.full_name.toLowerCase().includes(searchTerm))
+        : allVisitors;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="6">[ NO RECORDS FOUND ]</td></tr>`;
+        return;
       }
-    </script>
-  </body>
+
+      tbody.innerHTML = filtered.map(v => {
+        // Badge
+        let badge;
+        if (v.scheduled)            badge = `<span class="badge badge-scheduled">SCHEDULED</span>`;
+        else if (v.security_confirmed) badge = `<span class="badge badge-released">CHECKED OUT</span>`;
+        else if (v.out_time)        badge = `<span class="badge badge-pending">EXIT PENDING</span>`;
+        else                        badge = `<span class="badge badge-active">ON-SITE</span>`;
+
+        // Action buttons
+        let actions = '';
+        if (v.scheduled)
+          actions += `<button class="act-btn act-allow" data-id="${v.id}" onclick="allowEntry('${v.id}')">ALLOW IN</button>`;
+        else if (!v.out_time && v.approved)
+          actions += `<button class="act-btn act-release" onclick="releaseVisitor('${v.id}')">RELEASE</button>`;
+        else if (!v.out_time)
+          actions += `<button class="act-btn act-checkout" onclick="checkoutVisitor('${v.id}')">CHECK OUT</button>`;
+        else if (!v.security_confirmed)
+          actions += `<button class="act-btn act-security" onclick="securityCheckout('${v.id}')">CONFIRM EXIT</button>`;
+        actions += `<button class="act-btn act-delete" onclick="deleteVisitor('${v.id}', this)">&#10005;</button>`;
+
+        // Photo
+        const photoEl = v.photo_path
+          ? `<img src="${v.photo_path}" class="vis-thumb" alt="photo">`
+          : `<div class="vis-thumb-placeholder">N/A</div>`;
+
+        // Times
+        const inT  = new Date(v.in_time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        const outT = v.out_time ? new Date(v.out_time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '--:--';
+        const dateStr = new Date(v.in_time).toLocaleDateString();
+
+        return `<tr>
+          <td>
+            <div class="vis-name">
+              ${photoEl}
+              <div>
+                <div class="vis-name-text">${v.full_name}</div>
+                <div class="vis-id">${dateStr} · #${v.id.slice(-6)}</div>
+              </div>
+            </div>
+          </td>
+          <td><span style="font-family:'Share Tech Mono',monospace;font-size:0.85rem;">${v.contact_number}</span></td>
+          <td>
+            <div>${v.department_visiting}</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">&#8594; ${v.person_to_visit}</div>
+          </td>
+          <td>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--green)">IN&nbsp; ${inT}</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted)">OUT ${outT}</div>
+          </td>
+          <td>${badge}</td>
+          <td><div class="actions-cell">${actions}</div></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function checkoutVisitor(id) {
+      if (!confirm('Mark this visitor as checked out?')) return;
+      fetch(`/api/visitors/${id}/checkout`, {method:'POST'})
+        .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
+        .catch(() => alert('Checkout failed'));
+    }
+
+    function releaseVisitor(id) {
+      if (!confirm('Release this visitor?')) return;
+      fetch(`/api/visitors/${id}/release`, {method:'POST'})
+        .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
+        .catch(() => alert('Release failed'));
+    }
+
+    function securityCheckout(id) {
+      if (!confirm('Confirm security exit?')) return;
+      fetch(`/api/visitors/${id}/security-checkout`, {method:'POST'})
+        .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
+        .catch(() => alert('Security checkout failed'));
+    }
+
+    function allowEntry(id) {
+      fetch(`/api/visitors/${id}/allow-entry`, {method:'POST'})
+        .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
+        .catch(() => alert('Allow entry failed'));
+    }
+
+    function deleteVisitor(id, btn) {
+      if (!confirm('Permanently delete this visitor record?')) return;
+      const row = btn.closest('tr');
+      row.style.opacity = '0.4';
+      fetch(`/api/visitors/${id}`, {method:'DELETE'})
+        .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
+        .catch(() => { alert('Delete failed'); row.style.opacity = '1'; });
+    }
+
+    function downloadExcel(period) {
+      fetch(`/api/visitors/export?period=${period}`)
+        .then(r => r.blob())
+        .then(blob => {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `RSB_VisitorLOG_${period.toUpperCase()}_${new Date().toISOString().split('T')[0]}.xlsx`;
+          link.click();
+        }).catch(err => alert('Export Error: ' + err.message));
+    }
+
+    loadStats();
+    loadVisitors();
+  </script>
+</body>
 </html>

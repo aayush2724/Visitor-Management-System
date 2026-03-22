@@ -3,101 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RSB | Pre-Schedule</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>RSB | Pre-Schedule Visit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0d12; --bg-panel: #0d1117; --bg-card: #111820;
+      --border: #1a2a1a; --green: #00ff88; --green-dim: #00cc66;
+      --green-glow: rgba(0,255,136,0.25); --text: #e0ffe8;
+      --text-muted: #5a7a6a; --text-label: #00cc66;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); font-family: 'Rajdhani', sans-serif;
+      color: var(--text); min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.012) 2px, rgba(0,255,136,0.012) 4px);
+    }
+
+    /* NAV */
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 64px;
+      background: rgba(10,13,18,0.95); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .shield {
+      width: 32px; height: 32px; border: 2px solid var(--green); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--green); box-shadow: 0 0 10px var(--green-glow);
+    }
+    .logo-text { font-family: 'Orbitron', monospace; font-size: 0.95rem; font-weight: 600; letter-spacing: 2px; }
+    .logo-sub { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 4px; display: block; margin-top: -4px; }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-btn { padding: 8px 20px; border-radius: 4px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; text-decoration: none; border: 1px solid #1e2e2e; background: transparent; color: var(--text-muted); }
+    .nav-btn:hover { color: var(--green); border-color: var(--green); }
+    .nav-btn-active { background: var(--green); color: #000; border-color: var(--green); box-shadow: 0 0 16px var(--green-glow); }
+
+    /* PAGE */
+    .page { display: flex; align-items: flex-start; justify-content: center; padding: 60px 24px; }
+
+    .form-card {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 6px; padding: 48px; width: 100%; max-width: 560px;
+      box-shadow: 0 0 40px rgba(0,255,136,0.04);
+    }
+
+    .form-title {
+      font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 800;
+      letter-spacing: 2px; margin-bottom: 6px;
+    }
+    .form-title span { color: var(--green); }
+    .form-sub {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
+      color: var(--text-muted); letter-spacing: 2px; margin-bottom: 36px;
+    }
+
+    .form-group { margin-bottom: 20px; }
+    label {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
+      color: var(--text-label); letter-spacing: 3px; display: block; margin-bottom: 7px;
+    }
+    input, select {
+      width: 100%; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 4px; padding: 13px 16px; color: var(--text);
+      font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 500;
+      outline: none; transition: all 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: var(--green); box-shadow: 0 0 0 1px rgba(0,255,136,0.2);
+    }
+    input::placeholder { color: var(--text-muted); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
+    select option { background: var(--bg-card); }
+
+    /* Date/time row */
+    .date-time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    input[type="date"], input[type="time"] { color-scheme: dark; }
+
+    .submit-btn {
+      width: 100%; margin-top: 28px; padding: 16px;
+      background: transparent; border: 1px solid var(--green); border-radius: 4px;
+      color: var(--green); font-family: 'Orbitron', monospace; font-size: 0.8rem;
+      font-weight: 600; letter-spacing: 3px; cursor: pointer;
+      position: relative; overflow: hidden; transition: all 0.2s;
+    }
+    .submit-btn::before {
+      content: ''; position: absolute; inset: 0; background: var(--green);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; z-index: 0;
+    }
+    .submit-btn:hover::before { transform: scaleX(1); }
+    .submit-btn:hover { color: #000; box-shadow: 0 0 30px var(--green-glow); }
+    .submit-btn span { position: relative; z-index: 1; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Success */
+    .success-card {
+      display: none; margin-top: 24px; padding: 24px;
+      background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.2);
+      border-radius: 4px; text-align: center;
+    }
+    .success-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--green); letter-spacing: 2px; margin-bottom: 8px; }
+    .success-msg { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; }
+
+    @media (max-width: 600px) {
+      .form-card { padding: 28px 20px; }
+      .date-time-row { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <nav>
-      <a href="/index.html">Registration Home</a>
-      <a href="/dashboard.html">Admin Access</a>
-    </nav>
 
-    <header>
-      <h1>Plan your visit with certainty.</h1>
-      <p>Ensure a seamless entry experience by pre-scheduling your appointment today.</p>
-    </header>
-    
-    <main>
-      <section class="card" style="max-width: 600px; margin: 0 auto;">
-        <h2>Schedule Details</h2>
-        <form id="schedule-form" class="visitor-form">
-          <div class="form-group">
-            <label for="full_name">Full Name</label>
-            <input required type="text" placeholder="e.g. Sarah Jenkins" id="full_name" />
+  <nav class="nav">
+    <div class="nav-brand">
+      <div class="shield">&#9873;</div>
+      <div>
+        <span class="logo-text">RSB | SECURE</span>
+        <span class="logo-sub">VISITOR MANAGEMENT</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-btn">&#10022; Register</a>
+      <a href="/schedule.html" class="nav-btn nav-btn-active">&#8635; Schedule</a>
+      <a href="/dashboard.html" class="nav-btn">&#9685; Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="form-card">
+      <h2 class="form-title">PRE-SCHEDULE <span>VISIT</span></h2>
+      <p class="form-sub">> Book your visit in advance for seamless entry authorization.</p>
+
+      <form id="schedule-form">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="full_name" placeholder="FULL NAME" required>
+        </div>
+
+        <div class="form-group">
+          <label>Contact Number</label>
+          <input type="tel" id="contact_number" placeholder="10-DIGIT MOBILE NUMBER" required pattern="[0-9]{10}" title="Enter 10-digit mobile number">
+        </div>
+
+        <div class="form-group">
+          <label>Department Visiting</label>
+          <select id="department_visiting" required>
+            <option value="">SELECT DEPARTMENT</option>
+            <option value="HR">Human Resources</option>
+            <option value="IT">ITMS</option>
+            <option value="Finance">Finance</option>
+            <option value="Production">Production</option>
+            <option value="Quality">Quality</option>
+            <option value="Purchase">Purchase</option>
+            <option value="Engineering">Engineering &amp; Development</option>
+            <option value="Business">Business Development</option>
+            <option value="Sales">Sales</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Person to Visit</label>
+          <input type="text" id="person_to_visit" placeholder="HOST NAME" required>
+        </div>
+
+        <div class="form-group">
+          <label>Scheduled Date &amp; Time</label>
+          <div class="date-time-row">
+            <input type="date" id="scheduled_date" required>
+            <input type="time" id="scheduled_time">
           </div>
-          
-          <div class="form-group">
-            <label for="contact_number">Contact Number</label>
-            <input required type="tel" placeholder="10-digit mobile" id="contact_number" pattern="[0-9]{10}" />
-          </div>
-          
-          <div class="form-group">
-            <label for="department_visiting">Department Visiting</label>
-            <select id="department_visiting" required>
-              <option value="">Select Department</option>
-              <option value="HR">Human Resources</option>
-              <option value="IT">ITMS</option>
-              <option value="Finance">Finance</option>
-              <option value="Production">Production</option>
-              <option value="Quality">Quality</option>
-              <option value="Purchase">Purchase</option>
-              <option value="Engineering">Engineering & Development</option>
-              <option value="Business">Business Development</option>
-              <option value="Sales">Sales</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="person_to_visit">Person to Visit</label>
-            <input required type="text" placeholder="e.g. Robert Wilson" id="person_to_visit" />
-          </div>
-          
-          <button type="submit" class="btn btn-primary" style="width: 100%;">
-            <i data-lucide="calendar-check"></i> Confirm Schedule
-          </button>
-        </form>
-      </section>
-    </main>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span>&#9670; CONFIRM SCHEDULE</span>
+        </button>
+      </form>
+
+      <div class="success-card" id="success-card">
+        <div class="success-title">&#10003; VISIT SCHEDULED</div>
+        <div class="success-msg" id="success-msg"></div>
+      </div>
+    </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-    });
+    // Set min date to today
+    document.getElementById('scheduled_date').min = new Date().toISOString().split('T')[0];
 
     document.getElementById('schedule-form').addEventListener('submit', async e => {
       e.preventDefault();
-      const btn = e.target.querySelector('button');
-      const originalHtml = btn.innerHTML;
+      const btn = document.getElementById('submit-btn');
       btn.disabled = true;
-      btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin" style="width: 14px;"></i> Scheduling...';
-      lucide.createIcons();
+      btn.querySelector('span').textContent = '⧗ SCHEDULING...';
+
+      const dateVal = document.getElementById('scheduled_date').value;
+      const timeVal = document.getElementById('scheduled_time').value;
+      const scheduled_date = timeVal ? `${dateVal}T${timeVal}` : dateVal;
 
       const data = {
-        full_name: document.getElementById('full_name').value,
-        contact_number: document.getElementById('contact_number').value,
+        full_name: document.getElementById('full_name').value.trim(),
+        contact_number: document.getElementById('contact_number').value.trim(),
         department_visiting: document.getElementById('department_visiting').value,
-        person_to_visit: document.getElementById('person_to_visit').value
+        person_to_visit: document.getElementById('person_to_visit').value.trim(),
+        scheduled_date
       };
-  
+
       try {
-        const response = await fetch(`/api/schedule`, {
+        const res = await fetch('/api/schedule', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
-  
-        const result = await response.json();
-        alert(result.message || 'Scheduled successfully!');
-        if (response.ok) e.target.reset();
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Scheduling failed');
+
+        const card = document.getElementById('success-card');
+        document.getElementById('success-msg').textContent =
+          `${data.full_name} · ${document.getElementById('department_visiting').options[document.getElementById('department_visiting').selectedIndex].text} · ${new Date(scheduled_date).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'})}`;
+        card.style.display = 'block';
+        e.target.reset();
+        document.getElementById('scheduled_date').min = new Date().toISOString().split('T')[0];
       } catch (err) {
-        alert('Submission failed: ' + err.message);
+        alert('Error: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = originalHtml;
-        lucide.createIcons();
+        btn.querySelector('span').textContent = '◆ CONFIRM SCHEDULE';
       }
     });
   </script>

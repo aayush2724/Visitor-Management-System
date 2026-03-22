@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSB | Admin Access</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0d12;
+      --green: #00ff88;
+      --green-glow: rgba(0,255,136,0.25);
+      --red: #ff4444;
+      --text: #e0ffe8;
+      --text-muted: #5a7a6a;
+      --border: #1a2a1a;
+      --card: #0d1117;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.012) 2px, rgba(0,255,136,0.012) 4px);
+      pointer-events: none;
+    }
+    .login-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 56px 48px;
+      width: 380px;
+      box-shadow: 0 0 60px rgba(0,255,136,0.05);
+      text-align: center;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .shield {
+      width: 56px; height: 56px;
+      border: 2px solid var(--green);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; color: var(--green);
+      box-shadow: 0 0 20px var(--green-glow);
+      margin: 0 auto 24px;
+    }
+    h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      margin-bottom: 40px;
+    }
+    label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: #00cc66;
+      letter-spacing: 3px;
+      display: block;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+    input[type="password"] {
+      width: 100%;
+      background: #111820;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 4px;
+      text-align: center;
+      outline: none;
+      transition: all 0.2s;
+      margin-bottom: 24px;
+    }
+    input[type="password"]:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 20px rgba(0,255,136,0.1);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 15px;
+      background: transparent;
+      border: 1px solid var(--green);
+      border-radius: 4px;
+      color: var(--green);
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      position: relative; overflow: hidden;
+      transition: all 0.2s;
+    }
+    .login-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--green);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease; z-index: 0;
+    }
+    .login-btn:hover::before { transform: scaleX(1); }
+    .login-btn:hover { color: #000; box-shadow: 0 0 30px var(--green-glow); }
+    .login-btn span { position: relative; z-index: 1; }
+    .error-msg {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--red);
+      margin-top: 16px;
+      letter-spacing: 1px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .error-msg.visible { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="shield">&#9873;</div>
+    <h1>RSB | SECURE</h1>
+    <div class="sub">ADMIN ACCESS REQUIRED</div>
+    <label>ACCESS PIN</label>
+    <input type="password" id="pin-input" placeholder="••••" maxlength="8" autocomplete="off">
+    <button class="login-btn" onclick="checkPin()"><span>&#9670; AUTHENTICATE</span></button>
+    <div class="error-msg" id="error-msg">[ ACCESS DENIED — INCORRECT PIN ]</div>
+  </div>
+
+  <script>
+    // Change the PIN here — default is 1234
+    const ADMIN_PIN = '1234';
+
+    document.getElementById('pin-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkPin();
+    });
+
+    function checkPin() {
+      const entered = document.getElementById('pin-input').value;
+      if (entered === ADMIN_PIN) {
+        sessionStorage.setItem('rsb_auth', 'true');
+        window.location.href = '/dashboard.html';
+      } else {
+        const msg = document.getElementById('error-msg');
+        const inp = document.getElementById('pin-input');
+        msg.classList.add('visible');
+        inp.style.borderColor = '#ff4444';
+        inp.value = '';
+        setTimeout(() => {
+          msg.classList.remove('visible');
+          inp.style.borderColor = '';
+        }, 2000);
+      }
+    }
+  </script>
+</body>
+</html>

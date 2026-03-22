@@ -150,7 +150,7 @@ class VisitorSystem {
           </div>
         </div>
         ${visitor.qr_code_path
-          ? `<img src="/${visitor.qr_code_path}" style="width: 100px; margin-top: 15px; display: block;" alt="QR Code">`
+          ? `<img src="${visitor.qr_code_path}" style="width: 100px; margin-top: 15px; display: block;" alt="QR Code">`
           : ''}
       </div>
     `;

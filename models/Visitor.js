@@ -55,6 +55,9 @@ const visitorSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  scheduled_date: {
+    type: Date,
+  },
 });
 
 module.exports = mongoose.model("Visitor", visitorSchema);
