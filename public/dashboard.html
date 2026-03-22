@@ -143,8 +143,30 @@
 
     .actions-cell { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 
-    /* EMPTY STATE */
     .empty-row td { text-align: center; color: var(--text-muted); padding: 40px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; letter-spacing: 2px; }
+
+    /* --- NEW ANIMATIONS & INTERACTIVE EFFECTS --- */
+    @keyframes fadeInSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulseGlow { 0% { box-shadow: 0 0 10px rgba(0,255,136,0.1); } 100% { box-shadow: 0 0 25px rgba(0,255,136,0.25); } }
+    
+    .nav-brand { transition: transform 0.3s; }
+    .nav-brand:hover { transform: scale(1.02); }
+    .nav-btn, .export-btn, .tab { position: relative; overflow: hidden; }
+    .nav-btn::after, .export-btn::after, .tab::after {
+      content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+      transform: translateX(-100%); transition: transform 0.4s ease;
+    }
+    .nav-btn:hover::after, .export-btn:hover::after, .tab:hover::after { transform: translateX(100%); }
+    
+    .stat-card.pulsing:hover { animation: pulseGlow 1.5s infinite alternate; }
+    
+    tbody tr { animation: fadeInSlide 0.4s ease forwards; opacity: 0; }
+    tbody tr:nth-child(1) { animation-delay: 0.05s; }
+    tbody tr:nth-child(2) { animation-delay: 0.1s; }
+    tbody tr:nth-child(3) { animation-delay: 0.15s; }
+    tbody tr:nth-child(4) { animation-delay: 0.2s; }
+    tbody tr:nth-child(5) { animation-delay: 0.25s; }
+    tbody tr:hover { transform: scale(1.005); transition: transform 0.2s, background 0.2s; background: rgba(0,255,136,0.03); z-index: 10; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
     @media (max-width: 900px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
@@ -174,22 +196,22 @@
 
     <!-- Stats -->
     <div class="stats-row">
-      <div class="stat-card">
+      <div class="stat-card pulsing">
         <div class="stat-label">TOTAL REGISTRY</div>
         <div class="stat-value" id="stat-total">0</div>
         <div class="stat-accent" style="background:var(--green);opacity:0.4;"></div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card pulsing">
         <div class="stat-label">ON-SITE NOW</div>
         <div class="stat-value" id="stat-active">0</div>
         <div class="stat-accent" style="background:var(--green);"></div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card pulsing">
         <div class="stat-label">TOTAL RELEASED</div>
         <div class="stat-value" id="stat-released" style="color:var(--blue)">0</div>
         <div class="stat-accent" style="background:var(--blue);"></div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card pulsing">
         <div class="stat-label">PRE-SCHEDULED</div>
         <div class="stat-value" id="stat-scheduled" style="color:var(--purple)">0</div>
         <div class="stat-accent" style="background:var(--purple);"></div>
@@ -235,8 +257,9 @@
   </div>
 
   <script>
-    // — Auth guard —
-    if (!sessionStorage.getItem('rsb_auth')) {
+    // — Secure Auth Guard —
+    const token = sessionStorage.getItem('rsb_auth');
+    if (token !== 'rsb-admin-auth-token-xyz') {
       window.location.href = '/login.html';
     }
 

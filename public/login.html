@@ -25,13 +25,34 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+      perspective: 1000px;
     }
+    /* Dynamic Cyber Grid Background */
     body::before {
       content: '';
-      position: fixed; inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.012) 2px, rgba(0,255,136,0.012) 4px);
-      pointer-events: none;
+      position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+      background-image: 
+        linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform: rotateX(60deg) translateY(-100px);
+      animation: gridMove 15s linear infinite;
+      pointer-events: none; z-index: -1;
     }
+    @keyframes gridMove {
+      0% { transform: rotateX(60deg) translateY(0); }
+      100% { transform: rotateX(60deg) translateY(40px); }
+    }
+    /* Core glow ring */
+    .glow-ring {
+      position: absolute; width: 600px; height: 600px;
+      background: radial-gradient(circle, var(--green-glow) 0%, transparent 60%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none; z-index: -1; animation: pulse 4s ease-in-out infinite alternate;
+    }
+    @keyframes pulse { 0% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); } 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); } }
+    
     .login-box {
       background: var(--card);
       border: 1px solid var(--border);
@@ -131,32 +152,50 @@
   </style>
 </head>
 <body>
+  <div class="glow-ring"></div>
   <div class="login-box">
     <div class="shield">&#9873;</div>
     <h1>RSB | SECURE</h1>
     <div class="sub">ADMIN ACCESS REQUIRED</div>
-    <label>ACCESS PIN</label>
-    <input type="password" id="pin-input" placeholder="••••" maxlength="8" autocomplete="off">
-    <button class="login-btn" onclick="checkPin()"><span>&#9670; AUTHENTICATE</span></button>
-    <div class="error-msg" id="error-msg">[ ACCESS DENIED — INCORRECT PIN ]</div>
+    <label>ACCESS PIN / PASSWORD</label>
+    <input type="password" id="pin-input" placeholder="••••••••" autocomplete="off">
+    <button class="login-btn" id="login-btn" onclick="checkPin()"><span>&#9670; AUTHENTICATE</span></button>
+    <div class="error-msg" id="error-msg">[ ACCESS DENIED ]</div>
   </div>
 
   <script>
-    // Change the PIN here — default is 1234
-    const ADMIN_PIN = '1234';
-
     document.getElementById('pin-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') checkPin();
     });
 
-    function checkPin() {
+    async function checkPin() {
       const entered = document.getElementById('pin-input').value;
-      if (entered === ADMIN_PIN) {
-        sessionStorage.setItem('rsb_auth', 'true');
-        window.location.href = '/dashboard.html';
-      } else {
-        const msg = document.getElementById('error-msg');
-        const inp = document.getElementById('pin-input');
+      const btnSpan = document.querySelector('.login-btn span');
+      const msg = document.getElementById('error-msg');
+      const inp = document.getElementById('pin-input');
+
+      if (!entered) return;
+
+      btnSpan.innerHTML = '&#9670; VERIFYING...';
+      
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: entered })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          sessionStorage.setItem('rsb_auth', data.token); // Secure token, not plaintext PIN
+          btnSpan.innerHTML = '&#9670; GRANTED';
+          setTimeout(() => window.location.href = '/dashboard.html', 400);
+        } else {
+          throw new Error('Invalid Credentials');
+        }
+      } catch (err) {
+        btnSpan.innerHTML = '&#9670; AUTHENTICATE';
+        msg.textContent = '[ ACCESS DENIED — INCORRECT PIN ]';
         msg.classList.add('visible');
         inp.style.borderColor = '#ff4444';
         inp.value = '';

@@ -514,6 +514,19 @@ app.get("/api/visitors/:id/approve", async (req, res) => {
     res.status(500).send("Failed to approve visitor");
   }
 });
+// --- POST /api/admin/login ---
+app.post("/api/admin/login", (req, res) => {
+  const { password } = req.body;
+  // Use ADMIN_PASSWORD from .env, fallback to 1234
+  const correctPassword = process.env.ADMIN_PASSWORD || "1234";
+
+  if (password === correctPassword) {
+    // Return a dummy token for frontend session validation
+    res.json({ success: true, token: "rsb-admin-auth-token-xyz" });
+  } else {
+    res.status(401).json({ error: "Invalid credentials" });
+  }
+});
 
 // --- POST /api/visitors/:id/checkout ---
 app.post("/api/visitors/:id/checkout", async (req, res) => {

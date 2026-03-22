@@ -202,6 +202,27 @@ nav a:hover { color: #fff; }
 
 #canvas { display: none; }
 
+.subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 2.5s steps(40, end), blink-caret .75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+@keyframes blink-caret {
+  from, to { border-right: 2px solid transparent }
+  50% { border-right: 2px solid var(--accent); }
+}
+
 .form-group { margin-bottom: 32px; }
 
 label {
