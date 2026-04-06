@@ -14,6 +14,54 @@ const ExcelJS = require("exceljs");
 const twilio = require("twilio");
 const cloudinary = require("cloudinary").v2;
 
+// --- Resend (preferred) or nodemailer (fallback) ---
+let resendClient = null;
+try {
+  if (process.env.RESEND_API_KEY) {
+    const { Resend } = require("resend");
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+    console.log("Resend email client initialized");
+  }
+} catch (e) {
+  console.warn("Resend not available, falling back to nodemailer:", e.message);
+}
+
+// --- Nodemailer fallback transporter ---
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: { rejectUnauthorized: false },
+});
+
+if (!resendClient) {
+  transporter.verify((error) => {
+    if (error) {
+      console.error("Email server connection failed:", error);
+      console.log("Current Config - User:", process.env.EMAIL_USER);
+    } else {
+      console.log("Email server (nodemailer) is ready to send messages");
+    }
+  });
+} else {
+  console.log("Using Resend for email delivery");
+}
+
+// --- Unified send email function ---
+async function sendEmail({ from, to, subject, html }) {
+  if (resendClient) {
+    const result = await resendClient.emails.send({ from, to, subject, html });
+    if (result.error) throw new Error(result.error.message);
+    return result;
+  } else {
+    return transporter.sendMail({ from, to, subject, html });
+  }
+}
+
 // --- Cloudinary config ---
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dgusezzo2",
@@ -62,22 +110,30 @@ function notifyDashboardUpdate() {
 }
 
 // --- MongoDB ---
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/visitor-management';
-console.log('Attempting to connect to MongoDB...');
+const mongoUri =
+  process.env.MONGODB_URI || "mongodb://localhost:27017/visitor-management";
+console.log("Attempting to connect to MongoDB...");
 
 const mongoOptions = {
-  // Try forcing IPv4 to avoid querySrv ECONNREFUSED on some systems
   family: 4,
 };
 
-mongoose.connect(mongoUri, mongoOptions)
-  .then(() => console.log('Successfully connected to MongoDB:', mongoUri.split('@').pop().split('?')[0]))
-  .catch(err => {
-    console.error('CRITICAL: MongoDB connection failed!');
-    console.error('URI:', mongoUri.split('@').pop().split('?')[0]);
-    console.error('Error Details:', err.message);
-    if (mongoUri.includes('mongodb+srv')) {
-      console.warn('TIP: If you get ECONNREFUSED with +srv, try using the standard connection string format or check your local firewall.');
+mongoose
+  .connect(mongoUri, mongoOptions)
+  .then(() =>
+    console.log(
+      "Successfully connected to MongoDB:",
+      mongoUri.split("@").pop().split("?")[0],
+    ),
+  )
+  .catch((err) => {
+    console.error("CRITICAL: MongoDB connection failed!");
+    console.error("URI:", mongoUri.split("@").pop().split("?")[0]);
+    console.error("Error Details:", err.message);
+    if (mongoUri.includes("mongodb+srv")) {
+      console.warn(
+        "TIP: If you get ECONNREFUSED with +srv, try using the standard connection string format or check your local firewall.",
+      );
     }
     process.exit(1);
   });
@@ -86,7 +142,6 @@ mongoose.connect(mongoUri, mongoOptions)
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static("public"));
-// Keep local /uploads as fallback for dev
 app.use("/uploads", express.static("uploads"));
 
 // --- Multer (memory storage — we upload to Cloudinary, not disk) ---
@@ -119,42 +174,23 @@ async function generateQRCode(visitorId) {
   const approvalUrl = `${baseUrl}/api/visitors/${visitorId}/approve`;
 
   try {
-    // Generate QR as buffer
     const qrBuffer = await QRCode.toBuffer(approvalUrl, {
       type: "png",
       width: 300,
     });
 
-    // Upload to Cloudinary
     const result = await uploadToCloudinary(
       qrBuffer,
       "rsb-visitors/qrcodes",
       `qr-${visitorId}`,
     );
     console.log("QR uploaded to Cloudinary:", result.secure_url);
-    return result.secure_url; // Return Cloudinary URL
+    return result.secure_url;
   } catch (err) {
     console.error("QR Code generation/upload failed:", err);
     return null;
   }
 }
-
-// --- Email transporter ---
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: process.env.EMAIL_PORT || 587,
-  secure: process.env.EMAIL_SECURE === "true",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: { rejectUnauthorized: false },
-});
-
-transporter.verify((error) => {
-  if (error) console.error("Email server connection failed:", error);
-  else console.log("Email server is ready to send messages");
-});
 
 // --- POST /api/visitors — Register a new visitor ---
 app.post("/api/visitors", upload.single("photo"), async (req, res) => {
@@ -184,7 +220,6 @@ app.post("/api/visitors", upload.single("photo"), async (req, res) => {
         console.log("Photo uploaded to Cloudinary:", photoUrl);
       } catch (err) {
         console.error("Photo upload failed:", err);
-        // Continue registration even if photo upload fails
       }
     }
 
@@ -193,14 +228,13 @@ app.post("/api/visitors", upload.single("photo"), async (req, res) => {
       contact_number,
       department_visiting,
       person_to_visit,
-      photo_path: photoUrl, // Now a Cloudinary URL
+      photo_path: photoUrl,
       in_time: new Date(),
     });
 
     await newVisitor.save();
     const visitorId = newVisitor._id.toString();
 
-    // Generate QR and upload to Cloudinary
     const qrUrl = await generateQRCode(visitorId);
     if (qrUrl) {
       newVisitor.qr_code_path = qrUrl;
@@ -249,8 +283,12 @@ async function sendEmails({
   const baseUrl = process.env.BASE_URL || "http://localhost:3000";
   const approvalUrl = `${baseUrl}/api/visitors/${visitorId}/approve`;
 
+  const fromAddress = resendClient
+    ? process.env.EMAIL_FROM || "Visitor System <onboarding@resend.dev>"
+    : `"Visitor System" <${process.env.EMAIL_FROM || "visitor-system@example.com"}>`;
+
   const mailOptions = {
-    from: `"Visitor System" <${process.env.EMAIL_FROM || "visitor-system@example.com"}>`,
+    from: fromAddress,
     to: process.env.HR_EMAIL,
     subject: `APPROVAL REQUIRED: ${full_name} visiting ${person_to_visit}`,
     html: `
@@ -277,31 +315,50 @@ async function sendEmails({
 
   try {
     if (process.env.HR_EMAIL) {
-      const hrResult = await transporter.sendMail(mailOptions);
-      console.log("Email sent to HR:", hrResult.messageId);
+      const hrResult = await sendEmail(mailOptions);
+      console.log("Email sent to HR:", hrResult?.id || hrResult?.messageId);
     }
     await Visitor.findByIdAndUpdate(visitorId, { email_sent: true });
   } catch (error) {
-    console.error("Email sending failed:", error);
+    console.error("Email sending failed:", error.message);
   }
 }
 
 // --- Test email ---
 app.get("/test-email", async (req, res) => {
+  const debugInfo = {
+    emailMethod: resendClient ? "Resend" : "Nodemailer/Gmail",
+    resendConfigured: !!process.env.RESEND_API_KEY,
+    user: process.env.EMAIL_USER ? "Configured" : "Missing",
+    pass: process.env.EMAIL_PASS ? "Configured" : "Missing",
+    from: process.env.EMAIL_FROM || "Not Set",
+    hrEmail: process.env.HR_EMAIL || "Not Set",
+    baseUrl: process.env.BASE_URL || "Not Set",
+  };
+
   try {
-    const info = await transporter.sendMail({
-      from: `"Visitor System Test" <${process.env.EMAIL_FROM || "visitor-system@example.com"}>`,
+    console.log("Diagnostic: Sending test email with config:", debugInfo);
+
+    const fromAddress = resendClient
+      ? process.env.EMAIL_FROM || "Visitor System <onboarding@resend.dev>"
+      : `"Visitor System Test" <${process.env.EMAIL_FROM || "visitor-system@example.com"}>`;
+
+    const info = await sendEmail({
+      from: fromAddress,
       to: process.env.HR_EMAIL || "test@example.com",
       subject: "Visitor System Email Test",
-      html: "<b>Success!</b> Your email system is working correctly.",
+      html: `<b>Success!</b> Your email system is working correctly. <br><br> Debug Info: <pre>${JSON.stringify(debugInfo, null, 2)}</pre>`,
     });
     res.send(
-      `<h1>Email Test Successful</h1><p>Message ID: ${info.messageId}</p>`,
+      `<h1>Email Test Successful</h1><p>Message ID: ${info?.id || info?.messageId}</p><hr><pre>${JSON.stringify(debugInfo, null, 2)}</pre>`,
     );
   } catch (error) {
+    console.error("Diagnostic: Email Test Failed:", error);
     res
       .status(500)
-      .send(`<h1>Email Test Failed</h1><pre>${error.message}</pre>`);
+      .send(
+        `<h1>Email Test Failed</h1><p>Error: ${error.message}</p><hr><h3>Debug Info:</h3><pre>${JSON.stringify(debugInfo, null, 2)}</pre>`,
+      );
   }
 });
 
@@ -514,14 +571,13 @@ app.get("/api/visitors/:id/approve", async (req, res) => {
     res.status(500).send("Failed to approve visitor");
   }
 });
-// --- POST /api/admin/login ---
+
+// --- POST /api/admin/login ---
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body;
-  // Use ADMIN_PASSWORD from .env, fallback to 1234
   const correctPassword = process.env.ADMIN_PASSWORD || "1234";
 
   if (password === correctPassword) {
-    // Return a dummy token for frontend session validation
     res.json({ success: true, token: "rsb-admin-auth-token-xyz" });
   } else {
     res.status(401).json({ error: "Invalid credentials" });
@@ -569,8 +625,13 @@ app.post("/api/visitors/:id/security-checkout", async (req, res) => {
 
 // --- POST /api/schedule ---
 app.post("/api/schedule", async (req, res) => {
-  const { full_name, contact_number, department_visiting, person_to_visit, scheduled_date } =
-    req.body;
+  const {
+    full_name,
+    contact_number,
+    department_visiting,
+    person_to_visit,
+    scheduled_date,
+  } = req.body;
 
   if (
     !full_name ||

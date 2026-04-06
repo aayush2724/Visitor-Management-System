@@ -18,22 +18,54 @@ class VisitorSystem {
   }
 
   async setupCamera() {
+    const errorMessages = {
+      NotAllowedError: 'Camera access denied. Please click the lock icon in your address bar and "Allow" the camera.',
+      NotFoundError: 'No camera found on this device.',
+      NotReadableError: 'Camera is already in use by another application.',
+      OverconstrainedError: 'Requested camera resolution not supported.'
+    };
+
+    const tryConstraints = async (constraints) => {
+      try {
+        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+        return true;
+      } catch (e) {
+        return e;
+      }
+    };
+
     try {
       if (this.stream) return true;
 
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
-      });
-      // Clear out the placeholder and reveal the camera 
-      if (this.camPlaceholder) this.camPlaceholder.style.display = 'none';
-      if (this.photoStatus) this.photoStatus.innerText = '';
-      this.video.style.display = 'block';
-      this.video.srcObject = this.stream;
-      this.captureBtn.innerText = 'Take Identity Snapshot';
-      return true;
+      // Try fallbacks
+      const constraints = [
+        { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } },
+        { video: { facingMode: 'user' } },
+        { video: true }
+      ];
+
+      let lastError;
+      for (const c of constraints) {
+        const result = await tryConstraints(c);
+        if (result === true) {
+          // Success code remains same
+          if (this.camPlaceholder) this.camPlaceholder.style.display = 'none';
+          if (this.photoStatus) this.photoStatus.innerText = '';
+          this.video.style.display = 'block';
+          this.video.srcObject = this.stream;
+          this.captureBtn.innerText = 'Take Identity Snapshot';
+          return true;
+        }
+        lastError = result;
+      }
+
+      console.error('Final Camera error:', lastError);
+      const msg = errorMessages[lastError.name] || `Could not access the camera (${lastError.name}). Ensure permissions are granted.`;
+      alert(msg);
+      return false;
     } catch (error) {
-      console.error('Camera error:', error);
-      alert('Could not access the camera. Please ensure permissions are granted.');
+      console.error('Unexpected Camera error:', error);
+      alert('Camera initialization failed. Please ensure you are on a secure connection (HTTPS).');
       return false;
     }
   }

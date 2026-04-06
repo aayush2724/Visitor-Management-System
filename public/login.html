@@ -1,210 +1,279 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RSB | Admin Access</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #07090e;
-      --green: #00e5ff;
-      --green-glow: rgba(0,229,255,0.25);
-      --red: #ff4444;
-      --text: #ffffff;
-      --text-muted: #8b9bb4;
-      --border: #1e293b;
-      --card: #0d121c;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      font-family: 'Rajdhani', sans-serif;
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      perspective: 1000px;
-    }
-    /* Dynamic Cyber Grid Background */
-    body::before {
-      content: '';
-      position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-      background-image: 
-        linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
-      background-size: 40px 40px;
-      transform: rotateX(60deg) translateY(-100px);
-      animation: gridMove 15s linear infinite;
-      pointer-events: none; z-index: -1;
-    }
-    @keyframes gridMove {
-      0% { transform: rotateX(60deg) translateY(0); }
-      100% { transform: rotateX(60deg) translateY(40px); }
-    }
-    /* Core glow ring */
-    .glow-ring {
-      position: absolute; width: 600px; height: 600px;
-      background: radial-gradient(circle, var(--green-glow) 0%, transparent 60%);
-      top: 50%; left: 50%; transform: translate(-50%, -50%);
-      pointer-events: none; z-index: -1; animation: pulse 4s ease-in-out infinite alternate;
-    }
-    @keyframes pulse { 0% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); } 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); } }
-    
-    .login-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 56px 48px;
-      width: 380px;
-      box-shadow: 0 0 60px rgba(0,229,255,0.05);
-      text-align: center;
-      animation: fadeIn 0.5s ease;
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .shield {
-      width: 56px; height: 56px;
-      border: 2px solid var(--green);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; color: var(--green);
-      box-shadow: 0 0 20px var(--green-glow);
-      margin: 0 auto 24px;
-    }
-    h1 {
-      font-family: 'Orbitron', monospace;
-      font-size: 1rem;
-      letter-spacing: 3px;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-    .sub {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      letter-spacing: 3px;
-      margin-bottom: 40px;
-    }
-    label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--green);
-      letter-spacing: 3px;
-      display: block;
-      text-align: left;
-      margin-bottom: 8px;
-    }
-    input[type="password"] {
-      width: 100%;
-      background: #0b0f19;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 14px 16px;
-      color: var(--text);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1.1rem;
-      letter-spacing: 4px;
-      text-align: center;
-      outline: none;
-      transition: all 0.2s;
-      margin-bottom: 24px;
-    }
-    input[type="password"]:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 20px rgba(0,229,255,0.1);
-    }
-    .login-btn {
-      width: 100%;
-      padding: 15px;
-      background: transparent;
-      border: 1px solid var(--green);
-      border-radius: 4px;
-      color: var(--green);
-      font-family: 'Orbitron', monospace;
-      font-size: 0.8rem;
-      letter-spacing: 2px;
-      cursor: pointer;
-      position: relative; overflow: hidden;
-      transition: all 0.2s;
-    }
-    .login-btn::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: var(--green);
-      transform: scaleX(0); transform-origin: left;
-      transition: transform 0.3s ease; z-index: 0;
-    }
-    .login-btn:hover::before { transform: scaleX(1); }
-    .login-btn:hover { color: #000; box-shadow: 0 0 30px var(--green-glow); }
-    .login-btn span { position: relative; z-index: 1; }
-    .error-msg {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--red);
-      margin-top: 16px;
-      letter-spacing: 1px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .error-msg.visible { opacity: 1; }
-  </style>
-</head>
-<body>
-  <div class="glow-ring"></div>
-  <div class="login-box">
-    <div class="shield">&#9873;</div>
-    <h1>RSB | SECURE</h1>
-    <div class="sub">ADMIN ACCESS REQUIRED</div>
-    <label>ACCESS PIN / PASSWORD</label>
-    <input type="password" id="pin-input" placeholder="••••••••" autocomplete="off">
-    <button class="login-btn" id="login-btn" onclick="checkPin()"><span>&#9670; AUTHENTICATE</span></button>
-    <div class="error-msg" id="error-msg">[ ACCESS DENIED ]</div>
-  </div>
-
-  <script>
-    document.getElementById('pin-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') checkPin();
-    });
-
-    async function checkPin() {
-      const entered = document.getElementById('pin-input').value;
-      const btnSpan = document.querySelector('.login-btn span');
-      const msg = document.getElementById('error-msg');
-      const inp = document.getElementById('pin-input');
-
-      if (!entered) return;
-
-      btnSpan.innerHTML = '&#9670; VERIFYING...';
-      
-      try {
-        const res = await fetch('/api/admin/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: entered })
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          sessionStorage.setItem('rsb_auth', data.token); // Secure token, not plaintext PIN
-          btnSpan.innerHTML = '&#9670; GRANTED';
-          setTimeout(() => window.location.href = '/dashboard.html', 400);
-        } else {
-          throw new Error('Invalid Credentials');
-        }
-      } catch (err) {
-        btnSpan.innerHTML = '&#9670; AUTHENTICATE';
-        msg.textContent = '[ ACCESS DENIED — INCORRECT PIN ]';
-        msg.classList.add('visible');
-        inp.style.borderColor = '#ff4444';
-        inp.value = '';
-        setTimeout(() => {
-          msg.classList.remove('visible');
-          inp.style.borderColor = '';
-        }, 2000);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSB | Admin Access</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #07090e;
+        --green: #00e5ff;
+        --green-glow: rgba(0, 229, 255, 0.25);
+        --red: #ff4444;
+        --text: #ffffff;
+        --text-muted: #8b9bb4;
+        --border: #1e293b;
+        --card: #0d121c;
       }
-    }
-  </script>
-</body>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        font-family: "Rajdhani", sans-serif;
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        perspective: 1000px;
+      }
+      /* Dynamic Cyber Grid Background */
+      body::before {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background-image:
+          linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+        transform: rotateX(60deg) translateY(-100px);
+        animation: gridMove 15s linear infinite;
+        pointer-events: none;
+        z-index: -1;
+      }
+      @keyframes gridMove {
+        0% {
+          transform: rotateX(60deg) translateY(0);
+        }
+        100% {
+          transform: rotateX(60deg) translateY(40px);
+        }
+      }
+      /* Core glow ring */
+      .glow-ring {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          var(--green-glow) 0%,
+          transparent 60%
+        );
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: -1;
+        animation: pulse 4s ease-in-out infinite alternate;
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 0.3;
+          transform: translate(-50%, -50%) scale(0.9);
+        }
+        100% {
+          opacity: 0.6;
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+      }
+
+      .login-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 56px 48px;
+        width: 380px;
+        box-shadow: 0 0 60px rgba(0, 229, 255, 0.05);
+        text-align: center;
+        animation: fadeIn 0.5s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .shield {
+        width: 56px;
+        height: 56px;
+        border: 2px solid var(--green);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: var(--green);
+        box-shadow: 0 0 20px var(--green-glow);
+        margin: 0 auto 24px;
+      }
+      h1 {
+        font-family: "Orbitron", monospace;
+        font-size: 1rem;
+        letter-spacing: 3px;
+        color: var(--text);
+        margin-bottom: 6px;
+      }
+      .sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        letter-spacing: 3px;
+        margin-bottom: 40px;
+      }
+      label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.65rem;
+        color: var(--green);
+        letter-spacing: 3px;
+        display: block;
+        text-align: left;
+        margin-bottom: 8px;
+      }
+      input[type="password"] {
+        width: 100%;
+        background: #0b0f19;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 14px 16px;
+        color: var(--text);
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 4px;
+        text-align: center;
+        outline: none;
+        transition: all 0.2s;
+        margin-bottom: 24px;
+      }
+      input[type="password"]:focus {
+        border-color: var(--green);
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+      }
+      .login-btn {
+        width: 100%;
+        padding: 15px;
+        background: transparent;
+        border: 1px solid var(--green);
+        border-radius: 4px;
+        color: var(--green);
+        font-family: "Orbitron", monospace;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+      .login-btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--green);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+        z-index: 0;
+      }
+      .login-btn:hover::before {
+        transform: scaleX(1);
+      }
+      .login-btn:hover {
+        color: #000;
+        box-shadow: 0 0 30px var(--green-glow);
+      }
+      .login-btn span {
+        position: relative;
+        z-index: 1;
+      }
+      .error-msg {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--red);
+        margin-top: 16px;
+        letter-spacing: 1px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .error-msg.visible {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glow-ring"></div>
+    <div class="login-box">
+      <div class="shield">&#9873;</div>
+      <h1>RSB | SECURE</h1>
+      <div class="sub">ADMIN ACCESS REQUIRED</div>
+      <label>ACCESS PIN / PASSWORD</label>
+      <input
+        type="password"
+        id="pin-input"
+        placeholder="••••••••"
+        autocomplete="off"
+      />
+      <button class="login-btn" id="login-btn" onclick="checkPin()">
+        <span>&#9670; AUTHENTICATE</span>
+      </button>
+      <div class="error-msg" id="error-msg">[ ACCESS DENIED ]</div>
+    </div>
+
+    <script>
+      document.getElementById("pin-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") checkPin();
+      });
+
+      async function checkPin() {
+        const entered = document.getElementById("pin-input").value;
+        const btnSpan = document.querySelector(".login-btn span");
+        const msg = document.getElementById("error-msg");
+        const inp = document.getElementById("pin-input");
+
+        if (!entered) return;
+
+        btnSpan.innerHTML = "&#9670; VERIFYING...";
+
+        try {
+          const res = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: entered }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            sessionStorage.setItem("rsb_auth", data.token); // Secure token, not plaintext PIN
+            btnSpan.innerHTML = "&#9670; GRANTED";
+            setTimeout(() => (window.location.href = "/dashboard.html"), 400);
+          } else {
+            throw new Error("Invalid Credentials");
+          }
+        } catch (err) {
+          btnSpan.innerHTML = "&#9670; AUTHENTICATE";
+          msg.textContent = "[ ACCESS DENIED — INCORRECT PIN ]";
+          msg.classList.add("visible");
+          inp.style.borderColor = "#ff4444";
+          inp.value = "";
+          setTimeout(() => {
+            msg.classList.remove("visible");
+            inp.style.borderColor = "";
+          }, 2000);
+        }
+      }
+    </script>
+  </body>
 </html>
