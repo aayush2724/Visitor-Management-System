@@ -141,8 +141,8 @@ mongoose
 // --- Middleware ---
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("public"));
-app.use("/uploads", express.static("uploads"));
+app.use(express.static(path.join(__dirname, "../frontend")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // --- Multer (memory storage — we upload to Cloudinary, not disk) ---
 const upload = multer({
@@ -717,9 +717,9 @@ app.post("/api/visitors/:id/allow-entry", async (req, res) => {
 });
 
 // --- Static files ---
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../frontend")));
 app.get("/", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "index.html")),
+  res.sendFile(path.join(__dirname, "../frontend", "index.html")),
 );
 
 // --- Global error handler ---

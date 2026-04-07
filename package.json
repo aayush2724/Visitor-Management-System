@@ -1,25 +1,13 @@
 {
-  "name": "visitor-system",
+  "name": "visitor-management-system",
   "version": "1.0.0",
-  "main": "server.js",
+  "description": "Visitor Management System with separate frontend and backend",
   "scripts": {
-    "start": "node server.js"
+    "install:all": "cd backend && npm install",
+    "start:backend": "cd backend && npm start",
+    "dev": "npm run start:backend"
   },
-  "engines": {
-    "node": ">=20.19.0"
-  },
-  "dependencies": {
-    "body-parser": "^1.20.2",
-    "cloudinary": "^2.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "exceljs": "^4.4.0",
-    "express": "^4.19.2",
-    "mongoose": "^8.4.0",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.4",
-    "qrcode": "^1.5.1",
-    "resend": "^6.10.0",
-    "twilio": "^5.8.0"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

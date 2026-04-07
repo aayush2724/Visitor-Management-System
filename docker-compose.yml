@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "3000:3000"
     environment:
@@ -10,11 +12,11 @@ services:
       - BASE_URL=http://localhost:3000
       - MONGODB_URI=mongodb://mongodb:27017/visitor-management
     env_file:
-      - .env
+      - backend/.env
     depends_on:
       - mongodb
     volumes:
-      - ./uploads:/app/uploads
+      - ./backend/uploads:/app/backend/uploads
 
   mongodb:
     image: mongo:latest
