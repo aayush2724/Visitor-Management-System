@@ -12,7 +12,7 @@
 
 <br/>
 
-### 🔗 **[View Live Production App](https://rsb-visitor-management-system-production.up.railway.app/)** 
+
 
 </div>
 
