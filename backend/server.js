@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
 const Visitor = require("./models/Visitor");
@@ -13,7 +12,8 @@ const QRCode = require("qrcode");
 const ExcelJS = require("exceljs");
 const twilio = require("twilio");
 const cloudinary = require("cloudinary").v2;
-
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 // --- Resend (preferred) or nodemailer (fallback) ---
 let resendClient = null;
 try {
@@ -136,10 +136,27 @@ mongoose
   });
 
 // --- Middleware ---
+app.use(helmet({
+  contentSecurityPolicy: false // disable CSP temporarily as it might block inline scripts or assets
+}));
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../frontend")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// --- Auth Middleware ---
+function requireAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: "Unauthorized: Missing or invalid token" });
+  }
+  const token = authHeader.split(' ')[1];
+  if (token !== process.env.ADMIN_SECRET_TOKEN) {
+    return res.status(401).json({ error: "Unauthorized: Invalid token" });
+  }
+  next();
+}
 
 // --- Multer (memory storage — we upload to Cloudinary, not disk) ---
 const upload = multer({
@@ -360,7 +377,7 @@ app.get("/test-email", async (req, res) => {
 });
 
 // --- GET /api/visitors/stats ---
-app.get("/api/visitors/stats", async (req, res) => {
+app.get("/api/visitors/stats", requireAuth, async (req, res) => {
   try {
     const stats = await Visitor.aggregate([
       {
@@ -426,7 +443,7 @@ app.get("/api/visitors/stats", async (req, res) => {
 });
 
 // --- GET /api/visitors ---
-app.get("/api/visitors", async (req, res) => {
+app.get("/api/visitors", requireAuth, async (req, res) => {
   const { status } = req.query;
   let query = {};
 
@@ -454,6 +471,11 @@ app.get("/api/visitors", async (req, res) => {
 
 // --- GET /api/visitors/export ---
 app.get("/api/visitors/export", async (req, res) => {
+  // Use a query parameter for token since this is called from an <a> tag / window.open
+  const token = req.query.token;
+  if (token !== process.env.ADMIN_SECRET_TOKEN) {
+    return res.status(401).send("Unauthorized");
+  }
   try {
     const { period } = req.query;
     let query = {};
@@ -570,19 +592,25 @@ app.get("/api/visitors/:id/approve", async (req, res) => {
 });
 
 // --- POST /api/admin/login ---
-app.post("/api/admin/login", (req, res) => {
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: { error: "Too many login attempts. Try again later." }
+});
+
+app.post("/api/admin/login", loginLimiter, (req, res) => {
   const { password } = req.body;
   const correctPassword = process.env.ADMIN_PASSWORD || "1234";
 
   if (password === correctPassword) {
-    res.json({ success: true, token: "secure-admin-auth-token-xyz" });
+    res.json({ success: true, token: process.env.ADMIN_SECRET_TOKEN });
   } else {
     res.status(401).json({ error: "Invalid credentials" });
   }
 });
 
 // --- POST /api/visitors/:id/checkout ---
-app.post("/api/visitors/:id/checkout", async (req, res) => {
+app.post("/api/visitors/:id/checkout", requireAuth, async (req, res) => {
   try {
     await Visitor.findByIdAndUpdate(req.params.id, { out_time: new Date() });
     notifyDashboardUpdate();
@@ -594,7 +622,7 @@ app.post("/api/visitors/:id/checkout", async (req, res) => {
 });
 
 // --- POST /api/visitors/:id/release ---
-app.post("/api/visitors/:id/release", async (req, res) => {
+app.post("/api/visitors/:id/release", requireAuth, async (req, res) => {
   try {
     await Visitor.findByIdAndUpdate(req.params.id, { out_time: new Date() });
     notifyDashboardUpdate();
@@ -606,7 +634,7 @@ app.post("/api/visitors/:id/release", async (req, res) => {
 });
 
 // --- POST /api/visitors/:id/security-checkout ---
-app.post("/api/visitors/:id/security-checkout", async (req, res) => {
+app.post("/api/visitors/:id/security-checkout", requireAuth, async (req, res) => {
   try {
     await Visitor.findByIdAndUpdate(req.params.id, {
       security_confirmed: true,
@@ -682,7 +710,7 @@ app.post("/api/schedule", async (req, res) => {
 });
 
 // --- DELETE /api/visitors/:id ---
-app.delete("/api/visitors/:id", async (req, res) => {
+app.delete("/api/visitors/:id", requireAuth, async (req, res) => {
   try {
     const visitor = await Visitor.findByIdAndDelete(req.params.id);
     if (!visitor) return res.status(404).json({ error: "Visitor not found" });
@@ -695,7 +723,7 @@ app.delete("/api/visitors/:id", async (req, res) => {
 });
 
 // --- POST /api/visitors/:id/allow-entry ---
-app.post("/api/visitors/:id/allow-entry", async (req, res) => {
+app.post("/api/visitors/:id/allow-entry", requireAuth, async (req, res) => {
   try {
     const visitor = await Visitor.findByIdAndUpdate(
       req.params.id,
@@ -714,7 +742,7 @@ app.post("/api/visitors/:id/allow-entry", async (req, res) => {
 });
 
 // --- Static files ---
-app.use(express.static(path.join(__dirname, "../frontend")));
+// Removed duplicate app.use(express.static(...))
 app.get("/", (req, res) =>
   res.sendFile(path.join(__dirname, "../frontend", "index.html")),
 );

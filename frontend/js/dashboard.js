@@ -1,7 +1,44 @@
 // — Secure Auth Guard —
 const token = sessionStorage.getItem('secure_auth');
-if (token !== 'secure-admin-auth-token-xyz') {
+if (!token) {
   window.location.href = '/login.html';
+}
+
+// Wrapper to inject auth header
+const authFetch = (url, options = {}) => {
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`
+    }
+  }).then(res => {
+    if (res.status === 401) {
+      logout();
+      throw new Error('Unauthorized');
+    }
+    return res;
+  });
+};
+
+// Toast notification to replace ugly alerts
+function showToast(msg, isError = false) {
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  toast.style.cssText = `
+    position: fixed; bottom: 20px; right: 20px;
+    background: ${isError ? '#ff4444' : '#00e5ff'};
+    color: ${isError ? 'white' : '#07090e'};
+    padding: 12px 24px; border-radius: 4px;
+    font-family: 'Orbitron', sans-serif; font-weight: bold;
+    z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    transition: opacity 0.3s;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
 
 function logout() {
@@ -14,8 +51,22 @@ let allVisitors = [];
 let searchTerm = '';
 
 // SSE for live updates
-const es = new EventSource('/api/visitors/updates');
+let es = new EventSource('/api/visitors/updates');
 es.onmessage = () => { loadStats(); loadVisitors(); };
+
+// Cleanup SSE when tab is hidden to save connections
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (es) { es.close(); es = null; }
+  } else {
+    if (!es) {
+      es = new EventSource('/api/visitors/updates');
+      es.onmessage = () => { loadStats(); loadVisitors(); };
+      loadStats();
+      loadVisitors();
+    }
+  }
+});
 
 // Tabs
 document.querySelectorAll('.tab').forEach(tab => {
@@ -34,7 +85,7 @@ document.getElementById('search-input').addEventListener('input', e => {
 });
 
 function loadStats() {
-  fetch('/api/visitors/stats').then(r => r.json()).then(s => {
+  authFetch('/api/visitors/stats').then(r => r.json()).then(s => {
     document.getElementById('stat-total').textContent    = s.total    || 0;
     document.getElementById('stat-active').textContent   = s.active   || 0;
     document.getElementById('stat-released').textContent = s.released || 0;
@@ -44,7 +95,7 @@ function loadStats() {
 
 function loadVisitors() {
   const url = currentStatus === 'all' ? '/api/visitors' : `/api/visitors?status=${currentStatus}`;
-  fetch(url).then(r => {
+  authFetch(url).then(r => {
     if (!r.ok) throw new Error('Server error');
     return r.json();
   }).then(visitors => {
@@ -124,49 +175,49 @@ function renderTable() {
 
 function checkoutVisitor(id) {
   if (!confirm('Mark this visitor as checked out?')) return;
-  fetch(`/api/visitors/${id}/checkout`, {method:'POST'})
-    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
-    .catch(() => alert('Checkout failed'));
+  authFetch(`/api/visitors/${id}/checkout`, {method:'POST'})
+    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); showToast('Checked out successfully'); })
+    .catch(() => showToast('Checkout failed', true));
 }
 
 function releaseVisitor(id) {
   if (!confirm('Release this visitor?')) return;
-  fetch(`/api/visitors/${id}/release`, {method:'POST'})
-    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
-    .catch(() => alert('Release failed'));
+  authFetch(`/api/visitors/${id}/release`, {method:'POST'})
+    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); showToast('Visitor released'); })
+    .catch(() => showToast('Release failed', true));
 }
 
 function securityCheckout(id) {
   if (!confirm('Confirm security exit?')) return;
-  fetch(`/api/visitors/${id}/security-checkout`, {method:'POST'})
-    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
-    .catch(() => alert('Security checkout failed'));
+  authFetch(`/api/visitors/${id}/security-checkout`, {method:'POST'})
+    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); showToast('Security exit confirmed'); })
+    .catch(() => showToast('Security checkout failed', true));
 }
 
 function allowEntry(id) {
-  fetch(`/api/visitors/${id}/allow-entry`, {method:'POST'})
-    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
-    .catch(() => alert('Allow entry failed'));
+  authFetch(`/api/visitors/${id}/allow-entry`, {method:'POST'})
+    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); showToast('Entry allowed'); })
+    .catch(() => showToast('Allow entry failed', true));
 }
 
 function deleteVisitor(id, btn) {
   if (!confirm('Permanently delete this visitor record?')) return;
   const row = btn.closest('tr');
   row.style.opacity = '0.4';
-  fetch(`/api/visitors/${id}`, {method:'DELETE'})
-    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); })
-    .catch(() => { alert('Delete failed'); row.style.opacity = '1'; });
+  authFetch(`/api/visitors/${id}`, {method:'DELETE'})
+    .then(r => { if(!r.ok) throw new Error(); loadVisitors(); loadStats(); showToast('Record deleted'); })
+    .catch(() => { showToast('Delete failed', true); row.style.opacity = '1'; });
 }
 
 function downloadExcel(period) {
-  fetch(`/api/visitors/export?period=${period}`)
+  authFetch(`/api/visitors/export?period=${period}&token=${token}`)
     .then(r => r.blob())
     .then(blob => {
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = `SECURE_VisitorLOG_${period.toUpperCase()}_${new Date().toISOString().split('T')[0]}.xlsx`;
       link.click();
-    }).catch(err => alert('Export Error: ' + err.message));
+    }).catch(err => showToast('Export Error: ' + err.message, true));
 }
 
 loadStats();

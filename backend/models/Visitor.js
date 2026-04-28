@@ -4,15 +4,18 @@ const visitorSchema = new mongoose.Schema({
   full_name: {
     type: String,
     required: true,
+    trim: true,
   },
   contact_number: {
     type: String,
     required: true,
     validate: {
       validator: function (v) {
-        return /^[0-9]*$/.test(v);
+        // Accepts 7–15 digits, optional leading +, spaces/dashes stripped
+        return /^\+?[0-9]{7,15}$/.test(v.replace(/[\s\-]/g, ""));
       },
-      message: (props) => `${props.value} is not a valid phone number!`,
+      message: (props) =>
+        `${props.value} is not a valid phone number! Must be 7–15 digits.`,
     },
   },
   department_visiting: {
@@ -22,6 +25,11 @@ const visitorSchema = new mongoose.Schema({
   person_to_visit: {
     type: String,
     required: true,
+    trim: true,
+  },
+  purpose_of_visit: {
+    type: String,
+    default: "General",
   },
   in_time: {
     type: Date,
