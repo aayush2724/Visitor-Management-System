@@ -1,0 +1,572 @@
+const Visitor = require("../models/Visitor");
+const QRCode = require("qrcode");
+const ExcelJS = require("exceljs");
+const cloudinary = require("cloudinary").v2;
+const nodemailer = require("nodemailer");
+
+// --- SSE Setup ---
+const dashboardClients = new Set();
+
+const subscribeUpdates = (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  dashboardClients.add(res);
+  req.on("close", () => dashboardClients.delete(res));
+};
+
+const notifyDashboardUpdate = () => {
+  dashboardClients.forEach((client) => client.write("data: update\n\n"));
+};
+
+// --- Cloudinary config ---
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dgusezzo2",
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// --- Email Setup ---
+let resendClient = null;
+try {
+  if (process.env.RESEND_API_KEY) {
+    const { Resend } = require("resend");
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+} catch (e) {
+  console.warn("Resend not available, falling back to nodemailer.");
+}
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+async function sendEmail({ from, to, subject, html }) {
+  if (resendClient) {
+    const result = await resendClient.emails.send({ from, to, subject, html });
+    if (result.error) throw new Error(result.error.message);
+    return result;
+  } else {
+    return transporter.sendMail({ from, to, subject, html });
+  }
+}
+
+async function uploadToCloudinary(buffer, folder, publicId) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, public_id: publicId, resource_type: "image" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+    stream.end(buffer);
+  });
+}
+
+async function generateQRCode(visitorId) {
+  const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+  const approvalUrl = `${baseUrl}/api/visitors/${visitorId}/approve`;
+
+  try {
+    const qrBuffer = await QRCode.toBuffer(approvalUrl, {
+      type: "png",
+      width: 300,
+    });
+
+    const result = await uploadToCloudinary(
+      qrBuffer,
+      "visitors/qrcodes",
+      `qr-${visitorId}`
+    );
+    return result.secure_url;
+  } catch (err) {
+    console.error("QR Code generation/upload failed:", err);
+    return null;
+  }
+}
+
+async function sendEmails({
+  visitorId,
+  full_name,
+  person_to_visit,
+  department_visiting,
+  contact_number,
+  photoUrl,
+  qrUrl,
+}) {
+  const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+  const approvalUrl = `${baseUrl}/api/visitors/${visitorId}/approve`;
+
+  const fromAddress = resendClient
+    ? process.env.EMAIL_FROM || "Visitor System <onboarding@resend.dev>"
+    : `"Visitor System" <${
+        process.env.EMAIL_FROM || "visitor-system@example.com"
+      }>`;
+
+  const mailOptions = {
+    from: fromAddress,
+    to: process.env.HR_EMAIL,
+    subject: `APPROVAL REQUIRED: ${full_name} visiting ${person_to_visit}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #2c3e50;">Visitor Approval Required</h2>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+          <p><strong>Visitor:</strong> ${full_name}</p>
+          <p><strong>Contact:</strong> ${contact_number}</p>
+          <p><strong>Visiting:</strong> ${department_visiting} — ${person_to_visit}</p>
+          ${
+            photoUrl
+              ? `<img src="${photoUrl}" alt="Visitor photo" style="max-width: 200px; margin: 10px 0; border-radius: 8px;">`
+              : ""
+          }
+          ${
+            qrUrl
+              ? `<img src="${qrUrl}" alt="QR Code" style="max-width: 150px; margin: 10px 0; display: block;">`
+              : ""
+          }
+        </div>
+        <div style="margin: 25px 0; text-align: center;">
+          <a href="${approvalUrl}"
+             style="background-color: #2ecc71; color: white; padding: 12px 24px;
+                    text-decoration: none; border-radius: 4px; font-weight: bold;">
+            APPROVE VISITOR
+          </a>
+        </div>
+        <p style="font-size: 12px; color: #7f8c8d;">This approval link expires in 24 hours.</p>
+      </div>
+    `,
+  };
+
+  try {
+    if (process.env.HR_EMAIL) {
+      await sendEmail(mailOptions);
+    }
+    await Visitor.findByIdAndUpdate(visitorId, { email_sent: true });
+  } catch (error) {
+    console.error("Email sending failed:", error.message);
+  }
+}
+
+// --- Controller Methods ---
+
+const registerVisitor = async (req, res) => {
+  try {
+    const { full_name, contact_number, department_visiting, person_to_visit } =
+      req.body;
+
+    if (
+      !full_name ||
+      !contact_number ||
+      !department_visiting ||
+      !person_to_visit
+    ) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    let photoUrl = null;
+    if (req.file) {
+      try {
+        const result = await uploadToCloudinary(
+          req.file.buffer,
+          "visitors/photos",
+          `visitor-${Date.now()}`
+        );
+        photoUrl = result.secure_url;
+      } catch (err) {
+        console.error("Photo upload failed:", err);
+      }
+    }
+
+    const newVisitor = new Visitor({
+      full_name,
+      contact_number,
+      department_visiting,
+      person_to_visit,
+      photo_path: photoUrl,
+      in_time: new Date(),
+    });
+
+    await newVisitor.save();
+    const visitorId = newVisitor._id.toString();
+
+    const qrUrl = await generateQRCode(visitorId);
+    if (qrUrl) {
+      newVisitor.qr_code_path = qrUrl;
+      await newVisitor.save();
+    }
+
+    sendEmails({
+      visitorId,
+      full_name,
+      person_to_visit,
+      department_visiting,
+      contact_number,
+      photoUrl,
+      qrUrl,
+    }).catch((err) => console.error("Background email error:", err));
+
+    notifyDashboardUpdate();
+
+    res.json({
+      id: visitorId,
+      full_name,
+      contact_number,
+      department_visiting,
+      person_to_visit,
+      message: "Visitor registered successfully",
+      qr_code_path: qrUrl,
+      photo_path: photoUrl,
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
+};
+
+const getStats = async (req, res) => {
+  try {
+    const stats = await Visitor.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          active: {
+            $sum: {
+              $cond: [
+                { $eq: [{ $type: "$out_time" }, "missing"] },
+                1,
+                { $cond: [{ $eq: ["$out_time", null] }, 1, 0] },
+              ],
+            },
+          },
+          released: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $ne: ["$out_time", null] },
+                    { $eq: ["$security_confirmed", true] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          security_pending: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $ne: ["$out_time", null] },
+                    { $eq: ["$security_confirmed", false] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          scheduled: {
+            $sum: { $cond: [{ $eq: ["$scheduled", true] }, 1, 0] },
+          },
+        },
+      },
+    ]);
+
+    const row = stats[0] || {};
+    res.json({
+      total: row.total || 0,
+      active: row.active || 0,
+      released: row.released || 0,
+      scheduled: row.scheduled || 0,
+      security_pending: row.security_pending || 0,
+    });
+  } catch (err) {
+    console.error("Stats error:", err);
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
+};
+
+const getAllVisitors = async (req, res) => {
+  const { status } = req.query;
+  let query = {};
+
+  if (status === "active") {
+    query.out_time = { $exists: false };
+    query.scheduled = { $ne: true };
+  } else if (status === "released") {
+    query.out_time = { $ne: null };
+    query.security_confirmed = true;
+  } else if (status === "security-pending") {
+    query.out_time = { $ne: null };
+    query.security_confirmed = false;
+  } else if (status === "scheduled") {
+    query.scheduled = true;
+  }
+
+  try {
+    const visitors = await Visitor.find(query).sort({ in_time: -1 }).lean();
+    res.json(visitors.map((v) => ({ ...v, id: v._id.toString() })));
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({ error: "Failed to fetch visitors" });
+  }
+};
+
+const exportVisitors = async (req, res) => {
+  const token = req.query.token;
+  if (token !== process.env.ADMIN_SECRET_TOKEN) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  try {
+    const { period } = req.query;
+    let query = {};
+
+    if (period === "day") {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      query.in_time = { $gte: d };
+    } else if (period === "week") {
+      const d = new Date();
+      d.setDate(d.getDate() - d.getDay());
+      d.setHours(0, 0, 0, 0);
+      query.in_time = { $gte: d };
+    } else if (period === "month") {
+      const d = new Date();
+      d.setDate(1);
+      d.setHours(0, 0, 0, 0);
+      query.in_time = { $gte: d };
+    }
+
+    const visitors = await Visitor.find(query).sort({ in_time: -1 }).lean();
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Visitors");
+
+    worksheet.columns = [
+      { header: "ID", key: "_id", width: 25 },
+      { header: "Full Name", key: "full_name", width: 25 },
+      { header: "Contact", key: "contact_number", width: 15 },
+      { header: "Department", key: "department_visiting", width: 20 },
+      { header: "Host", key: "person_to_visit", width: 20 },
+      {
+        header: "Check-in",
+        key: "in_time",
+        width: 20,
+        style: { numFmt: "yyyy-mm-dd hh:mm:ss" },
+      },
+      {
+        header: "Check-out",
+        key: "out_time",
+        width: 20,
+        style: { numFmt: "yyyy-mm-dd hh:mm:ss" },
+      },
+      { header: "Photo", key: "photo_path", width: 40 },
+      { header: "Status", key: "status", width: 15 },
+    ];
+
+    visitors.forEach((visitor) => {
+      worksheet.addRow({
+        ...visitor,
+        status: visitor.scheduled
+          ? "Scheduled"
+          : visitor.security_confirmed
+          ? "Completed"
+          : visitor.out_time
+          ? "Pending Checkout"
+          : "Active",
+      });
+    });
+
+    const filename = `visitors_${
+      period || "all"
+    }_${new Date().toISOString().split("T")[0]}.xlsx`;
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    console.error("Export error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to export data", details: error.message });
+  }
+};
+
+const approveVisitor = async (req, res) => {
+  try {
+    const visitor = await Visitor.findByIdAndUpdate(
+      req.params.id,
+      { approved: true },
+      { new: true }
+    );
+    if (!visitor) return res.status(404).send("Visitor not found");
+
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    res.send(`<!DOCTYPE html>
+<html>
+<head>
+  <title>Visitor Approved — SECURE</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 40px; background: #f0fdf4; }
+    h1 { color: #16a34a; }
+    .btn { padding: 12px 24px; margin: 10px; border: none; color: white; cursor: pointer; border-radius: 6px; font-size: 1rem; }
+    .release-btn { background: #dc2626; }
+  </style>
+</head>
+<body>
+  <h1>✓ Visitor Approved</h1>
+  <p><strong>${visitor.full_name}</strong> is now checked in.</p>
+  <button class="btn release-btn" onclick="releaseVisitor('${visitor._id}')">Release Visitor</button>
+  <script>
+    function releaseVisitor(id) {
+      fetch('${baseUrl}/api/visitors/' + id + '/release', { method: 'POST' })
+        .then(r => { alert(r.ok ? 'Visitor released.' : 'Release failed.'); if (r.ok) window.close(); });
+    }
+  </script>
+</body>
+</html>`);
+  } catch (err) {
+    console.error("Approval error:", err);
+    res.status(500).send("Failed to approve visitor");
+  }
+};
+
+const checkoutVisitor = async (req, res) => {
+  try {
+    await Visitor.findByIdAndUpdate(req.params.id, { out_time: new Date() });
+    notifyDashboardUpdate();
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Checkout error:", err);
+    res.status(500).send("Checkout failed");
+  }
+};
+
+const releaseVisitor = async (req, res) => {
+  try {
+    await Visitor.findByIdAndUpdate(req.params.id, { out_time: new Date() });
+    notifyDashboardUpdate();
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Release error:", err);
+    res.status(500).send("Release failed");
+  }
+};
+
+const securityCheckout = async (req, res) => {
+  try {
+    await Visitor.findByIdAndUpdate(req.params.id, {
+      security_confirmed: true,
+      security_out_time: new Date(),
+    });
+    notifyDashboardUpdate();
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Security checkout error:", err);
+    res.status(500).send("Checkout failed");
+  }
+};
+
+const deleteVisitor = async (req, res) => {
+  try {
+    const visitor = await Visitor.findByIdAndDelete(req.params.id);
+    if (!visitor) return res.status(404).json({ error: "Visitor not found" });
+    notifyDashboardUpdate();
+    res.json({ message: "Visitor deleted successfully" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ error: "Failed to delete visitor" });
+  }
+};
+
+const allowEntry = async (req, res) => {
+  try {
+    const visitor = await Visitor.findByIdAndUpdate(
+      req.params.id,
+      { scheduled: false, in_time: new Date(), approved: true },
+      { new: true }
+    ).lean();
+
+    if (!visitor) return res.status(404).json({ error: "Visitor not found" });
+
+    notifyDashboardUpdate();
+    res.json({ ...visitor, id: visitor._id.toString() });
+  } catch (err) {
+    console.error("Allow entry error:", err);
+    res.status(500).json({ error: "Failed to allow entry" });
+  }
+};
+
+const testEmail = async (req, res) => {
+  const debugInfo = {
+    emailMethod: resendClient ? "Resend" : "Nodemailer/Gmail",
+    resendConfigured: !!process.env.RESEND_API_KEY,
+    user: process.env.EMAIL_USER ? "Configured" : "Missing",
+    pass: process.env.EMAIL_PASS ? "Configured" : "Missing",
+    from: process.env.EMAIL_FROM || "Not Set",
+    hrEmail: process.env.HR_EMAIL || "Not Set",
+    baseUrl: process.env.BASE_URL || "Not Set",
+  };
+
+  try {
+    const fromAddress = resendClient
+      ? process.env.EMAIL_FROM || "Visitor System <onboarding@resend.dev>"
+      : `"Visitor System Test" <${
+          process.env.EMAIL_FROM || "visitor-system@example.com"
+        }>`;
+
+    const info = await sendEmail({
+      from: fromAddress,
+      to: process.env.HR_EMAIL || "test@example.com",
+      subject: "Visitor System Email Test",
+      html: `<b>Success!</b> Your email system is working correctly. <br><br> Debug Info: <pre>${JSON.stringify(
+        debugInfo,
+        null,
+        2
+      )}</pre>`,
+    });
+    res.send(
+      `<h1>Email Test Successful</h1><p>Message ID: ${
+        info?.id || info?.messageId
+      }</p><hr><pre>${JSON.stringify(debugInfo, null, 2)}</pre>`
+    );
+  } catch (error) {
+    res
+      .status(500)
+      .send(
+        `<h1>Email Test Failed</h1><p>Error: ${
+          error.message
+        }</p><hr><h3>Debug Info:</h3><pre>${JSON.stringify(
+          debugInfo,
+          null,
+          2
+        )}</pre>`
+      );
+  }
+};
+
+module.exports = {
+  subscribeUpdates,
+  notifyDashboardUpdate,
+  registerVisitor,
+  getStats,
+  getAllVisitors,
+  exportVisitors,
+  approveVisitor,
+  checkoutVisitor,
+  releaseVisitor,
+  securityCheckout,
+  deleteVisitor,
+  allowEntry,
+  testEmail,
+};
