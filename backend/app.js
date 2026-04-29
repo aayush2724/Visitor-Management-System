@@ -1,19 +1,15 @@
-require("dotenv").config();
 const express = require("express");
-const app = express();
 const cors = require("cors");
 const path = require("path");
 const helmet = require("helmet");
-const connectDB = require("./config/db");
-const errorHandler = require("./middleware/errorHandler");
+const errorHandler = require("./middlewares/errorHandler");
 
 // --- Import Routes ---
 const visitorRoutes = require("./routes/visitorRoutes");
 const authRoutes = require("./routes/authRoutes");
 const scheduleRoutes = require("./routes/scheduleRoutes");
 
-// --- Database Connection ---
-connectDB();
+const app = express();
 
 // --- Middleware ---
 app.use(
@@ -26,8 +22,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // --- Static Files ---
+// Serving frontend from the root's frontend folder
 app.use(express.static(path.join(__dirname, "../frontend")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serving uploads from the root's uploads folder (if any)
+app.use("/uploads", express.static(path.join(__dirname, "../uploads"))); 
 
 // --- Routes ---
 app.use("/api/visitors", visitorRoutes);
@@ -42,14 +40,4 @@ app.get("/", (req, res) =>
 // --- Global Error Handler ---
 app.use(errorHandler);
 
-// --- Start Server ---
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-process.on("SIGTERM", async () => {
-  const mongoose = require("mongoose");
-  await mongoose.connection.close();
-  process.exit(0);
-});
+module.exports = app;

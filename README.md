@@ -24,43 +24,45 @@ It handles end-to-end visitor processing: from initial registration and hardware
 
 ---
 
-## 🏗️ System Architecture (MVC)
+## 🏗️ System Architecture (SaaS Structure)
 
-The backend has been restructured into a professional **Model-View-Controller (MVC)** architecture for maximum maintainability and scalability.
+The project follows a modular SaaS architecture for scalability:
 
 ```text
 RSB-Visitor-Management-System/
 ├── backend/
-│   ├── config/              # Database connection logic
-│   ├── controllers/         # Business logic & Route handlers
-│   ├── middleware/          # Security & Auth filters
-│   ├── models/              # Mongoose Data Schemas
-│   ├── routes/              # Express Route definitions
-│   └── server.js            # Application Entry Point
-└── frontend/                # View Layer (Vanilla HTML/CSS/JS)
+│   ├── config/              # DB & Env configurations
+│   ├── controllers/         # Request logic (what happens)
+│   ├── middlewares/         # Auth, security & error handling
+│   ├── models/              # Database schemas (Mongoose)
+│   ├── routes/              # API endpoints (URLs)
+│   ├── services/            # Business logic (optional but pro)
+│   ├── utils/               # Helper functions & scripts
+│   └── app.js               # Express application setup
+├── frontend/                # View Layer (Static HTML/CSS/JS)
+├── server.js                # Application Entry Point
+├── package.json             # Root dependencies & scripts
+└── .env                     # Environment Secrets
 ```
 
 ---
 
 ## 🛡️ Enhanced Security Suite
 
-- **Authenticated API Access**: All administrative routes are protected by a server-side **Auth Middleware** requiring a secret Bearer Token.
-- **Brute-Force Protection**: Implements `express-rate-limit` on the login gateway to prevent automated credential testing.
-- **Production-Grade Headers**: Powered by `Helmet.js` to protect against common web vulnerabilities (XSS, Clickjacking, etc.).
-- **Encrypted Env Handling**: Sensitive credentials like `ADMIN_SECRET_TOKEN` are managed exclusively through environment variables.
+- **Authenticated API Access**: Protected by a server-side **Auth Middleware** requiring a secret token.
+- **Brute-Force Protection**: Implements `express-rate-limit` on the login gateway.
+- **Production-Grade Headers**: Powered by `Helmet.js`.
+- **Encrypted Env Handling**: Managed exclusively through environment variables.
 
 ---
 
 ## ✨ Core Features
 
-- **Biometric Identity Capture**: Custom JavaScript hooks into the device's webcam to snap live photos, instantly buffering to Cloudinary.
-- **Dynamic Check-in Pass & QR Code**: Generates an entry QR Code unique to each visitor, stored in Cloudinary for rapid fetching.
-- **Background Async Notifications**: Fires off HTML Emails via `Nodemailer` and direct WhatsApp tickets via `Twilio` the second a visitor checks in.
-- **Intelligence Dashboard**: 
-  - Live real-time KPI statistics.
-  - Search & filtering, immediate entry/exit logging toggles.
-  - One-click `.xlsx` exporting.
-- **Pre-Clearance Schedule Portal**: Allows hosts to pre-approve future dates for incoming guests.
+- **Biometric Identity Capture**: Custom JS webcam integration with Cloudinary upload.
+- **Dynamic Check-in Pass & QR Code**: Automated QR generation for secure entry.
+- **Background Async Notifications**: Email via `Nodemailer/Resend` and WhatsApp via `Twilio`.
+- **Intelligence Dashboard**: Live stats, search, filtering, and `.xlsx` exporting.
+- **Pre-Clearance Schedule Portal**: Pre-approve future guest visits.
 
 ---
 
@@ -68,15 +70,14 @@ RSB-Visitor-Management-System/
 
 ### 1. Database Setup
 1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-2. Whitelist `0.0.0.0/0` in Network Access.
-3. Copy your connection string (`mongodb+srv://...`).
+2. Copy your connection string (`mongodb+srv://...`).
 
 ### 2. Render Setup
 1. Sign in to [Render](https://render.com) and create a **New Web Service**.
-2. Connect this GitHub repository.
-3. Use the following build/start commands:
-   - **Build Command**: `cd backend && npm install`
-   - **Start Command**: `cd backend && node server.js`
+2. Connect this repository.
+3. Use the following commands:
+   - **Build Command**: `npm install`
+   - **Start Command**: `node server.js`
 4. Add the **Environment Variables** listed below.
 
 ### Required Environment Variables
@@ -107,12 +108,11 @@ HR_EMAIL=recipient@gmail.com
 ## 🐳 Docker Deployment
 
 1. **Ensure Docker is Installed**
-2. **Configure Environment** (.env in root)
-3. **Build and Run**
+2. **Build and Run**
    ```bash
    docker-compose up -d --build
    ```
-4. **Access**: `http://localhost:3000`
+3. **Access**: `http://localhost:3000`
 
 ---
 
@@ -121,13 +121,13 @@ HR_EMAIL=recipient@gmail.com
 1. **Clone & Install**
    ```bash
    git clone https://github.com/aayush2724/RSB-Visitor-Management-System.git
-   cd RSB-Visitor-Management-System/backend
+   cd RSB-Visitor-Management-System
    npm install
    ```
-2. **Configure .env** in the `/backend` folder.
+2. **Configure .env** in the root folder.
 3. **Run**
    ```bash
-   npm start
+   npm run dev
    ```
 
 ---
