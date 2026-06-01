@@ -1,202 +1,148 @@
-:root {
-  --bg: #07090e;
-  --green: #00e5ff;
-  --green-glow: rgba(0, 229, 255, 0.25);
-  --red: #ff4444;
-  --text: #ffffff;
-  --text-muted: #8b9bb4;
-  --border: #1e293b;
-  --card: #0d121c;
-}
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@import url('shared.css');
+
 body {
-  background: var(--bg);
-  font-family: "Rajdhani", sans-serif;
-  color: var(--text);
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 100vh;
+  background: var(--bg);
   overflow: hidden;
-  perspective: 1000px;
-}
-/* Dynamic Cyber Grid Background */
-body::before {
-  content: "";
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  top: -50%;
-  left: -50%;
-  background-image:
-    linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-  transform: rotateX(60deg) translateY(-100px);
-  animation: gridMove 15s linear infinite;
-  pointer-events: none;
-  z-index: -1;
-}
-@keyframes gridMove {
-  0% {
-    transform: rotateX(60deg) translateY(0);
-  }
-  100% {
-    transform: rotateX(60deg) translateY(40px);
-  }
-}
-/* Core glow ring */
-.glow-ring {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(
-    circle,
-    var(--green-glow) 0%,
-    transparent 60%
-  );
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: -1;
-  animation: pulse 4s ease-in-out infinite alternate;
-}
-@keyframes pulse {
-  0% {
-    opacity: 0.3;
-    transform: translate(-50%, -50%) scale(0.9);
-  }
-  100% {
-    opacity: 0.6;
-    transform: translate(-50%, -50%) scale(1.1);
-  }
 }
 
-.login-box {
-  background: var(--card);
+.login-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.login-bg::before {
+  content: '';
+  position: absolute;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 65%);
+  border-radius: 50%;
+}
+.login-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 65%);
+  border-radius: 50%;
+}
+
+.login-card {
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 56px 48px;
-  width: 380px;
-  box-shadow: 0 0 60px rgba(0, 229, 255, 0.05);
-  text-align: center;
-  animation: fadeIn 0.5s ease;
+  border-radius: 20px;
+  padding: 44px 40px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  animation: card-in 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes card-in {
+  from { opacity: 0; transform: scale(0.95) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
-.shield {
-  width: 56px;
-  height: 56px;
-  border: 2px solid var(--green);
-  border-radius: 10px;
+
+.login-logo {
+  width: 52px; height: 52px;
+  background: var(--accent);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  color: var(--green);
-  box-shadow: 0 0 20px var(--green-glow);
-  margin: 0 auto 24px;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 32px var(--accent-glow);
 }
-h1 {
-  font-family: "Orbitron", monospace;
-  font-size: 1rem;
-  letter-spacing: 3px;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.sub {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  letter-spacing: 3px;
-  margin-bottom: 40px;
-}
-label {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 0.65rem;
-  color: var(--green);
-  letter-spacing: 3px;
-  display: block;
-  text-align: left;
-  margin-bottom: 8px;
-}
-input[type="password"] {
-  width: 100%;
-  background: #0b0f19;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 14px 16px;
-  color: var(--text);
-  font-family: "Rajdhani", sans-serif;
-  font-size: 1.1rem;
-  letter-spacing: 4px;
+.login-logo svg { width: 28px; height: 28px; fill: white; }
+
+.login-title {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 800;
   text-align: center;
-  outline: none;
-  transition: all 0.2s;
-  margin-bottom: 24px;
+  margin-bottom: 4px;
 }
-input[type="password"]:focus {
-  border-color: var(--green);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+.login-sub {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  text-align: center;
+  margin-bottom: 32px;
 }
-.login-btn {
-  width: 100%;
-  padding: 15px;
-  background: transparent;
-  border: 1px solid var(--green);
-  border-radius: 4px;
-  color: var(--green);
-  font-family: "Orbitron", monospace;
-  font-size: 0.8rem;
-  letter-spacing: 2px;
-  cursor: pointer;
+
+.input-wrap {
   position: relative;
-  overflow: hidden;
-  transition: all 0.2s;
+  margin-bottom: 12px;
 }
-.login-btn::before {
-  content: "";
+.input-wrap .icon-left {
   position: absolute;
-  inset: 0;
-  background: var(--green);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-  z-index: 0;
+  left: 13px; top: 50%;
+  transform: translateY(-50%);
+  width: 16px; height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
 }
-.login-btn:hover::before {
-  transform: scaleX(1);
+.input-wrap .form-control { padding-left: 42px; padding-right: 40px; }
+.toggle-pw {
+  position: absolute;
+  right: 11px; top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  line-height: 0;
+  transition: var(--transition);
 }
-.login-btn:hover {
-  color: #000;
-  box-shadow: 0 0 30px var(--green-glow);
-}
-.login-btn span {
-  position: relative;
-  z-index: 1;
-}
-.error-msg {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 0.75rem;
+.toggle-pw:hover { color: var(--text); }
+.toggle-pw svg { width: 15px; height: 15px; }
+
+.login-error {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--red-dim);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: var(--radius);
+  font-size: 0.82rem;
   color: var(--red);
-  margin-top: 16px;
-  letter-spacing: 1px;
-  opacity: 0;
-  transition: opacity 0.3s;
+  margin-bottom: 16px;
 }
-.error-msg.visible {
-  opacity: 1;
+.login-error svg { width: 15px; height: 15px; flex-shrink: 0; }
+.login-error.show { display: flex; animation: shake 0.35s ease; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60%  { transform: translateX(-5px); }
+  40%,80%  { transform: translateX(5px); }
 }
+
+.login-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.login-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.login-footer a:hover { text-decoration: underline; }
+
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

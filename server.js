@@ -3,24 +3,17 @@ const app = require("./backend/app");
 const connectDB = require("./backend/config/db");
 const mongoose = require("mongoose");
 
-// --- Database Connection ---
-connectDB();
+const PORT = process.env.PORT || 5000;
 
-// --- Start Server ---
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Start HTTP server first so the UI is always reachable, then connect DB
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`SECURE VMS running on port ${PORT}`);
+  connectDB();
 });
 
-// Handle graceful shutdown
-process.on("SIGTERM", async () => {
-  console.log("SIGTERM received. Closing database connection...");
-  await mongoose.connection.close();
+const graceful = async () => {
+  try { await mongoose.connection.close(); } catch (_) {}
   process.exit(0);
-});
-
-process.on("SIGINT", async () => {
-  console.log("SIGINT received. Closing database connection...");
-  await mongoose.connection.close();
-  process.exit(0);
-});
+};
+process.on("SIGTERM", graceful);
+process.on("SIGINT",  graceful);

@@ -1,30 +1,23 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  const mongoUri =
-    process.env.MONGODB_URI || "mongodb://localhost:27017/visitor-management";
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    console.warn("⚠  MONGODB_URI not set — running in limited mode (no database).");
+    console.warn("   Set MONGODB_URI in Secrets to enable all features.");
+    return;
+  }
+
   console.log("Attempting to connect to MongoDB...");
 
-  const mongoOptions = {
-    family: 4,
-  };
-
   try {
-    await mongoose.connect(mongoUri, mongoOptions);
-    console.log(
-      "Successfully connected to MongoDB:",
-      mongoUri.split("@").pop().split("?")[0]
-    );
+    await mongoose.connect(mongoUri, { family: 4, serverSelectionTimeoutMS: 8000 });
+    const safeUri = mongoUri.split("@").pop().split("?")[0];
+    console.log("✓ MongoDB connected:", safeUri);
   } catch (err) {
-    console.error("CRITICAL: MongoDB connection failed!");
-    console.error("URI:", mongoUri.split("@").pop().split("?")[0]);
-    console.error("Error Details:", err.message);
-    if (mongoUri.includes("mongodb+srv")) {
-      console.warn(
-        "TIP: If you get ECONNREFUSED with +srv, try using the standard connection string format or check your local firewall."
-      );
-    }
-    process.exit(1);
+    console.error("✗ MongoDB connection failed:", err.message);
+    console.warn("  App will continue without database — API calls will fail until DB is available.");
   }
 };
 

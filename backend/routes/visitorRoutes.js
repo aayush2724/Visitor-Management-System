@@ -4,7 +4,6 @@ const multer = require("multer");
 const visitorController = require("../controllers/visitorController");
 const { requireAuth } = require("../middlewares/authMiddleware");
 
-// --- Multer Setup ---
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
@@ -14,24 +13,22 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// --- Routes ---
-
 router.get("/updates", visitorController.subscribeUpdates);
+router.get("/check-repeat", visitorController.checkRepeatVisitor);
 router.post("/", upload.single("photo"), visitorController.registerVisitor);
 router.get("/stats", requireAuth, visitorController.getStats);
+router.get("/export", visitorController.exportVisitors);
+router.get("/test-email", visitorController.testEmail);
 router.get("/", requireAuth, visitorController.getAllVisitors);
-router.get("/export", visitorController.exportVisitors); // Auth inside controller
+router.get("/:id", visitorController.getVisitor);
 router.get("/:id/approve", visitorController.approveVisitor);
-
 router.post("/:id/checkout", requireAuth, visitorController.checkoutVisitor);
 router.post("/:id/release", requireAuth, visitorController.releaseVisitor);
-router.post(
-  "/:id/security-checkout",
-  requireAuth,
-  visitorController.securityCheckout
-);
-router.delete("/:id", requireAuth, visitorController.deleteVisitor);
+router.post("/:id/security-checkout", requireAuth, visitorController.securityCheckout);
 router.post("/:id/allow-entry", requireAuth, visitorController.allowEntry);
-router.get("/test-email", visitorController.testEmail);
+router.post("/:id/flag", requireAuth, visitorController.flagVisitor);
+router.post("/:id/unflag", requireAuth, visitorController.unflagVisitor);
+router.delete("/bulk", requireAuth, visitorController.bulkDelete);
+router.delete("/:id", requireAuth, visitorController.deleteVisitor);
 
 module.exports = router;

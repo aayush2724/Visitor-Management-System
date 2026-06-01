@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SECURE — Visitor Badge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080c14; --card: #0f1420; --border: #1e293b;
+      --accent: #6366f1; --green: #10b981; --text: #f1f5f9; --muted: #64748b;
+      --font: 'Inter',sans-serif; --font-display: 'Plus Jakarta Sans',sans-serif; --mono: 'JetBrains Mono',monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); font-family: var(--font); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 32px 16px; }
+    .page-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+    .page-sub { color: var(--muted); font-size: 0.84rem; margin-bottom: 28px; }
+    .actions { display: flex; gap: 10px; margin-bottom: 28px; }
+    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 9px; font-family: var(--font); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .2s; border: none; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #141925; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: #818cf8; }
+
+    /* Badge card */
+    .badge-card {
+      width: 360px;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+      color: #1e293b;
+      font-family: var(--font);
+    }
+    .badge-header {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge-header-brand { color: white; }
+    .badge-brand-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; }
+    .badge-brand-sub { font-size: 0.7rem; opacity: 0.8; margin-top: 1px; }
+    .badge-type-chip {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .badge-body { padding: 20px 24px; }
+    .badge-photo-row { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+    .badge-photo {
+      width: 72px; height: 72px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid #e2e8f0;
+      flex-shrink: 0;
+      background: #f1f5f9;
+    }
+    .badge-photo-placeholder {
+      width: 72px; height: 72px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; font-weight: 800; color: white;
+      flex-shrink: 0;
+    }
+    .badge-name { font-size: 1.2rem; font-weight: 800; color: #0f172a; margin-bottom: 3px; font-family: var(--font-display); }
+    .badge-number { font-family: var(--mono); font-size: 0.8rem; color: #6366f1; font-weight: 500; margin-bottom: 6px; }
+    .badge-dept { font-size: 0.82rem; color: #475569; }
+
+    .badge-divider { height: 1px; background: #e2e8f0; margin: 14px 0; }
+
+    .badge-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-bottom: 16px; }
+    .badge-info-item {}
+    .badge-info-label { font-size: 0.62rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+    .badge-info-value { font-size: 0.8rem; font-weight: 600; color: #1e293b; }
+
+    .badge-qr-row { display: flex; align-items: center; gap: 16px; }
+    .badge-qr {
+      width: 80px; height: 80px;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      padding: 2px;
+      flex-shrink: 0;
+    }
+    .badge-qr-text { font-size: 0.72rem; color: #64748b; line-height: 1.5; }
+    .badge-qr-text strong { color: #1e293b; display: block; font-size: 0.78rem; margin-bottom: 3px; }
+
+    .badge-footer {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge-footer-time { font-size: 0.68rem; color: #94a3b8; }
+    .badge-status {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.68rem; font-weight: 700; color: #10b981;
+    }
+    .badge-status::before { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
+
+    #loading { color: var(--muted); font-size: 0.9rem; }
+    #error-msg { color: #ef4444; font-size: 0.9rem; display: none; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .actions, nav { display: none; }
+      .badge-card { box-shadow: none; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <p class="page-title">Visitor Badge</p>
+  <p class="page-sub">Digital visitor pass for gate verification</p>
+
+  <div class="actions">
+    <button class="btn btn-outline" onclick="history.back()">← Back</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨 Print Badge</button>
+  </div>
+
+  <p id="loading">Loading visitor details…</p>
+  <p id="error-msg">Visitor not found or badge expired.</p>
+
+  <div class="badge-card" id="badge-card" style="display:none;">
+    <div class="badge-header">
+      <div class="badge-header-brand">
+        <div class="badge-brand-name">SECURE</div>
+        <div class="badge-brand-sub">Visitor Management System</div>
+      </div>
+      <div class="badge-type-chip" id="b-type">Guest</div>
+    </div>
+
+    <div class="badge-body">
+      <div class="badge-photo-row">
+        <div id="b-photo-wrap"></div>
+        <div>
+          <div class="badge-name" id="b-name">—</div>
+          <div class="badge-number" id="b-badge">—</div>
+          <div class="badge-dept" id="b-dept">—</div>
+        </div>
+      </div>
+
+      <div class="badge-divider"></div>
+
+      <div class="badge-info-grid">
+        <div class="badge-info-item">
+          <div class="badge-info-label">Host</div>
+          <div class="badge-info-value" id="b-host">—</div>
+        </div>
+        <div class="badge-info-item">
+          <div class="badge-info-label">Purpose</div>
+          <div class="badge-info-value" id="b-purpose">—</div>
+        </div>
+        <div class="badge-info-item">
+          <div class="badge-info-label">Check-In</div>
+          <div class="badge-info-value" id="b-checkin">—</div>
+        </div>
+        <div class="badge-info-item">
+          <div class="badge-info-label">Duration</div>
+          <div class="badge-info-value" id="b-duration">—</div>
+        </div>
+      </div>
+
+      <div class="badge-divider"></div>
+
+      <div class="badge-qr-row">
+        <img id="b-qr" class="badge-qr" alt="QR Code" style="display:none;">
+        <div id="b-qr-placeholder" style="width:80px;height:80px;border-radius:8px;border:2px dashed #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:#94a3b8;text-align:center;flex-shrink:0;">QR Not Available</div>
+        <div class="badge-qr-text">
+          <strong>Scan at exit gate</strong>
+          Present this badge to security officer. QR code enables quick verification and checkout.
+        </div>
+      </div>
+    </div>
+
+    <div class="badge-footer">
+      <div class="badge-footer-time" id="b-time">—</div>
+      <div class="badge-status">AUTHORIZED</div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    if (!id) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error-msg').style.display = 'block';
+    } else {
+      fetch(`/api/visitors/${id}`)
+        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+        .then(v => {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('badge-card').style.display = 'block';
+
+          document.getElementById('b-name').textContent = v.full_name;
+          document.getElementById('b-badge').textContent = v.badge_number || 'N/A';
+          document.getElementById('b-dept').textContent = `${v.department_visiting}`;
+          document.getElementById('b-host').textContent = v.person_to_visit;
+          document.getElementById('b-purpose').textContent = v.purpose_of_visit || 'General';
+          document.getElementById('b-duration').textContent = v.expected_duration || '—';
+          document.getElementById('b-type').textContent = v.visitor_type || 'Guest';
+
+          const inTime = new Date(v.in_time);
+          document.getElementById('b-checkin').textContent = inTime.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+          document.getElementById('b-time').textContent = inTime.toLocaleDateString('en-US', {weekday:'short',year:'numeric',month:'short',day:'numeric'}) + ' · ' + inTime.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+          const photoWrap = document.getElementById('b-photo-wrap');
+          if (v.photo_path) {
+            photoWrap.innerHTML = `<img src="${v.photo_path}" class="badge-photo" alt="Photo">`;
+          } else {
+            const initials = v.full_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+            photoWrap.innerHTML = `<div class="badge-photo-placeholder">${initials}</div>`;
+          }
+
+          if (v.qr_code_path) {
+            const qr = document.getElementById('b-qr');
+            qr.src = v.qr_code_path;
+            qr.style.display = 'block';
+            document.getElementById('b-qr-placeholder').style.display = 'none';
+          }
+        })
+        .catch(() => {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('error-msg').style.display = 'block';
+        });
+    }
+  </script>
+</body>
+</html>

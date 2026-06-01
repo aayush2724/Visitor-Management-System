@@ -1,0 +1,2 @@
+- [SECURE VMS Setup](secure-vms-setup.md) — server must start before DB connect; MONGODB_URI + ADMIN_SECRET_TOKEN are the two required secrets
+- [SECURE VMS Design](secure-vms-design.md) — indigo/emerald dark theme; shared.css is the single design-system source; all pages import it
