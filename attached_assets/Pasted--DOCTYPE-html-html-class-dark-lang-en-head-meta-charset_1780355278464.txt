@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SENTINEL VMS - Schedule a Visit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Hanken+Grotesk:wght@600;700;900&amp;family=Geist:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-sm:hover {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        input:focus + label, input:not(:placeholder-shown) + label {
+            transform: translateY(-24px) scale(0.85);
+            color: #00dbe9;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0d1515;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3b494b;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#ffdad6",
+                      "tertiary": "#f8f4ff",
+                      "inverse-primary": "#006970",
+                      "on-tertiary-container": "#494bd7",
+                      "surface-bright": "#333b3b",
+                      "background": "#0d1515",
+                      "surface-dim": "#0d1515",
+                      "secondary-fixed-dim": "#4edea3",
+                      "secondary": "#4edea3",
+                      "error-container": "#93000a",
+                      "outline": "#849495",
+                      "on-surface-variant": "#b9cacb",
+                      "primary-fixed": "#7df4ff",
+                      "tertiary-container": "#d7d6ff",
+                      "on-surface": "#dce4e5",
+                      "surface-tint": "#00dbe9",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-tertiary": "#1000a9",
+                      "surface-container-low": "#151d1e",
+                      "surface-container": "#192122",
+                      "on-secondary": "#003824",
+                      "primary-fixed-dim": "#00dbe9",
+                      "surface": "#0d1515",
+                      "on-primary-fixed-variant": "#004f54",
+                      "error": "#ffb4ab",
+                      "on-tertiary-fixed": "#07006c",
+                      "on-primary-container": "#006970",
+                      "on-error": "#690005",
+                      "secondary-fixed": "#6ffbbe",
+                      "surface-container-high": "#232b2c",
+                      "on-secondary-container": "#00311f",
+                      "outline-variant": "#3b494b",
+                      "on-primary": "#00363a",
+                      "primary": "#dbfcff",
+                      "on-secondary-fixed": "#002113",
+                      "secondary-container": "#00a572",
+                      "inverse-on-surface": "#2a3233",
+                      "tertiary-fixed": "#e1e0ff",
+                      "tertiary-fixed-dim": "#c0c1ff",
+                      "surface-container-lowest": "#080f10",
+                      "primary-container": "#00f0ff",
+                      "on-background": "#dce4e5",
+                      "surface-variant": "#2e3637",
+                      "on-primary-fixed": "#002022",
+                      "surface-container-highest": "#2e3637",
+                      "inverse-surface": "#dce4e5",
+                      "on-tertiary-fixed-variant": "#2f2ebe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "xl": "64px",
+                      "margin-desktop": "48px",
+                      "sm": "12px",
+                      "gutter": "24px",
+                      "md": "24px",
+                      "base": "8px",
+                      "lg": "40px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Hanken Grotesk"],
+                      "code-snippet": ["Geist"],
+                      "display-lg-mobile": ["Hanken Grotesk"],
+                      "label-sm": ["Geist"],
+                      "body-base": ["Inter"],
+                      "headline-md": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "code-snippet": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "display-lg-mobile": ["36px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-base overflow-hidden">
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] border-r border-outline-variant/10 bg-surface-container-low flex flex-col py-lg px-md z-50">
+<div class="mb-xl px-sm">
+<h1 class="font-display-lg text-headline-md font-bold tracking-tighter text-primary dark:text-primary-fixed">SENTINEL VMS</h1>
+<p class="text-on-surface-variant font-label-sm uppercase tracking-widest mt-xs opacity-60">Secure Terminal 01</p>
+</div>
+<nav class="flex-1 space-y-xs overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-body-base">Dashboard</span>
+</a>
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">fingerprint</span>
+<span class="font-body-base">Visitor Check-In</span>
+</a>
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-primary dark:text-primary-fixed-dim font-bold border-l-4 border-secondary bg-surface-container-high scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_add_on</span>
+<span class="font-body-base">Schedule Visit</span>
+</a>
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">assignment</span>
+<span class="font-body-base">Log History</span>
+</a>
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+<span class="font-body-base">System Settings</span>
+</a>
+</nav>
+<div class="pt-lg border-t border-outline-variant/10 mt-lg">
+<button class="w-full py-md px-md mb-lg bg-error-container text-on-error-container font-label-sm uppercase tracking-widest rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">security</span>
+                Emergency Lockdown
+            </button>
+<div class="space-y-xs">
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-sm">Help</span>
+</a>
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm">Logout</span>
+</a>
+</div>
+<div class="mt-xl flex items-center gap-md px-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center overflow-hidden">
+<img alt="Security Administrator" class="w-full h-full object-cover" data-alt="A professional security administrator's headshot in a high-tech corporate office setting. The lighting is crisp and modern with soft blue and slate tones in the background, matching a cyber-security dashboard environment. The individual is wearing professional attire and looking toward the camera with a calm, authoritative expression. The image is clean, sharp, and has a shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe8xm2E8F3DOlNjIZDqZLEnbObUFju3IIAy246c6-Olmj9WDhc0RdFTOACtLRtqw7kLfDnZvPDHiXU7_k_9znBJtpnuDEWAtDZRB9PBMJEbZ3yj0DbYLyp3D9fZwdO-Rrrk7dkg8jc0nYn_hunGWr8udJDUBjzCKXs2cqr60w-DlXxSm2RxjCg5PSy6HL2dXrq-NrB34wxfnhBQhYAEXfG7qq2IPtlhoaCCkawNdw8FqNg6Q5adwLKP8zh14R1aXfxzJqWU2f0p98"/>
+</div>
+<div class="overflow-hidden">
+<p class="font-label-sm font-bold truncate">Admin User</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter opacity-60">Security Level Alpha</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar (Offset by Sidebar) -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-xl border-b border-outline-variant/10 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl z-40 flex justify-between items-center px-margin-desktop">
+<div class="flex items-center gap-lg">
+<span class="font-headline-md text-headline-md font-black text-primary">SENTINEL</span>
+<nav class="hidden lg:flex items-center gap-md">
+<a class="text-on-surface-variant font-label-sm uppercase tracking-widest hover:text-secondary-fixed-dim transition-all" href="#">Analytics</a>
+<a class="text-on-surface-variant font-label-sm uppercase tracking-widest hover:text-secondary-fixed-dim transition-all" href="#">Alerts</a>
+<a class="text-on-surface-variant font-label-sm uppercase tracking-widest hover:text-secondary-fixed-dim transition-all" href="#">Directories</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative flex items-center bg-surface-container px-md py-xs rounded-full border border-outline-variant/20 focus-within:border-primary-container transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-xs">search</span>
+<input class="bg-transparent border-none outline-none text-on-surface text-label-sm w-48 focus:ring-0" placeholder="Search Global Access..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-variant">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-variant">admin_panel_settings</button>
+<button class="bg-primary-container text-on-primary-container px-lg py-xs font-label-sm uppercase tracking-widest rounded-lg hover:brightness-110 transition-all glow-sm">Check-In</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[280px] pt-xl h-screen overflow-y-auto custom-scrollbar bg-background">
+<div class="max-w-[1440px] mx-auto p-margin-desktop">
+<!-- Header Section -->
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary tracking-tighter">Schedule a Visit</h2>
+<p class="text-on-surface-variant mt-xs max-w-xl">Configure access credentials and logistical parameters for incoming external personnel. Ensure all mandatory fields are validated for security protocol compliance.</p>
+</div>
+<div class="flex gap-sm">
+<button class="flex items-center gap-xs px-md py-sm border border-outline-variant/30 text-on-surface-variant rounded-lg hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-sm">upload_file</span>
+<span class="font-label-sm uppercase tracking-widest">Import Guest List</span>
+</button>
+</div>
+</div>
+<!-- Bento Form Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Section 1: Personal Information -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<div class="p-lg rounded-xl border border-outline-variant/10 bg-surface-container-low/50 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined text-secondary">person</span>
+<h3 class="font-headline-md text-headline-md text-secondary tracking-tight">Personal Information</h3>
+</div>
+<div class="space-y-lg">
+<div class="relative">
+<input class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all peer" id="visitor_name" placeholder=" " type="text"/>
+<label class="absolute left-0 top-md text-on-surface-variant font-label-sm uppercase tracking-widest transition-all pointer-events-none origin-[0]" for="visitor_name">Full Legal Name</label>
+</div>
+<div class="relative">
+<input class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all peer" id="visitor_email" placeholder=" " type="email"/>
+<label class="absolute left-0 top-md text-on-surface-variant font-label-sm uppercase tracking-widest transition-all pointer-events-none origin-[0]" for="visitor_email">Email Address</label>
+</div>
+<div class="relative">
+<input class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all peer" id="visitor_phone" placeholder=" " type="tel"/>
+<label class="absolute left-0 top-md text-on-surface-variant font-label-sm uppercase tracking-widest transition-all pointer-events-none origin-[0]" for="visitor_phone">Contact Number</label>
+</div>
+<div class="relative">
+<input class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all peer" id="visitor_org" placeholder=" " type="text"/>
+<label class="absolute left-0 top-md text-on-surface-variant font-label-sm uppercase tracking-widest transition-all pointer-events-none origin-[0]" for="visitor_org">Organization / Agency</label>
+</div>
+</div>
+</div>
+<div class="p-lg rounded-xl border border-outline-variant/10 bg-surface-container-low/50">
+<div class="flex items-center justify-between mb-md">
+<p class="font-label-sm uppercase tracking-widest text-on-surface-variant">Identity Verification</p>
+<span class="bg-secondary/10 text-secondary px-sm py-xs rounded-full font-label-sm">Required</span>
+</div>
+<div class="border-2 border-dashed border-outline-variant/20 rounded-xl p-lg flex flex-col items-center justify-center text-center hover:bg-surface-variant/20 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant mb-sm text-display-lg opacity-40">badge</span>
+<p class="font-label-sm uppercase tracking-widest text-on-surface">Upload Photo ID</p>
+<p class="text-xs text-on-surface-variant mt-xs">Passport or Driver's License</p>
+</div>
+</div>
+</div>
+<!-- Section 2: Visit Details -->
+<div class="col-span-12 lg:col-span-4">
+<div class="h-full p-lg rounded-xl border border-outline-variant/10 bg-surface-container relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+<div class="flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined text-primary-container">location_on</span>
+<h3 class="font-headline-md text-headline-md text-primary tracking-tight">Visit Details</h3>
+</div>
+<div class="space-y-lg">
+<div>
+<label class="block font-label-sm uppercase tracking-widest text-on-surface-variant mb-sm">Visit Classification</label>
+<div class="grid grid-cols-2 gap-sm">
+<button class="py-md border border-outline-variant rounded-lg font-label-sm uppercase tracking-widest hover:border-primary-container hover:text-primary transition-all bg-surface-container-highest">Standard</button>
+<button class="py-md border border-primary-container rounded-lg font-label-sm uppercase tracking-widest text-primary-container bg-primary-container/10">VIP/Restricted</button>
+<button class="py-md border border-outline-variant rounded-lg font-label-sm uppercase tracking-widest hover:border-primary-container hover:text-primary transition-all">Maintenance</button>
+<button class="py-md border border-outline-variant rounded-lg font-label-sm uppercase tracking-widest hover:border-primary-container hover:text-primary transition-all">Interview</button>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-lg mt-xl">
+<div class="relative">
+<select class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all text-on-surface font-body-base">
+<option>Research &amp; Development</option>
+<option>Cloud Infrastructure</option>
+<option>Cyber Security Ops</option>
+<option>Executive Management</option>
+</select>
+<label class="absolute left-0 -top-sm text-on-surface-variant font-label-sm uppercase tracking-widest scale-85 text-primary-container">Target Department</label>
+</div>
+<div class="relative">
+<input class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all peer" id="person_visit" placeholder=" " type="text"/>
+<label class="absolute left-0 top-md text-on-surface-variant font-label-sm uppercase tracking-widest transition-all pointer-events-none origin-[0]" for="person_visit">Person to Visit</label>
+</div>
+<div class="relative">
+<textarea class="block w-full bg-surface-container border border-outline-variant/30 rounded-lg py-md px-md focus:ring-0 focus:border-primary-container transition-all peer resize-none" id="purpose" placeholder=" " rows="4"></textarea>
+<label class="absolute left-md -top-sm px-xs bg-surface-container text-on-surface-variant font-label-sm uppercase tracking-widest scale-85 text-primary-container" for="purpose">Purpose of Visit</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Logistics & Timing -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<div class="flex-1 p-lg rounded-xl border border-outline-variant/10 bg-surface-container-low/50 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary-container"></div>
+<div class="flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined text-tertiary-container">schedule</span>
+<h3 class="font-headline-md text-headline-md text-tertiary-fixed-dim tracking-tight">Logistics &amp; Timing</h3>
+</div>
+<div class="space-y-lg">
+<div class="relative">
+<input class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all text-on-surface" id="visit_date" type="date"/>
+<label class="absolute left-0 -top-sm text-on-surface-variant font-label-sm uppercase tracking-widest scale-85 text-primary-container" for="visit_date">Arrival Date</label>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="relative">
+<input class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all text-on-surface" id="visit_time" type="time"/>
+<label class="absolute left-0 -top-sm text-on-surface-variant font-label-sm uppercase tracking-widest scale-85 text-primary-container" for="visit_time">Entry Time</label>
+</div>
+<div class="relative">
+<select class="block w-full bg-surface-container border-0 border-b border-outline-variant py-md px-0 focus:ring-0 focus:border-primary-container transition-all text-on-surface" id="duration">
+<option>30 mins</option>
+<option>1 hour</option>
+<option>2 hours</option>
+<option>Full Day</option>
+</select>
+<label class="absolute left-0 -top-sm text-on-surface-variant font-label-sm uppercase tracking-widest scale-85 text-primary-container" for="duration">Duration</label>
+</div>
+</div>
+<div class="pt-md">
+<label class="flex items-center gap-md group cursor-pointer">
+<div class="relative">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-variant border border-outline-variant rounded-full peer-checked:bg-secondary transition-all"></div>
+<div class="absolute left-1 top-1 w-4 h-4 bg-on-surface rounded-full peer-checked:translate-x-6 transition-all"></div>
+</div>
+<span class="font-label-sm uppercase tracking-widest text-on-surface-variant group-hover:text-on-surface">Require Secure Escort</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Final Action Area -->
+<div class="p-lg rounded-xl glass-panel relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent"></div>
+<p class="text-xs text-on-surface-variant mb-md leading-relaxed">By confirming this schedule, you authorize the generation of a digital access token and notify the relevant departmental security personnel.</p>
+<button class="w-full py-lg bg-primary-container text-on-primary-container font-headline-md uppercase tracking-tighter font-black rounded-lg hover:brightness-110 active:scale-[0.98] transition-all glow-sm flex items-center justify-center gap-md" onclick="simulateConfirm()">
+<span class="material-symbols-outlined font-normal">task_alt</span>
+                            Confirm Schedule
+                        </button>
+</div>
+</div>
+</div>
+<!-- Dashboard Style Metrics/Quick View Footer -->
+<div class="mt-xl grid grid-cols-1 md:grid-cols-4 gap-md">
+<div class="p-md rounded-lg border border-outline-variant/10 bg-surface-container-lowest/50 flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-md">group</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Active Visitors</p>
+<p class="font-headline-md text-primary">124</p>
+</div>
+</div>
+<div class="p-md rounded-lg border border-outline-variant/10 bg-surface-container-lowest/50 flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-md">pending_actions</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Pending Approvals</p>
+<p class="font-headline-md text-secondary">08</p>
+</div>
+</div>
+<div class="p-md rounded-lg border border-outline-variant/10 bg-surface-container-lowest/50 flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-container text-md">door_open</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Scheduled Today</p>
+<p class="font-headline-md text-tertiary-fixed-dim">32</p>
+</div>
+</div>
+<div class="p-md rounded-lg border border-outline-variant/10 bg-surface-container-lowest/50 flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-md">warning</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Security Alerts</p>
+<p class="font-headline-md text-error">02</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Global atmospheric effect (Subtle Grid) -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[-1]" style="background-image: radial-gradient(#ffffff 1px, transparent 0); background-size: 40px 40px;"></div>
+<script>
+        function simulateConfirm() {
+            const btn = document.querySelector('button[onclick="simulateConfirm()"]');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `
+                <svg class="animate-spin h-6 w-6 text-on-primary-container" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+            `;
+            
+            setTimeout(() => {
+                btn.innerHTML = `
+                    <span class="material-symbols-outlined">verified</span>
+                    Visit Scheduled
+                `;
+                btn.classList.replace('bg-primary-container', 'bg-secondary');
+                btn.classList.replace('text-on-primary-container', 'text-on-secondary');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.replace('bg-secondary', 'bg-primary-container');
+                    btn.classList.replace('text-on-secondary', 'text-on-primary-container');
+                    btn.disabled = false;
+                    alert('Visit scheduled successfully. Digital pass sent to guest.');
+                }, 3000);
+            }, 1500);
+        }
+    </script>
+</body></html>

@@ -1,225 +1,391 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SECURE — Visitor Check-In</title>
-  <link rel="stylesheet" href="css/index.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SENTINEL VMS — Visitor Check-In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Hanken+Grotesk:wght@600;700;800;900&family=Geist:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/sentinel.css"/>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  body { background-color: #0d1515; color: #dce4e5; }
+</style>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode:"class",
+  theme:{ extend:{
+    colors:{
+      "background":"#0d1515","surface":"#0d1515","surface-dim":"#0d1515","surface-bright":"#333b3b",
+      "surface-container-lowest":"#080f10","surface-container-low":"#151d1e","surface-container":"#192122",
+      "surface-container-high":"#232b2c","surface-container-highest":"#2e3637","surface-variant":"#2e3637",
+      "on-surface":"#dce4e5","on-surface-variant":"#b9cacb","outline":"#849495","outline-variant":"#3b494b",
+      "primary":"#dbfcff","primary-fixed":"#7df4ff","primary-fixed-dim":"#00dbe9","primary-container":"#00f0ff",
+      "on-primary":"#00363a","on-primary-fixed":"#002022","on-primary-fixed-variant":"#004f54","on-primary-container":"#006970",
+      "secondary":"#4edea3","secondary-fixed":"#6ffbbe","secondary-fixed-dim":"#4edea3","secondary-container":"#00a572",
+      "on-secondary":"#003824","on-secondary-fixed":"#002113","on-secondary-container":"#00311f",
+      "tertiary":"#f8f4ff","tertiary-fixed":"#e1e0ff","tertiary-fixed-dim":"#c0c1ff","tertiary-container":"#d7d6ff",
+      "on-tertiary":"#1000a9","on-tertiary-fixed":"#07006c","on-tertiary-fixed-variant":"#2f2ebe","on-tertiary-container":"#494bd7",
+      "error":"#ffb4ab","error-container":"#93000a","on-error":"#690005","on-error-container":"#ffdad6",
+      "inverse-primary":"#006970","inverse-surface":"#dce4e5","inverse-on-surface":"#2a3233",
+    },
+    borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},
+    spacing:{"xs":"4px","xl":"64px","margin-desktop":"48px","sm":"12px","gutter":"24px","md":"24px","base":"8px","lg":"40px","margin-mobile":"16px"},
+    fontFamily:{"display-lg":["Hanken Grotesk"],"code-snippet":["Geist"],"label-sm":["Geist"],"body-base":["Inter"],"headline-md":["Hanken Grotesk"]},
+    fontSize:{
+      "display-lg":["48px",{lineHeight:"1.1",letterSpacing:"-0.02em",fontWeight:"700"}],
+      "display-lg-mobile":["36px",{lineHeight:"1.2",fontWeight:"700"}],
+      "label-sm":["12px",{lineHeight:"1",letterSpacing:"0.05em",fontWeight:"500"}],
+      "body-base":["16px",{lineHeight:"1.6",fontWeight:"400"}],
+      "headline-md":["24px",{lineHeight:"1.3",fontWeight:"600"}],
+    }
+  }}
+}
+</script>
 </head>
-<body>
+<body class="font-body-base text-on-surface overflow-hidden">
 
-  <nav class="topbar">
-    <a href="/" class="brand">
-      <div class="brand-logo">
-        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-      </div>
-      <div class="brand-name">SECURE <span>Visitor Management</span></div>
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-low border-r border-outline-variant/10 flex flex-col py-lg px-md z-50">
+  <div class="mb-xl px-sm">
+    <h1 class="font-display-lg text-headline-md font-black tracking-tighter text-primary">SENTINEL VMS</h1>
+    <p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant opacity-60 mt-xs">Secure Terminal 01</p>
+  </div>
+  <nav class="flex-1 space-y-xs overflow-y-auto">
+    <a href="/dashboard.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
+      <span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+      <span class="font-body-base">Dashboard</span>
     </a>
-
-    <div class="nav-links">
-      <a href="/" class="nav-link active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        Check-In
-      </a>
-      <a href="/schedule.html" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Schedule
-      </a>
-      <a href="/dashboard.html" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-        Dashboard
-      </a>
-      <a href="/analytics.html" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Analytics
-      </a>
-    </div>
-
-    <div class="nav-right">
-      <span class="nav-badge">System Online</span>
-      <a href="/login.html" class="icon-btn" title="Admin Login">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-      </a>
-    </div>
+    <a href="/" class="flex items-center gap-md py-sm px-md rounded-lg text-primary font-bold border-l-4 border-secondary bg-surface-container-high">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">fingerprint</span>
+      <span class="font-body-base">Visitor Check-In</span>
+    </a>
+    <a href="/schedule.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
+      <span class="material-symbols-outlined group-hover:text-primary transition-colors">calendar_add_on</span>
+      <span class="font-body-base">Schedule Visit</span>
+    </a>
+    <a href="/dashboard.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
+      <span class="material-symbols-outlined group-hover:text-primary transition-colors">assignment</span>
+      <span class="font-body-base">Log History</span>
+    </a>
+    <a href="/login.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
+      <span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+      <span class="font-body-base">System Settings</span>
+    </a>
   </nav>
-
-  <div class="page-wrap">
-    <div class="page-header">
-      <h1 class="page-title">Visitor Check-In</h1>
-      <p class="page-subtitle">Register walk-in visitors — biometric capture &amp; instant notifications</p>
+  <div class="pt-lg border-t border-outline-variant/10">
+    <button class="w-full py-md px-md mb-lg bg-error-container text-on-error-container font-label-sm uppercase tracking-widest rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-sm">
+      <span class="material-symbols-outlined text-[18px]">security</span>
+      Emergency Lockdown
+    </button>
+    <div class="space-y-xs">
+      <a href="#" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">
+        <span class="material-symbols-outlined">help</span>
+        <span class="font-label-sm">Help</span>
+      </a>
+      <a href="/login.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">
+        <span class="material-symbols-outlined">logout</span>
+        <span class="font-label-sm">Logout</span>
+      </a>
     </div>
+  </div>
+</aside>
 
-    <div class="checkin-grid">
-      <!-- Left: Camera -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            Biometric Capture
-          </span>
+<!-- Main -->
+<main class="ml-[280px] min-h-screen bg-surface flex flex-col overflow-hidden">
+  <!-- Top Bar -->
+  <header class="h-xl flex justify-between items-center px-margin-desktop bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 sticky top-0 z-40 flex-shrink-0">
+    <div class="flex gap-lg items-center">
+      <span class="font-headline-md text-headline-md font-black text-primary">SENTINEL</span>
+      <nav class="hidden lg:flex gap-md">
+        <a href="/analytics.html" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all">Analytics</a>
+        <a href="/dashboard.html" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all">Alerts</a>
+        <a href="/dashboard.html" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all">Directories</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-md">
+      <div class="relative flex items-center bg-surface-container px-md py-xs rounded-full border border-outline-variant/20">
+        <span class="material-symbols-outlined text-on-surface-variant mr-xs text-[18px]">search</span>
+        <input class="bg-transparent border-none outline-none text-on-surface text-label-sm w-40 focus:ring-0 focus:w-52 transition-all" placeholder="Search Global Access..." type="text"/>
+      </div>
+      <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-variant">notifications</button>
+      <a href="/login.html" class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-variant">admin_panel_settings</a>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="flex-1 overflow-y-auto p-margin-desktop">
+    <div class="max-w-[1440px] w-full mx-auto">
+      <!-- Page header -->
+      <div class="flex items-start justify-between mb-lg">
+        <div>
+          <h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary tracking-tighter">Visitor Check-In</h2>
+          <p class="text-on-surface-variant opacity-70 mt-xs">Log new entry permit and verify identification credentials.</p>
         </div>
-
-        <div class="cam-wrap" id="cam-wrap">
-          <div class="cam-offline-state" id="cam-offline">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-            <p>Camera not started</p>
-            <small>Click below to enable camera access</small>
-          </div>
-          <video id="video" autoplay playsinline muted></video>
-          <img id="snapshot" class="cam-snapshot" alt="Captured photo">
-          <canvas id="canvas"></canvas>
-          <div class="cam-overlay">
-            <div class="cam-corner top-left"></div>
-            <div class="cam-corner top-right"></div>
-            <div class="cam-corner bot-left"></div>
-            <div class="cam-corner bot-right"></div>
-          </div>
-          <div class="cam-status" id="cam-status"></div>
-        </div>
-
-        <div class="cam-actions">
-          <button class="btn btn-outline btn-full" id="cam-btn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            Start Camera
-          </button>
-          <button class="btn btn-ghost" id="retake-btn" type="button" style="display:none; flex-shrink:0;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
-          </button>
+        <div class="flex items-center gap-xs bg-secondary/10 text-secondary px-md py-xs rounded-full font-label-sm">
+          <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+          Terminal Active
         </div>
       </div>
 
-      <!-- Right: Form -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Visitor Details
-          </span>
-        </div>
+      <!-- Repeat visitor banner -->
+      <div id="repeat-banner" style="display:none;" class="flex items-center gap-md mb-lg p-md rounded-lg bg-tertiary-fixed-dim/10 border border-tertiary-fixed-dim/25 text-tertiary-fixed-dim font-label-sm">
+        <span class="material-symbols-outlined text-[18px]">warning</span>
+        <span id="repeat-text">Repeat visitor detected</span>
+      </div>
 
-        <div class="repeat-banner" id="repeat-banner">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span id="repeat-text">Repeat visitor detected</span>
-        </div>
-
-        <form id="visitor-form">
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Full Name *</label>
-              <input type="text" id="full_name" class="form-control" placeholder="John Smith" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Contact Number *</label>
-              <input type="tel" id="contact_number" class="form-control" placeholder="+91 98765 43210" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Department *</label>
-              <select id="department_visiting" class="form-control" required>
-                <option value="">Select department</option>
-                <option value="HR">Human Resources</option>
-                <option value="IT">IT &amp; Operations</option>
-                <option value="Finance">Finance</option>
-                <option value="Engineering">Engineering &amp; Dev</option>
-                <option value="Security">Security</option>
-                <option value="Management">Management</option>
-                <option value="Sales">Sales</option>
-                <option value="Legal">Legal</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Host Name *</label>
-              <input type="text" id="person_to_visit" class="form-control" placeholder="Dr. Sarah Chen" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Purpose of Visit</label>
-              <select id="purpose_of_visit" class="form-control">
-                <option value="Meeting">Meeting</option>
-                <option value="Interview">Interview</option>
-                <option value="Delivery">Delivery</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="Inspection">Inspection</option>
-                <option value="Training">Training</option>
-                <option value="General">General</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Visitor Type</label>
-              <select id="visitor_type" class="form-control">
-                <option value="Guest">Guest</option>
-                <option value="Client">Client</option>
-                <option value="Vendor">Vendor</option>
-                <option value="Contractor">Contractor</option>
-                <option value="Interviewee">Interviewee</option>
-                <option value="Government">Government</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Visitor Email</label>
-              <input type="email" id="email" class="form-control" placeholder="visitor@email.com">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Expected Duration</label>
-              <select id="expected_duration" class="form-control">
-                <option value="30 Minutes">30 Minutes</option>
-                <option value="1 Hour" selected>1 Hour</option>
-                <option value="2 Hours">2 Hours</option>
-                <option value="Half Day">Half Day</option>
-                <option value="Full Day">Full Day</option>
-              </select>
-            </div>
-            <div class="form-group span-2">
-              <label class="form-label">Host Contact (optional — for direct notifications)</label>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <input type="email" id="host_email" class="form-control" placeholder="host@company.com">
-                <input type="tel" id="host_phone" class="form-control" placeholder="Host phone">
+      <div class="grid grid-cols-12 gap-gutter">
+        <!-- Left: Biometric capture -->
+        <div class="col-span-12 lg:col-span-4 space-y-gutter">
+          <section class="glass-panel p-md rounded-xl">
+            <h3 class="font-headline-md text-headline-md text-primary-container mb-md flex items-center gap-xs">
+              <span class="material-symbols-outlined">face</span>
+              Biometric Verification
+            </h3>
+            <div class="aspect-square relative rounded-lg overflow-hidden bg-surface-container-highest border border-outline-variant/20 mb-md" id="cam-wrap">
+              <!-- Camera offline state -->
+              <div id="cam-offline" class="absolute inset-0 flex flex-col items-center justify-center text-on-surface-variant opacity-40">
+                <span class="material-symbols-outlined text-[48px] mb-sm">videocam_off</span>
+                <p class="font-label-sm uppercase tracking-widest">Camera Offline</p>
+                <p class="text-[10px] mt-xs">Enable camera access below</p>
+              </div>
+              <video id="video" class="w-full h-full object-cover" autoplay playsinline muted style="display:none;"></video>
+              <img id="snapshot" class="w-full h-full object-cover" alt="Captured" style="display:none;">
+              <canvas id="canvas" style="display:none;"></canvas>
+              <!-- Scan overlay -->
+              <div class="absolute inset-0 pointer-events-none" id="scan-overlay" style="display:none;">
+                <div class="biometric-scan-line"></div>
+                <div class="absolute inset-x-8 inset-y-8 border border-secondary/30 rounded-xl">
+                  <div class="w-5 h-5 border-t-2 border-l-2 border-secondary absolute top-0 left-0"></div>
+                  <div class="w-5 h-5 border-t-2 border-r-2 border-secondary absolute top-0 right-0"></div>
+                  <div class="w-5 h-5 border-b-2 border-l-2 border-secondary absolute bottom-0 left-0"></div>
+                  <div class="w-5 h-5 border-b-2 border-r-2 border-secondary absolute bottom-0 right-0"></div>
+                </div>
+                <div id="cam-status" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-surface/80 px-md py-xs rounded text-secondary font-label-sm backdrop-blur-md text-[10px]"></div>
               </div>
             </div>
-          </div>
+            <div class="grid grid-cols-2 gap-xs">
+              <button id="cam-btn" type="button" class="flex items-center justify-center gap-xs py-sm border border-outline-variant/30 rounded text-on-surface-variant hover:text-primary hover:border-primary transition-all font-label-sm">
+                <span class="material-symbols-outlined text-[16px]">photo_camera</span>
+                Start Camera
+              </button>
+              <button id="retake-btn" type="button" style="display:none;" class="flex items-center justify-center gap-xs py-sm border border-outline-variant/30 rounded text-on-surface-variant hover:text-primary hover:border-primary transition-all font-label-sm">
+                <span class="material-symbols-outlined text-[16px]">refresh</span>
+                Retake
+              </button>
+            </div>
+          </section>
 
-          <div class="nda-row" style="margin-top:14px;" onclick="document.getElementById('nda_signed').click()">
-            <input type="checkbox" id="nda_signed">
-            <div class="nda-text">
-              <strong>Terms &amp; NDA Acknowledgment</strong><br>
-              I agree to facility rules, confidentiality requirements, and consent to photo capture for security purposes.
+          <!-- System status -->
+          <section class="glass-panel p-md rounded-xl">
+            <div class="flex items-center justify-between mb-sm">
+              <h4 class="font-label-sm uppercase tracking-widest text-on-surface-variant">System Status</h4>
+              <span class="text-secondary font-code-snippet text-[11px]">v2.4.9-SECURE</span>
+            </div>
+            <div class="space-y-sm">
+              <div class="h-1 bg-outline-variant/20 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-primary-container to-secondary w-[85%]"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-on-surface-variant opacity-60 font-code-snippet">
+                <span>Encrypted Pipeline</span>
+                <span>85% Signal</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right: Form + activity -->
+        <div class="col-span-12 lg:col-span-8 space-y-gutter">
+          <form id="visitor-form" class="glass-panel p-lg rounded-xl">
+            <!-- Visitor info -->
+            <div class="mb-lg">
+              <div class="flex items-center gap-xs mb-md border-b border-outline-variant/10 pb-xs">
+                <span class="material-symbols-outlined text-primary-container">person</span>
+                <h3 class="font-headline-md text-headline-md text-primary">Visitor Information</h3>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-lg gap-y-md">
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Full Name *</label>
+                  <input id="full_name" type="text" required class="input-underline" placeholder="Johnathan Doe"/>
+                </div>
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Contact Number *</label>
+                  <input id="contact_number" type="tel" required class="input-underline" placeholder="+1 (555) 000-0000"/>
+                </div>
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Visitor Type</label>
+                  <select id="visitor_type" class="input-underline cursor-pointer appearance-none">
+                    <option value="Guest">General Visitor</option>
+                    <option value="Client">Client Partner</option>
+                    <option value="Vendor">Vendor / Supplier</option>
+                    <option value="Contractor">Contractor</option>
+                    <option value="Interviewee">Interviewee</option>
+                    <option value="Government">Government Official</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Estimated Duration</label>
+                  <select id="expected_duration" class="input-underline cursor-pointer appearance-none">
+                    <option value="30 Minutes">30 Minutes</option>
+                    <option value="1 Hour" selected>1–2 Hours</option>
+                    <option value="2 Hours">2–4 Hours</option>
+                    <option value="Half Day">Half Day</option>
+                    <option value="Full Day">Full Day Pass</option>
+                  </select>
+                </div>
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Purpose of Visit</label>
+                  <select id="purpose_of_visit" class="input-underline cursor-pointer appearance-none">
+                    <option value="Meeting">Meeting</option>
+                    <option value="Interview">Interview</option>
+                    <option value="Delivery">Delivery</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Inspection">Inspection / Audit</option>
+                    <option value="Training">Training</option>
+                    <option value="General">General</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Visitor Email</label>
+                  <input id="email" type="email" class="input-underline" placeholder="visitor@company.com"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Host assignment -->
+            <div class="mb-lg p-md rounded-lg bg-primary-container/5 border border-primary-container/10">
+              <div class="flex items-center gap-xs mb-md">
+                <span class="material-symbols-outlined text-secondary">domain_verification</span>
+                <h3 class="font-headline-md text-headline-md text-primary">Host Assignment</h3>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-lg gap-y-md">
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Department *</label>
+                  <select id="department_visiting" required class="input-underline cursor-pointer appearance-none">
+                    <option value="">Select department</option>
+                    <option value="HR">Human Resources</option>
+                    <option value="IT">IT &amp; Operations</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Engineering">Engineering &amp; Dev</option>
+                    <option value="Security">Cybersecurity Operations</option>
+                    <option value="Management">Executive Management</option>
+                    <option value="Sales">Sales &amp; BD</option>
+                    <option value="Legal">Legal &amp; Compliance</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Host Name *</label>
+                  <div class="relative">
+                    <input id="person_to_visit" type="text" required class="input-underline pr-6" placeholder="Search employee..."/>
+                    <span class="material-symbols-outlined absolute right-0 top-2 text-[16px] text-on-surface-variant opacity-50">search</span>
+                  </div>
+                </div>
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Host Email</label>
+                  <input id="host_email" type="email" class="input-underline" placeholder="host@company.com"/>
+                </div>
+                <div class="space-y-xs">
+                  <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Host Phone</label>
+                  <input id="host_phone" type="tel" class="input-underline" placeholder="+1 (555) 000-0000"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- NDA + actions -->
+            <div class="space-y-md">
+              <label class="flex items-start gap-md cursor-pointer group">
+                <div class="relative mt-1 flex-shrink-0">
+                  <input id="nda_signed" type="checkbox" class="peer sr-only"/>
+                  <div class="w-5 h-5 border-2 border-outline-variant rounded flex items-center justify-center peer-checked:bg-secondary peer-checked:border-secondary transition-all">
+                    <span class="material-symbols-outlined text-[14px] text-on-secondary hidden peer-checked:block" style="font-variation-settings:'FILL' 1;">check</span>
+                  </div>
+                </div>
+                <span class="text-on-surface-variant text-sm leading-relaxed group-hover:text-on-surface transition-colors">
+                  I acknowledge the <span class="text-primary-container underline underline-offset-4 cursor-pointer">Visitor NDA</span> and safety protocols. I certify that the information provided is accurate for security logging purposes.
+                </span>
+              </label>
+              <div class="flex flex-col md:flex-row gap-md items-center justify-end pt-md border-t border-outline-variant/10">
+                <button type="button" onclick="document.getElementById('visitor-form').reset()" class="w-full md:w-auto px-xl py-md text-on-surface-variant font-bold uppercase tracking-widest text-[11px] hover:text-error transition-all">
+                  Cancel Check-In
+                </button>
+                <button id="submit-btn" type="submit" class="w-full md:w-auto px-xl py-md bg-primary-container text-on-primary-container font-bold uppercase tracking-widest text-[11px] rounded glow-primary hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-sm">
+                  <span class="material-symbols-outlined text-[16px]">verified_user</span>
+                  <span id="submit-text">Authorize Entry</span>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Recent activity -->
+          <div class="glass-panel rounded-xl overflow-hidden">
+            <div class="bg-surface-container-high px-md py-xs border-b border-outline-variant/10 flex items-center justify-between">
+              <span class="font-code-snippet text-[10px] text-on-surface-variant uppercase tracking-widest">Recent Check-In Activity</span>
+              <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+            </div>
+            <div id="recent-activity-list" class="divide-y divide-outline-variant/5">
+              <div class="p-md text-on-surface-variant text-[11px] font-code-snippet uppercase tracking-widest opacity-50">No recent activity</div>
             </div>
           </div>
-
-          <button type="submit" class="btn btn-primary btn-full btn-lg" id="submit-btn" style="margin-top:18px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span id="submit-text">Authorize Entry</span>
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   </div>
+</main>
 
-  <!-- Success Overlay -->
-  <div id="pass-overlay">
-    <div class="pass-modal">
-      <div class="pass-check">✓</div>
-      <h2 class="pass-title">Entry Authorized</h2>
-      <p class="pass-sub">Visitor registered &amp; host notified</p>
-      <div class="pass-badge" id="pass-badge">VIS-2024-0001</div>
-      <div class="pass-repeat-note" id="pass-repeat"></div>
-      <img id="pass-qr" class="pass-qr" alt="Visitor QR Code">
-      <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:18px;" id="pass-name"></p>
-      <div class="pass-actions">
-        <button class="btn btn-outline" onclick="window.print()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Print Pass
-        </button>
-        <button class="btn btn-primary" id="close-pass-btn">
-          New Check-In
-        </button>
-      </div>
+<!-- Success overlay -->
+<div id="pass-overlay" style="display:none;" class="fixed inset-0 bg-black/70 backdrop-blur-xl z-[400] flex items-center justify-center p-md">
+  <div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg max-w-sm w-full text-center" style="animation: modal-in .4s cubic-bezier(.34,1.56,.64,1);">
+    <div class="w-16 h-16 rounded-full bg-secondary/10 border-2 border-secondary/40 flex items-center justify-center mx-auto mb-md">
+      <span class="material-symbols-outlined text-secondary text-[32px]" style="font-variation-settings:'FILL' 1;">verified</span>
+    </div>
+    <h3 class="font-display-lg text-display-lg-mobile text-primary mb-xs">Entry Authorized</h3>
+    <p class="text-on-surface-variant text-sm mb-md">Visitor registered &amp; host notified</p>
+    <div class="font-code-snippet text-primary-container text-lg tracking-widest bg-primary-container/5 border border-primary-container/15 rounded px-md py-sm mb-xs" id="pass-badge">VIS-2024-0001</div>
+    <p class="text-[11px] text-on-surface-variant font-code-snippet mb-md" id="pass-name"></p>
+    <div id="pass-repeat" style="display:none;" class="text-tertiary-fixed-dim text-[11px] font-code-snippet mb-md bg-tertiary-fixed-dim/10 border border-tertiary-fixed-dim/20 rounded px-sm py-xs"></div>
+    <img id="pass-qr" style="display:none;" class="w-32 h-32 mx-auto mb-md border-2 border-outline-variant rounded-lg bg-white p-1" alt="QR Code">
+    <div class="flex gap-sm justify-center">
+      <button onclick="window.print()" class="flex items-center gap-xs px-md py-sm border border-outline-variant/30 rounded text-on-surface-variant hover:text-primary hover:border-primary transition-all font-label-sm">
+        <span class="material-symbols-outlined text-[16px]">print</span> Print Pass
+      </button>
+      <button id="close-pass-btn" class="flex items-center gap-xs px-md py-sm bg-primary-container text-on-primary-container rounded font-label-sm hover:brightness-110 transition-all">
+        <span class="material-symbols-outlined text-[16px]">add</span> New Check-In
+      </button>
     </div>
   </div>
+</div>
 
-  <div class="toast-container" id="toasts"></div>
+<!-- Global grid bg -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.025] z-[-1]" style="background-image:radial-gradient(#ffffff 1px,transparent 0);background-size:40px 40px;"></div>
 
-  <script src="js/index.js"></script>
+<div class="toast-container" id="toasts"></div>
+<script src="js/index.js"></script>
+<script>
+// Load recent activity (public — no auth needed)
+fetch('/api/analytics/recent-activity?limit=5')
+  .then(r => r.ok ? r.json() : [])
+  .then(activities => {
+    const el = document.getElementById('recent-activity-list');
+    if (!activities.length) return;
+    el.innerHTML = activities.map(a => `
+      <div class="flex items-center justify-between p-sm hover:bg-white/[0.03] transition-colors">
+        <div class="flex items-center gap-md">
+          <div class="w-7 h-7 rounded-full bg-secondary-container/20 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-secondary text-[14px]">person</span>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-on-surface">${a.visitor}</p>
+            <p class="text-[10px] text-on-surface-variant font-code-snippet">${a.detail || ''}</p>
+          </div>
+        </div>
+        <span class="text-[10px] font-code-snippet ${a.type === 'checkin' ? 'text-secondary' : 'text-on-surface-variant opacity-60'}">${a.type === 'checkin' ? 'CHECKED_IN' : 'EXITED'} ${new Date(a.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+      </div>
+    `).join('');
+  }).catch(() => {});
+</script>
 </body>
 </html>

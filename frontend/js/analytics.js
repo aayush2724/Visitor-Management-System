@@ -21,18 +21,22 @@ function toast(msg, type = 'success') {
 }
 
 // ─── Chart defaults ───
-Chart.defaults.color = '#64748b';
-Chart.defaults.borderColor = '#1e293b';
-Chart.defaults.font.family = 'Inter, sans-serif';
-Chart.defaults.font.size   = 12;
+Chart.defaults.color = '#b9cacb';
+Chart.defaults.borderColor = '#3b494b';
+Chart.defaults.font.family = 'Geist, Inter, sans-serif';
+Chart.defaults.font.size   = 11;
 
+// SENTINEL color palette
 const COLORS = {
-  accent:  '#6366f1', green: '#10b981', amber: '#f59e0b',
-  red: '#ef4444', blue: '#3b82f6', purple: '#a78bfa',
-  cyan: '#06b6d4', rose: '#f43f5e',
+  cyan:    '#00dbe9', green:  '#4edea3', teal:   '#00f0ff',
+  violet:  '#c0c1ff', amber:  '#ffd07a', rose:   '#ffb4ab',
+  blue:    '#7df4ff', slate:  '#849495',
 };
 const PALETTE = Object.values(COLORS);
-const ALPHA   = (hex, a) => hex + Math.round(a*255).toString(16).padStart(2,'0');
+const ALPHA   = (hex, a) => {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+};
 
 let trendsChart = null;
 let deptChart   = null;
@@ -78,30 +82,30 @@ async function loadTrends() {
           {
             label: 'Walk-ins',
             data: walkins,
-            backgroundColor: ALPHA(COLORS.accent, 0.7),
-            borderColor: COLORS.accent,
+            backgroundColor: ALPHA(COLORS.cyan, 0.6),
+            borderColor: COLORS.cyan,
             borderWidth: 1,
-            borderRadius: 4,
+            borderRadius: 3,
           },
           {
             label: 'Scheduled',
             data: scheduled,
-            backgroundColor: ALPHA(COLORS.purple, 0.6),
-            borderColor: COLORS.purple,
+            backgroundColor: ALPHA(COLORS.green, 0.5),
+            borderColor: COLORS.green,
             borderWidth: 1,
-            borderRadius: 4,
+            borderRadius: 3,
           },
         ],
       },
       options: {
         responsive: true,
         plugins: {
-          legend: { labels: { color: '#94a3b8', padding: 16, usePointStyle: true } },
-          tooltip: { mode: 'index', intersect: false },
+          legend: { labels: { color: '#b9cacb', padding: 16, usePointStyle: true, font:{size:10} } },
+          tooltip: { mode: 'index', intersect: false, backgroundColor:'#192122', borderColor:'#3b494b', borderWidth:1 },
         },
         scales: {
-          x: { stacked: false, grid: { color: '#1e293b' }, ticks: { maxRotation: 45, color: '#64748b', font: {size:10} } },
-          y: { beginAtZero: true, grid: { color: '#1e293b' }, ticks: { color: '#64748b', stepSize: 1 } },
+          x: { stacked: false, grid: { color: 'rgba(59,73,75,.3)' }, ticks: { maxRotation: 45, color: '#849495', font:{size:9} } },
+          y: { beginAtZero: true, grid: { color: 'rgba(59,73,75,.3)' }, ticks: { color: '#849495', stepSize: 1, font:{size:9} } },
         },
       },
     });
@@ -129,7 +133,8 @@ async function loadDeptCharts() {
         responsive: true,
         cutout: '65%',
         plugins: {
-          legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 12, usePointStyle: true, font:{size:11} } },
+          legend: { position: 'bottom', labels: { color: '#b9cacb', padding: 10, usePointStyle: true, font:{size:10} } },
+          tooltip: { backgroundColor:'#192122', borderColor:'#3b494b', borderWidth:1 },
         },
       },
     });
@@ -143,19 +148,19 @@ async function loadDeptCharts() {
         datasets: [{
           label: 'Visitors',
           data: counts,
-          backgroundColor: colors.map(c => ALPHA(c,0.75)),
+          backgroundColor: colors.map(c => ALPHA(c, 0.7)),
           borderColor: colors,
           borderWidth: 1,
-          borderRadius: 4,
+          borderRadius: 3,
         }],
       },
       options: {
         indexAxis: 'y',
         responsive: true,
-        plugins: { legend: { display: false } },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor:'#192122', borderColor:'#3b494b', borderWidth:1 } },
         scales: {
-          x: { beginAtZero: true, grid: { color: '#1e293b' }, ticks: { color: '#64748b', stepSize: 1 } },
-          y: { grid: { display: false }, ticks: { color: '#94a3b8', font:{size:11} } },
+          x: { beginAtZero: true, grid: { color: 'rgba(59,73,75,.3)' }, ticks: { color: '#849495', stepSize: 1, font:{size:9} } },
+          y: { grid: { display: false }, ticks: { color: '#b9cacb', font:{size:10} } },
         },
       },
     });
@@ -181,7 +186,10 @@ async function loadTypeChart() {
       },
       options: {
         responsive: true,
-        plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 10, usePointStyle: true, font:{size:10} } } },
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#b9cacb', padding: 8, usePointStyle: true, font:{size:9} } },
+          tooltip: { backgroundColor:'#192122', borderColor:'#3b494b', borderWidth:1 },
+        },
       },
     });
   } catch(e) {}
@@ -194,7 +202,7 @@ async function loadPurposeChart() {
     const data = await r.json();
     const labels = data.map(d => d.purpose);
     const counts = data.map(d => d.count);
-    const colors = [COLORS.green, COLORS.accent, COLORS.amber, COLORS.blue, COLORS.purple, COLORS.cyan, COLORS.rose, COLORS.red];
+    const colors = [COLORS.green, COLORS.cyan, COLORS.amber, COLORS.blue, COLORS.violet, COLORS.teal, COLORS.rose, COLORS.slate];
 
     destroyChart(purposeChart);
     const ctx = document.getElementById('purpose-chart').getContext('2d');
@@ -202,11 +210,14 @@ async function loadPurposeChart() {
       type: 'pie',
       data: {
         labels,
-        datasets: [{ data: counts, backgroundColor: colors.map(c=>ALPHA(c,0.8)), borderColor: colors, borderWidth: 2 }],
+        datasets: [{ data: counts, backgroundColor: colors.map(c=>ALPHA(c,0.75)), borderColor: colors, borderWidth: 1 }],
       },
       options: {
         responsive: true,
-        plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 10, usePointStyle: true, font:{size:10} } } },
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#b9cacb', padding: 8, usePointStyle: true, font:{size:9} } },
+          tooltip: { backgroundColor:'#192122', borderColor:'#3b494b', borderWidth:1 },
+        },
       },
     });
   } catch(e) {}
@@ -232,8 +243,8 @@ async function loadHoursHeatmap() {
       const cell = document.createElement('div');
       cell.className = 'hour-cell';
       const alpha = Math.max(0.05, intensity);
-      cell.style.background = `rgba(99,102,241,${alpha})`;
-      cell.innerHTML = `<div class="tooltip">${timeLabels[i]}: ${d.count} visits</div>`;
+      cell.style.background = `rgba(0,219,233,${alpha})`;
+      cell.innerHTML = `<div class="hc-tip">${timeLabels[i]}: ${d.count} visits</div>`;
       grid.appendChild(cell);
     });
 

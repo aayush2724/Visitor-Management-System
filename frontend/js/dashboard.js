@@ -161,7 +161,7 @@ function loadVisitors() {
     })
     .catch(err => {
       document.getElementById('visitor-tbody').innerHTML =
-        `<tr><td colspan="8" class="empty-state"><p>Error: ${err.message}</p></td></tr>`;
+        `<tr><td colspan="8" class="empty-state-s">Error loading data</td></tr>`;
     });
 }
 
@@ -172,18 +172,22 @@ function loadActivity() {
     .then(activities => {
       const feed = document.getElementById('activity-feed');
       if (!activities.length) {
-        feed.innerHTML = `<p style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:24px 0;">No recent activity</p>`;
+        feed.innerHTML = `<div class="p-md text-on-surface-variant text-[11px] font-code-snippet uppercase tracking-widest opacity-50">No recent activity</div>`;
         return;
       }
-      const dotMap = { checkin:'dot-checkin', checkout:'dot-checkout', exit:'dot-exit', approved:'dot-approved' };
+      const dotColors = { checkin:'bg-secondary', checkout:'bg-primary-container', exit:'bg-outline', approved:'bg-secondary' };
       feed.innerHTML = activities.slice(0, 12).map(a => `
-        <div class="activity-item">
-          <div class="activity-dot ${dotMap[a.type] || 'dot-checkin'}"></div>
-          <div class="activity-text">
-            <div class="activity-name">${a.visitor}</div>
-            <div class="activity-detail">${a.detail} · ${a.dept || ''}</div>
+        <div class="flex items-center justify-between p-sm hover:bg-white/[0.02] transition-colors">
+          <div class="flex items-center gap-md">
+            <div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center flex-shrink-0 border border-outline-variant/20">
+              <span class="material-symbols-outlined text-[13px] ${a.type === 'checkin' ? 'text-secondary' : 'text-on-surface-variant'}">${a.type === 'checkin' ? 'login' : 'logout'}</span>
+            </div>
+            <div>
+              <div class="text-sm font-medium text-on-surface">${a.visitor}</div>
+              <div class="text-[10px] text-on-surface-variant font-code-snippet">${a.detail}${a.dept ? ' · ' + a.dept : ''}</div>
+            </div>
           </div>
-          <div class="activity-time">${formatTime(a.time)}</div>
+          <div class="text-[10px] font-code-snippet ${a.type === 'checkin' ? 'text-secondary' : 'text-on-surface-variant opacity-60'} flex-shrink-0">${formatTime(a.time)}</div>
         </div>
       `).join('');
     }).catch(() => {});
@@ -215,10 +219,7 @@ function renderTable() {
     : allVisitors;
 
   if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <p>No visitors found</p>
-    </td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="empty-state-s">No visitors found</td></tr>`;
     return;
   }
 
@@ -226,83 +227,80 @@ function renderTable() {
     const id = v.id || v._id;
     const isChecked = selectedIds.has(id);
 
-    // Status badge
+    // Status badge — uses sentinel.css classes
     let badge;
-    if (v.is_flagged)              badge = `<span class="badge badge-flagged">🚩 Flagged</span>`;
-    else if (v.scheduled)         badge = `<span class="badge badge-scheduled">Scheduled</span>`;
-    else if (v.security_confirmed) badge = `<span class="badge badge-released">Completed</span>`;
-    else if (v.out_time)          badge = `<span class="badge badge-pending">Pending Exit</span>`;
-    else                          badge = `<span class="badge badge-active">On-Site</span>`;
+    if (v.is_flagged)               badge = `<span class="s-badge badge-flagged">Flagged</span>`;
+    else if (v.scheduled)          badge = `<span class="s-badge badge-scheduled">Scheduled</span>`;
+    else if (v.security_confirmed) badge = `<span class="s-badge badge-released">Completed</span>`;
+    else if (v.out_time)           badge = `<span class="s-badge badge-pending">Pending Exit</span>`;
+    else                           badge = `<span class="s-badge badge-active">On-Site</span>`;
 
     // Repeat label
-    const repeatFlag = v.is_repeat ? `<span class="repeat-flag">↩ ${v.visit_count}x visitor</span>` : '';
+    const repeatFlag = v.is_repeat ? `<div class="repeat-flag">↩ ${v.visit_count}x visitor</div>` : '';
 
     // Avatar
     const initials = (v.full_name || 'VV').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     const avatar = v.photo_path
-      ? `<img src="${v.photo_path}" class="avatar" alt="photo">`
-      : `<div class="avatar-initials">${initials}</div>`;
+      ? `<img src="${v.photo_path}" class="v-avatar" alt="photo">`
+      : `<div class="v-avatar-initials">${initials}</div>`;
 
     // Times
     const inT  = v.in_time  ? new Date(v.in_time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})  : '—';
     const outT = v.out_time ? new Date(v.out_time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '—';
     const dateStr = v.in_time ? new Date(v.in_time).toLocaleDateString([], {month:'short',day:'numeric'}) : '';
 
-    // Actions
+    // Actions — Tailwind micro-buttons
+    const btnBase = 'inline-flex items-center gap-[3px] px-[8px] py-[3px] rounded text-[10px] font-code-snippet uppercase tracking-widest transition-all border cursor-pointer';
     let acts = '';
     if (v.scheduled && !v.out_time)
-      acts += `<button class="btn btn-success btn-sm" onclick="allowEntry('${id}')">Allow In</button>`;
+      acts += `<button class="${btnBase} border-secondary/30 bg-secondary/10 text-secondary hover:bg-secondary/20" onclick="allowEntry('${id}')">Allow In</button>`;
     else if (!v.out_time && v.approved)
-      acts += `<button class="btn btn-outline btn-sm" onclick="releaseVisitor('${id}')">Release</button>`;
+      acts += `<button class="${btnBase} border-primary-container/30 bg-primary-container/10 text-primary-container hover:bg-primary-container/20" onclick="releaseVisitor('${id}')">Release</button>`;
     else if (!v.out_time)
-      acts += `<button class="btn btn-outline btn-sm" onclick="checkoutVisitor('${id}')">Check Out</button>`;
+      acts += `<button class="${btnBase} border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary-container/40" onclick="checkoutVisitor('${id}')">Check Out</button>`;
     else if (!v.security_confirmed)
-      acts += `<button class="btn btn-outline btn-sm" style="color:var(--amber);border-color:rgba(245,158,11,0.4);" onclick="securityCheckout('${id}')">Confirm Exit</button>`;
+      acts += `<button class="${btnBase} border-tertiary-fixed-dim/30 text-tertiary-fixed-dim hover:bg-tertiary-fixed-dim/10" onclick="securityCheckout('${id}')">Confirm Exit</button>`;
 
     if (v.is_flagged)
-      acts += `<button class="btn btn-ghost btn-sm btn-icon-sm" onclick="unflagVisitor('${id}')" title="Remove flag">🏳</button>`;
+      acts += `<button class="${btnBase} border-outline-variant/20 text-on-surface-variant hover:text-secondary" onclick="unflagVisitor('${id}')" title="Remove flag"><span class="material-symbols-outlined text-[11px]">flag_circle</span></button>`;
     else
-      acts += `<button class="btn btn-ghost btn-sm btn-icon-sm" onclick="openFlagModal('${id}')" title="Flag visitor">🚩</button>`;
+      acts += `<button class="${btnBase} border-outline-variant/20 text-on-surface-variant hover:text-error" onclick="openFlagModal('${id}')" title="Flag visitor"><span class="material-symbols-outlined text-[11px]">flag</span></button>`;
 
-    acts += `<a href="/badge.html?id=${id}" target="_blank" class="btn btn-ghost btn-sm btn-icon-sm" title="View badge">🏷</a>`;
-    acts += `<button class="btn btn-ghost btn-sm btn-icon-sm" style="color:var(--red);" onclick="deleteVisitor('${id}', this)" title="Delete">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-    </button>`;
+    acts += `<a href="/badge.html?id=${id}" target="_blank" class="${btnBase} border-outline-variant/20 text-on-surface-variant hover:text-primary-container" title="View badge"><span class="material-symbols-outlined text-[11px]">badge</span></a>`;
+    acts += `<button class="${btnBase} border-outline-variant/20 text-on-surface-variant hover:text-error hover:border-error/30" onclick="deleteVisitor('${id}', this)" title="Delete"><span class="material-symbols-outlined text-[11px]">delete</span></button>`;
 
     return `<tr>
-      <td><input type="checkbox" class="row-check" data-id="${id}" ${isChecked?'checked':''} onchange="onRowCheck(this)" style="accent-color:var(--accent);cursor:pointer;"></td>
+      <td><input type="checkbox" class="row-check" data-id="${id}" ${isChecked?'checked':''} onchange="onRowCheck(this)" style="accent-color:#4edea3;cursor:pointer;"></td>
       <td>
-        <div class="vis-cell">
+        <div style="display:flex;align-items:center;gap:10px;">
           ${avatar}
-          <div class="vis-info">
-            <div class="name">${v.full_name}${v.is_flagged ? ' 🚩' : ''}</div>
-            <div class="meta">${v.badge_number || ''} ${dateStr ? '· '+dateStr : ''}</div>
+          <div>
+            <div style="font-size:.82rem;font-weight:500;color:#dce4e5;">${v.full_name}${v.is_flagged ? ' <span style="color:#ffb4ab;font-size:.7rem;">●</span>' : ''}</div>
+            <div style="font-size:.68rem;color:#849495;font-family:Geist,monospace;">${v.badge_number || ''} ${dateStr ? '· '+dateStr : ''}</div>
             ${repeatFlag}
           </div>
         </div>
       </td>
       <td>
-        <div style="font-size:0.82rem;font-family:var(--font-mono);">${v.contact_number}</div>
-        ${v.email ? `<div style="font-size:0.72rem;color:var(--text-muted);">${v.email}</div>` : ''}
+        <div style="font-size:.82rem;font-family:Geist,monospace;color:#dce4e5;">${v.contact_number}</div>
+        ${v.email ? `<div style="font-size:.7rem;color:#849495;">${v.email}</div>` : ''}
       </td>
       <td>
-        <div class="dept-cell">
-          ${v.department_visiting}
-          <div class="host">→ ${v.person_to_visit}</div>
-        </div>
+        <div style="font-size:.82rem;color:#dce4e5;">${v.department_visiting}</div>
+        <div style="font-size:.7rem;color:#849495;">→ ${v.person_to_visit}</div>
       </td>
       <td>
-        <span class="chip">${v.purpose_of_visit || 'General'}</span>
-        ${v.visitor_type ? `<div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px;">${v.visitor_type}</div>` : ''}
+        <span class="s-chip">${v.purpose_of_visit || 'General'}</span>
+        ${v.visitor_type ? `<div style="font-size:.68rem;color:#849495;margin-top:3px;">${v.visitor_type}</div>` : ''}
       </td>
       <td>
-        <div class="time-cell">
-          <div class="in-time">▲ ${inT}</div>
-          <div class="out-time">▼ ${outT}</div>
+        <div style="font-family:Geist,monospace;font-size:.72rem;">
+          <div style="color:#4edea3;">▲ ${inT}</div>
+          <div style="color:#849495;">▼ ${outT}</div>
         </div>
       </td>
       <td>${badge}</td>
-      <td><div class="actions-cell">${acts}</div></td>
+      <td><div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${acts}</div></td>
     </tr>`;
   }).join('');
 }

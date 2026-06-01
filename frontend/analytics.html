@@ -1,156 +1,213 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SECURE — Analytics</title>
-  <link rel="stylesheet" href="css/analytics.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SENTINEL VMS — Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Hanken+Grotesk:wght@600;700;800;900&family=Geist:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/sentinel.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  body { background-color: #0d1515; color: #dce4e5; }
+</style>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode:"class",
+  theme:{ extend:{
+    colors:{
+      "background":"#0d1515","surface":"#0d1515","surface-container-lowest":"#080f10",
+      "surface-container-low":"#151d1e","surface-container":"#192122","surface-container-high":"#232b2c",
+      "surface-container-highest":"#2e3637","surface-variant":"#2e3637",
+      "on-surface":"#dce4e5","on-surface-variant":"#b9cacb","outline":"#849495","outline-variant":"#3b494b",
+      "primary":"#dbfcff","primary-fixed":"#7df4ff","primary-fixed-dim":"#00dbe9","primary-container":"#00f0ff",
+      "on-primary":"#00363a","on-primary-container":"#006970",
+      "secondary":"#4edea3","secondary-fixed-dim":"#4edea3","on-secondary":"#003824",
+      "tertiary-fixed-dim":"#c0c1ff","tertiary-container":"#d7d6ff",
+      "error":"#ffb4ab","error-container":"#93000a","on-error-container":"#ffdad6",
+    },
+    borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},
+    spacing:{"xs":"4px","xl":"64px","margin-desktop":"48px","sm":"12px","gutter":"24px","md":"24px","base":"8px","lg":"40px"},
+    fontFamily:{"display-lg":["Hanken Grotesk"],"code-snippet":["Geist"],"label-sm":["Geist"],"body-base":["Inter"],"headline-md":["Hanken Grotesk"]},
+    fontSize:{
+      "display-lg":["48px",{lineHeight:"1.1",letterSpacing:"-0.02em",fontWeight:"700"}],
+      "display-lg-mobile":["36px",{lineHeight:"1.2",fontWeight:"700"}],
+      "label-sm":["12px",{lineHeight:"1",letterSpacing:"0.05em",fontWeight:"500"}],
+      "body-base":["16px",{lineHeight:"1.6",fontWeight:"400"}],
+      "headline-md":["24px",{lineHeight:"1.3",fontWeight:"600"}],
+    }
+  }}
+}
+</script>
 </head>
-<body>
+<body class="font-body-base text-on-surface overflow-hidden">
 
-  <nav class="topbar">
-    <a href="/" class="brand">
-      <div class="brand-logo">
-        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-      </div>
-      <div class="brand-name">SECURE <span>Visitor Management</span></div>
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-low border-r border-outline-variant/10 flex flex-col py-lg px-md z-50">
+  <div class="mb-xl px-sm">
+    <h1 class="font-display-lg text-headline-md font-black tracking-tighter text-primary">SENTINEL VMS</h1>
+    <p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant opacity-60 mt-xs">Secure Terminal 01</p>
+  </div>
+  <nav class="flex-1 space-y-xs overflow-y-auto">
+    <a href="/dashboard.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
+      <span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+      <span class="font-body-base">Dashboard</span>
     </a>
-
-    <div class="nav-links">
-      <a href="/" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        Check-In
+    <a href="/" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
+      <span class="material-symbols-outlined group-hover:text-primary transition-colors">fingerprint</span>
+      <span class="font-body-base">Visitor Check-In</span>
+    </a>
+    <a href="/schedule.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
+      <span class="material-symbols-outlined group-hover:text-primary transition-colors">calendar_add_on</span>
+      <span class="font-body-base">Schedule Visit</span>
+    </a>
+    <a href="/dashboard.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
+      <span class="material-symbols-outlined group-hover:text-primary transition-colors">assignment</span>
+      <span class="font-body-base">Log History</span>
+    </a>
+    <a href="/analytics.html" class="flex items-center gap-md py-sm px-md rounded-lg text-primary font-bold border-l-4 border-secondary bg-surface-container-high">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">bar_chart</span>
+      <span class="font-body-base">Analytics</span>
+    </a>
+  </nav>
+  <div class="pt-lg border-t border-outline-variant/10">
+    <button class="w-full py-md px-md mb-lg bg-error-container text-on-error-container font-label-sm uppercase tracking-widest rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-sm">
+      <span class="material-symbols-outlined text-[18px]">security</span>
+      Emergency Lockdown
+    </button>
+    <div class="space-y-xs">
+      <a href="#" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">
+        <span class="material-symbols-outlined">help</span>
+        <span class="font-label-sm">Help</span>
       </a>
-      <a href="/schedule.html" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Schedule
-      </a>
-      <a href="/dashboard.html" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-        Dashboard
-      </a>
-      <a href="/analytics.html" class="nav-link active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Analytics
-      </a>
-    </div>
-
-    <div class="nav-right">
-      <span class="nav-badge">Live Data</span>
-      <button class="icon-btn" onclick="logout()" title="Sign Out">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <button onclick="logout()" class="w-full flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">
+        <span class="material-symbols-outlined">logout</span>
+        <span class="font-label-sm">Logout</span>
       </button>
     </div>
-  </nav>
+  </div>
+</aside>
 
-  <div class="page-wrap">
-    <div class="page-header" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-      <div>
-        <h1 class="page-title">Analytics &amp; Reports</h1>
-        <p class="page-subtitle">Visitor intelligence, trends &amp; insights</p>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <select id="trend-days" class="form-control" style="width:auto;font-size:0.82rem;padding:7px 12px;">
-          <option value="7">Last 7 days</option>
-          <option value="30" selected>Last 30 days</option>
-          <option value="90">Last 90 days</option>
-        </select>
-        <button class="btn btn-primary btn-sm" onclick="exportReport()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export Excel
-        </button>
-      </div>
+<!-- Main -->
+<main class="ml-[280px] min-h-screen bg-surface flex flex-col overflow-hidden">
+  <!-- Top Bar -->
+  <header class="h-xl flex justify-between items-center px-margin-desktop bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 sticky top-0 z-40 flex-shrink-0">
+    <div class="flex gap-lg items-center">
+      <span class="font-headline-md text-headline-md font-black text-primary">SENTINEL</span>
+      <nav class="hidden lg:flex gap-md">
+        <a href="/analytics.html" class="font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed-dim">Analytics</a>
+        <a href="#" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all">Alerts</a>
+        <a href="#" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all">Directories</a>
+      </nav>
     </div>
-
-    <!-- Summary stats -->
-    <div class="analytics-grid">
-      <div class="stat-card">
-        <div class="stat-label">Today</div>
-        <div class="stat-value" id="s-today">—</div>
-        <div class="stat-sub">visitors checked in</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">This Week</div>
-        <div class="stat-value" id="s-week">—</div>
-        <div class="stat-sub">visitors this week</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">This Month</div>
-        <div class="stat-value" id="s-month">—</div>
-        <div class="stat-sub">visitors this month</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Avg Duration</div>
-        <div class="stat-value" id="s-avg">—</div>
-        <div class="stat-sub">minutes per visit</div>
-      </div>
+    <div class="flex items-center gap-md">
+      <select id="trend-days" class="bg-surface-container border border-outline-variant/20 rounded px-sm py-xs text-on-surface font-code-snippet text-[11px] outline-none focus:border-primary-container transition-all cursor-pointer">
+        <option value="7">Last 7 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+      <button onclick="exportReport()" class="flex items-center gap-xs px-md py-xs bg-primary-container text-on-primary-container rounded font-label-sm uppercase tracking-widest hover:brightness-110 transition-all glow-sm">
+        <span class="material-symbols-outlined text-[15px]">download</span>
+        Export
+      </button>
+      <button onclick="logout()" class="material-symbols-outlined text-on-surface-variant hover:text-error transition-all p-2 rounded-full hover:bg-surface-variant">logout</button>
     </div>
+  </header>
 
-    <!-- Trend chart + dept pie -->
-    <div class="chart-grid">
-      <div class="chart-wrap">
-        <div class="chart-title">
-          Visit Trends
-          <span class="subtitle">Daily walk-ins vs scheduled</span>
-        </div>
-        <div class="chart-canvas-wrap">
-          <canvas id="trends-chart" height="90"></canvas>
-        </div>
+  <!-- Content -->
+  <div class="flex-1 overflow-y-auto p-margin-desktop">
+    <div class="max-w-[1440px] w-full mx-auto">
+      <div class="mb-lg">
+        <h2 class="font-display-lg text-display-lg tracking-tighter text-primary">Analytics &amp; Reports</h2>
+        <p class="text-on-surface-variant opacity-70 mt-xs">Visitor intelligence, behavioral patterns &amp; security insights</p>
       </div>
-      <div class="chart-wrap">
-        <div class="chart-title">By Department</div>
-        <div class="chart-canvas-wrap" style="max-height:220px;display:flex;align-items:center;justify-content:center;">
-          <canvas id="dept-chart"></canvas>
-        </div>
-      </div>
-    </div>
 
-    <!-- Type + Purpose + Peak hours -->
-    <div class="chart-grid-3">
-      <div class="chart-wrap">
-        <div class="chart-title">Visitor Types</div>
-        <div class="chart-canvas-wrap" style="max-height:200px;display:flex;align-items:center;justify-content:center;">
-          <canvas id="type-chart"></canvas>
+      <!-- Summary stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-md mb-lg">
+        <div class="p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60">
+          <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet mb-xs">Today</p>
+          <p class="font-headline-md text-primary text-display-lg-mobile" id="s-today">—</p>
+          <p class="text-[10px] text-on-surface-variant font-code-snippet mt-xs">visitors checked in</p>
+        </div>
+        <div class="p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60">
+          <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet mb-xs">This Week</p>
+          <p class="font-headline-md text-secondary text-display-lg-mobile" id="s-week">—</p>
+          <p class="text-[10px] text-on-surface-variant font-code-snippet mt-xs">this week</p>
+        </div>
+        <div class="p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60">
+          <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet mb-xs">This Month</p>
+          <p class="font-headline-md text-primary-fixed-dim text-display-lg-mobile" id="s-month">—</p>
+          <p class="text-[10px] text-on-surface-variant font-code-snippet mt-xs">this month</p>
+        </div>
+        <div class="p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60">
+          <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet mb-xs">Avg Duration</p>
+          <p class="font-headline-md text-tertiary-fixed-dim text-display-lg-mobile" id="s-avg">—</p>
+          <p class="text-[10px] text-on-surface-variant font-code-snippet mt-xs">minutes per visit</p>
         </div>
       </div>
-      <div class="chart-wrap">
-        <div class="chart-title">Purpose of Visit</div>
-        <div class="chart-canvas-wrap" style="max-height:200px;display:flex;align-items:center;justify-content:center;">
-          <canvas id="purpose-chart"></canvas>
+
+      <!-- Trends + Dept pie -->
+      <div class="grid grid-cols-12 gap-gutter mb-gutter">
+        <div class="col-span-12 lg:col-span-8 glass-panel rounded-xl p-lg">
+          <div class="flex items-center justify-between mb-md">
+            <h3 class="font-headline-md text-headline-md text-primary">Visit Trends</h3>
+            <span class="text-[10px] text-on-surface-variant font-code-snippet uppercase">Daily walk-ins vs scheduled</span>
+          </div>
+          <canvas id="trends-chart" height="100"></canvas>
+        </div>
+        <div class="col-span-12 lg:col-span-4 glass-panel rounded-xl p-lg">
+          <h3 class="font-headline-md text-headline-md text-primary mb-md">By Department</h3>
+          <div class="flex items-center justify-center" style="max-height:220px;">
+            <canvas id="dept-chart"></canvas>
+          </div>
         </div>
       </div>
-      <div class="chart-wrap">
-        <div class="chart-title">
-          Peak Hours
-          <span class="subtitle">Traffic by hour of day</span>
+
+      <!-- Type + Purpose + Peak hours -->
+      <div class="grid grid-cols-12 gap-gutter mb-gutter">
+        <div class="col-span-12 md:col-span-4 glass-panel rounded-xl p-lg">
+          <h3 class="font-headline-md text-primary mb-md text-sm font-semibold uppercase tracking-widest">Visitor Types</h3>
+          <div class="flex items-center justify-center" style="max-height:200px;">
+            <canvas id="type-chart"></canvas>
+          </div>
         </div>
-        <div id="hours-container">
-          <div class="hours-grid" id="hours-grid"></div>
+        <div class="col-span-12 md:col-span-4 glass-panel rounded-xl p-lg">
+          <h3 class="font-headline-md text-primary mb-md text-sm font-semibold uppercase tracking-widest">Purpose of Visit</h3>
+          <div class="flex items-center justify-center" style="max-height:200px;">
+            <canvas id="purpose-chart"></canvas>
+          </div>
+        </div>
+        <div class="col-span-12 md:col-span-4 glass-panel rounded-xl p-lg">
+          <h3 class="font-headline-md text-primary mb-md text-sm font-semibold uppercase tracking-widest">Peak Hours</h3>
+          <div class="hours-grid" id="hours-grid" style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;"></div>
           <div class="hours-labels" id="hours-labels"></div>
         </div>
       </div>
-    </div>
 
-    <!-- Bottom row: repeat visitors + recent activity -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-      <div class="chart-wrap">
-        <div class="chart-title">🔁 Frequent Visitors</div>
-        <ul class="repeat-list" id="repeat-list">
-          <li style="color:var(--text-muted);font-size:0.82rem;padding:16px 0;text-align:center;">Loading…</li>
-        </ul>
-      </div>
-      <div class="chart-wrap">
-        <div class="chart-title">
-          📈 Department Breakdown
-          <span class="subtitle">Visit counts</span>
+      <!-- Bottom: repeat visitors + dept bar -->
+      <div class="grid grid-cols-12 gap-gutter">
+        <div class="col-span-12 md:col-span-5 glass-panel rounded-xl p-lg">
+          <div class="flex items-center gap-xs mb-md">
+            <span class="material-symbols-outlined text-primary-container text-[18px]">repeat</span>
+            <h3 class="font-headline-md text-primary text-sm font-semibold uppercase tracking-widest">Frequent Visitors</h3>
+          </div>
+          <ul class="repeat-list" id="repeat-list">
+            <li class="py-md text-on-surface-variant text-[11px] font-code-snippet uppercase tracking-widest opacity-50">Loading...</li>
+          </ul>
         </div>
-        <canvas id="dept-bar-chart" height="140"></canvas>
+        <div class="col-span-12 md:col-span-7 glass-panel rounded-xl p-lg">
+          <h3 class="font-headline-md text-primary mb-md text-sm font-semibold uppercase tracking-widest">Department Breakdown</h3>
+          <canvas id="dept-bar-chart" height="160"></canvas>
+        </div>
       </div>
     </div>
   </div>
+</main>
 
-  <div class="toast-container" id="toasts"></div>
-  <script src="js/analytics.js"></script>
+<div class="fixed inset-0 pointer-events-none opacity-[0.025] z-[-1]" style="background-image:radial-gradient(#ffffff 1px,transparent 0);background-size:40px 40px;"></div>
+<div class="toast-container" id="toasts"></div>
+<script src="js/analytics.js"></script>
 </body>
 </html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SENTINEL VMS - Visitor Check-In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Hanken+Grotesk:wght@600;700;800;900&amp;family=Geist:wght@400;500;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Hanken+Grotesk:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0d1515;
+            color: #dce4e5;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-primary {
+            box-shadow: 0 0 15px rgba(0, 219, 233, 0.3);
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(21, 29, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .status-pill {
+            background: rgba(78, 222, 163, 0.1);
+            color: #4edea3;
+        }
+        .input-underline {
+            border-bottom: 1px solid #3b494b;
+            transition: all 0.3s ease;
+        }
+        .input-underline:focus {
+            border-bottom: 2px solid #00f0ff;
+            outline: none;
+            box-shadow: 0 4px 12px -4px rgba(0, 240, 255, 0.2);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0d1515; }
+        ::-webkit-scrollbar-thumb { background: #3b494b; border-radius: 10px; }
+        
+        .biometric-scan-line {
+            width: 100%;
+            height: 2px;
+            background: #00f0ff;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: scan 3s infinite linear;
+            box-shadow: 0 0 10px #00f0ff;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#f8f4ff",
+                        "inverse-primary": "#006970",
+                        "on-tertiary-container": "#494bd7",
+                        "surface-bright": "#333b3b",
+                        "background": "#0d1515",
+                        "surface-dim": "#0d1515",
+                        "secondary-fixed-dim": "#4edea3",
+                        "secondary": "#4edea3",
+                        "error-container": "#93000a",
+                        "outline": "#849495",
+                        "on-surface-variant": "#b9cacb",
+                        "primary-fixed": "#7df4ff",
+                        "tertiary-container": "#d7d6ff",
+                        "on-surface": "#dce4e5",
+                        "surface-tint": "#00dbe9",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-tertiary": "#1000a9",
+                        "surface-container-low": "#151d1e",
+                        "surface-container": "#192122",
+                        "on-secondary": "#003824",
+                        "primary-fixed-dim": "#00dbe9",
+                        "surface": "#0d1515",
+                        "on-primary-fixed-variant": "#004f54",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed": "#07006c",
+                        "on-primary-container": "#006970",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-container-high": "#232b2c",
+                        "on-secondary-container": "#00311f",
+                        "outline-variant": "#3b494b",
+                        "on-primary": "#00363a",
+                        "primary": "#dbfcff",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-container": "#00a572",
+                        "inverse-on-surface": "#2a3233",
+                        "tertiary-fixed": "#e1e0ff",
+                        "tertiary-fixed-dim": "#c0c1ff",
+                        "surface-container-lowest": "#080f10",
+                        "primary-container": "#00f0ff",
+                        "on-background": "#dce4e5",
+                        "surface-variant": "#2e3637",
+                        "on-primary-fixed": "#002022",
+                        "surface-container-highest": "#2e3637",
+                        "inverse-surface": "#dce4e5",
+                        "on-tertiary-fixed-variant": "#2f2ebe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "64px",
+                        "margin-desktop": "48px",
+                        "sm": "12px",
+                        "gutter": "24px",
+                        "md": "24px",
+                        "base": "8px",
+                        "lg": "40px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Hanken Grotesk"],
+                        "code-snippet": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "body-base": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-body-base text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-low border-r border-outline-variant/10 flex flex-col py-lg px-md z-50">
+<div class="mb-xl px-sm">
+<h1 class="font-display-lg text-display-lg font-bold tracking-tighter text-primary">SENTINEL VMS</h1>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant opacity-60">Secure Terminal 01</p>
+</div>
+<nav class="flex-1 space-y-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-base">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-primary font-bold border-l-4 border-secondary bg-surface-container-high transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-body-base">Visitor Check-In</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">calendar_add_on</span>
+<span class="font-body-base">Schedule Visit</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-body-base">Log History</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-base">System Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-sm">
+<button class="w-full py-md bg-error/10 border border-error/30 text-error font-bold uppercase tracking-widest text-[10px] rounded hover:bg-error/20 transition-all active:scale-[0.98]">
+                Emergency Lockdown
+            </button>
+<div class="pt-md border-t border-outline-variant/10">
+<a class="flex items-center gap-md px-md py-xs text-on-surface-variant opacity-70 hover:text-primary" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-base">Help</span>
+</a>
+<a class="flex items-center gap-md px-md py-xs text-on-surface-variant opacity-70 hover:text-error" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-base">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-[280px] min-h-screen bg-surface flex flex-col">
+<!-- Top Bar -->
+<header class="h-xl flex justify-between items-center px-margin-desktop bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 sticky top-0 z-40">
+<div class="flex gap-lg items-center">
+<span class="font-headline-md text-headline-md font-black text-primary">SENTINEL</span>
+<nav class="hidden lg:flex gap-md">
+<a class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all" href="#">Analytics</a>
+<a class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all" href="#">Alerts</a>
+<a class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all" href="#">Directories</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant p-sm hover:text-primary cursor-pointer transition-all">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full border border-surface"></span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant p-sm hover:text-primary cursor-pointer transition-all">admin_panel_settings</span>
+<div class="h-8 w-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/30 ml-xs">
+<img alt="Security Administrator" data-alt="A professional close-up portrait of a security administrator with a focused expression, wearing a sleek modern tactical shirt. The lighting is low-key with subtle electric blue highlights on her face, reflecting a high-tech command center environment. The background is a blurred dark slate grid of monitors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDreOSUGSz3wufWaBdAoBbdeXhd92hgu-ywJviBnWRv80gqjz-pTTZcOWVCh_gexSmv9UNRS5HBSo5XNLSCTOAjJexTHQ_h47QV-wPvrr43T1ZXdxHy3eyHzutuwqo_BAnVlb4R3UOMkVyGrYLaPI7MtmLeHa-3eoHETqvVEGBj4rdR8_iWOMZICsydxb24WQSfUgUVOzkI1p3h-qLeGay2CIntuO63A93IMEeArSLMHDl5qIrhACDxzNniGpvmPeNsRG3WBXDAvec"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-margin-desktop max-w-[1440px] w-full mx-auto">
+<div class="flex items-center justify-between mb-lg">
+<div>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary">Visitor Check-In</h2>
+<p class="text-on-surface-variant opacity-70">Log new entry permit and verify identification credentials.</p>
+</div>
+<div class="status-pill px-md py-xs rounded-full font-label-sm flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                    Terminal Active
+                </div>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Column: Biometric Capture -->
+<div class="col-span-12 lg:col-span-4 space-y-gutter">
+<section class="glass-panel p-md rounded-xl">
+<h3 class="font-headline-md text-headline-md text-primary-container mb-md flex items-center gap-xs">
+<span class="material-symbols-outlined">face</span>
+                            Biometric Verification
+                        </h3>
+<div class="aspect-square relative rounded-lg overflow-hidden bg-surface-container-highest border border-outline-variant/20 mb-md group">
+<img alt="Camera Feed" class="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 transition-opacity duration-700" data-alt="A high-contrast close-up of a high-resolution security camera lens reflecting digital data streams. The lighting is dramatic, dominated by deep charcoal shadows and electric cyan highlights. Around the lens, faint digital overlays and UI elements like facial recognition nodes are visible, creating a futuristic biometric scanning atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiZPNKQMkV-gBhKnIzfFyqtFoPeEc4fStCHoKKB6jakG4lYQFP1UTVnsBI-BO81jDz-DXJt8gk3ZoEcTyLLj4OrgzRJF3mK4GgYw8ivX7Pr8zmn9TEz8G5tPMeYdXS_obzYhiLo7dq7FpDw2mwfRQ53SCJIOVAiBrUBesbMYWaierMEREq6yvQzI_y9DZFlyvjOETQavhU3zxKmSQY38I_o_oCENYZB21MCy7XnBPbChPyifmTpiflyk6inz_xBxGrmlRP5VgIFD8"/>
+<div class="biometric-scan-line"></div>
+<div class="absolute inset-0 border-[20px] border-surface/40 pointer-events-none"></div>
+<!-- Target UI -->
+<div class="absolute inset-x-12 inset-y-12 border-2 border-secondary/30 rounded-2xl flex items-center justify-center">
+<div class="w-8 h-8 border-t-2 border-l-2 border-secondary absolute top-0 left-0"></div>
+<div class="w-8 h-8 border-t-2 border-r-2 border-secondary absolute top-0 right-0"></div>
+<div class="w-8 h-8 border-b-2 border-l-2 border-secondary absolute bottom-0 left-0"></div>
+<div class="w-8 h-8 border-b-2 border-r-2 border-secondary absolute bottom-0 right-0"></div>
+<span class="material-symbols-outlined text-secondary opacity-50 scale-[3]">center_focus_weak</span>
+</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-surface/80 px-md py-xs rounded text-secondary font-label-sm backdrop-blur-md">
+                                SCANNING IDENTITY...
+                            </div>
+</div>
+<div class="grid grid-cols-2 gap-xs">
+<button class="flex items-center justify-center gap-xs py-sm border border-outline-variant/30 rounded text-on-surface-variant hover:text-primary hover:border-primary transition-all">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                                Retake Photo
+                            </button>
+<button class="flex items-center justify-center gap-xs py-sm border border-outline-variant/30 rounded text-on-surface-variant hover:text-primary hover:border-primary transition-all">
+<span class="material-symbols-outlined text-[18px]">credit_card</span>
+                                Scan ID
+                            </button>
+</div>
+</section>
+<section class="glass-panel p-md rounded-xl">
+<div class="flex items-center justify-between mb-sm">
+<h4 class="font-label-sm uppercase tracking-widest text-on-surface-variant">System Status</h4>
+<span class="text-secondary font-code-snippet text-[12px]">v2.4.9-SECURE</span>
+</div>
+<div class="space-y-sm">
+<div class="h-1 bg-outline-variant/20 rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary-container to-secondary w-[85%]"></div>
+</div>
+<div class="flex justify-between text-[11px] opacity-60">
+<span>Encrypted Pipeline</span>
+<span>85% Signal</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Form Fields -->
+<div class="col-span-12 lg:col-span-8 space-y-gutter">
+<form class="glass-panel p-lg rounded-xl">
+<!-- Visitor Details -->
+<div class="mb-lg">
+<div class="flex items-center gap-xs mb-md border-b border-outline-variant/10 pb-xs">
+<span class="material-symbols-outlined text-primary-container">person</span>
+<h3 class="font-headline-md text-headline-md text-primary">Visitor Information</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-lg gap-y-md">
+<div class="space-y-xs">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Full Name</label>
+<input class="w-full bg-transparent input-underline py-sm text-body-base placeholder:opacity-30" placeholder="Johnathan Doe" type="text"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Contact Number</label>
+<input class="w-full bg-transparent input-underline py-sm text-body-base placeholder:opacity-30" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Visitor Type</label>
+<select class="w-full bg-transparent input-underline py-sm text-body-base appearance-none cursor-pointer">
+<option class="bg-surface-container">Contractor</option>
+<option class="bg-surface-container">Client Partner</option>
+<option class="bg-surface-container">Delivery/Maintenance</option>
+<option class="bg-surface-container" selected="">General Visitor</option>
+</select>
+</div>
+<div class="space-y-xs">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Estimated Duration</label>
+<select class="w-full bg-transparent input-underline py-sm text-body-base appearance-none cursor-pointer">
+<option class="bg-surface-container">30 Minutes</option>
+<option class="bg-surface-container" selected="">1-2 Hours</option>
+<option class="bg-surface-container">4+ Hours</option>
+<option class="bg-surface-container">Full Day Pass</option>
+</select>
+</div>
+<div class="md:col-span-2 space-y-xs">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Purpose of Visit</label>
+<input class="w-full bg-transparent input-underline py-sm text-body-base placeholder:opacity-30" placeholder="e.g., Q3 Security Audit, Server Maintenance" type="text"/>
+</div>
+</div>
+</div>
+<!-- Host Information -->
+<div class="mb-lg p-md bg-primary-container/5 rounded-lg border border-primary-container/10">
+<div class="flex items-center gap-xs mb-md">
+<span class="material-symbols-outlined text-secondary">domain_verification</span>
+<h3 class="font-headline-md text-headline-md text-primary">Host Assignment</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-lg gap-y-md">
+<div class="space-y-xs">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Host Name</label>
+<div class="relative">
+<input class="w-full bg-transparent input-underline py-sm text-body-base placeholder:opacity-30" placeholder="Search employee..." type="text"/>
+<span class="material-symbols-outlined absolute right-0 top-2 opacity-50">search</span>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Department</label>
+<input class="w-full bg-transparent input-underline py-sm text-body-base text-secondary border-secondary/30" readonly="" type="text" value="Cybersecurity Operations"/>
+</div>
+</div>
+</div>
+<!-- Legal & Action -->
+<div class="space-y-md">
+<label class="flex items-start gap-md cursor-pointer group">
+<div class="relative mt-1">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-5 h-5 border-2 border-outline-variant rounded flex items-center justify-center peer-checked:bg-secondary peer-checked:border-secondary transition-all">
+<span class="material-symbols-outlined text-[16px] text-on-secondary hidden peer-checked:block" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<span class="text-on-surface-variant text-sm leading-relaxed group-hover:text-on-surface transition-colors">
+                                    I acknowledge the <span class="text-primary-container underline underline-offset-4 cursor-pointer">Visitor NDA</span> and safety protocols. I certify that the information provided is accurate for security logging purposes.
+                                </span>
+</label>
+<div class="flex flex-col md:flex-row gap-md items-center justify-end pt-md">
+<button class="w-full md:w-auto px-xl py-md text-on-surface-variant font-bold uppercase tracking-widest text-[12px] hover:text-error transition-all" type="button">
+                                    Cancel Check-In
+                                </button>
+<button class="w-full md:w-auto px-xl py-md bg-primary-container text-on-primary-container font-bold uppercase tracking-widest text-[12px] rounded glow-primary hover:brightness-110 active:scale-95 transition-all" type="button">
+                                    Authorize Entry
+                                </button>
+</div>
+</div>
+</form>
+<!-- Activity Log Sub-panel -->
+<div class="glass-panel rounded-xl overflow-hidden">
+<div class="bg-surface-container-high px-md py-xs border-b border-outline-variant/10">
+<span class="font-code-snippet text-[10px] text-on-surface-variant uppercase tracking-widest">Recent Check-In Activity</span>
+</div>
+<div class="divide-y divide-outline-variant/5">
+<div class="flex items-center justify-between p-sm hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[18px]">person</span>
+</div>
+<div>
+<p class="text-sm font-medium">Michael Vance</p>
+<p class="text-[10px] text-on-surface-variant">Access Level: Level 2 North</p>
+</div>
+</div>
+<span class="text-[10px] font-code-snippet text-secondary">CHECKED_IN 14:22</span>
+</div>
+<div class="flex items-center justify-between p-sm hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-outline-variant/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">person</span>
+</div>
+<div>
+<p class="text-sm font-medium">Elena Rodriguez</p>
+<p class="text-[10px] text-on-surface-variant">Access Level: Visitor Common</p>
+</div>
+</div>
+<span class="text-[10px] font-code-snippet text-on-surface-variant opacity-60">EXITED 13:05</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interaction for form inputs
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', () => {
+                element.parentElement.querySelector('label')?.classList.add('text-primary-container');
+            });
+            element.addEventListener('blur', () => {
+                element.parentElement.querySelector('label')?.classList.remove('text-primary-container');
+            });
+        });
+
+        // Atmospheric interaction: subtle glow following cursor over cards
+        const cards = document.querySelectorAll('.glass-panel');
+        document.addEventListener('mousemove', (e) => {
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>
