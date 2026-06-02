@@ -13,13 +13,18 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
+// --- Routes ---
+// NOTE: Specific routes must come BEFORE :id routes to avoid param conflicts
+
 router.get("/updates", visitorController.subscribeUpdates);
 router.get("/check-repeat", visitorController.checkRepeatVisitor);
-router.post("/", upload.single("photo"), visitorController.registerVisitor);
-router.get("/stats", requireAuth, visitorController.getStats);
-router.get("/export", visitorController.exportVisitors);
 router.get("/test-email", visitorController.testEmail);
+router.get("/export", visitorController.exportVisitors); // Auth inside controller
+router.get("/stats", requireAuth, visitorController.getStats);
 router.get("/", requireAuth, visitorController.getAllVisitors);
+
+// ID-based routes (these must come last)
+router.post("/", upload.single("photo"), visitorController.registerVisitor);
 router.get("/:id", visitorController.getVisitor);
 router.get("/:id/approve", visitorController.approveVisitor);
 router.post("/:id/checkout", requireAuth, visitorController.checkoutVisitor);
