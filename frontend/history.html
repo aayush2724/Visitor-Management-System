@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CheckMate - Log History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "surface-variant": "#e2e2e3","tertiary": "#000000","on-primary-fixed-variant": "#474747","on-tertiary-fixed": "#1a1c1e","on-surface": "#1a1c1d","inverse-primary": "#c6c6c6","tertiary-container": "#1a1c1e","tertiary-fixed-dim": "#c6c6c9","surface-container-low": "#f3f3f4","secondary-fixed-dim": "#c6c5cf","primary-fixed-dim": "#c6c6c6","tertiary-fixed": "#e2e2e5","secondary-container": "#e3e1ec","error-container": "#ffdad6","outline": "#7e7576","primary": "#000000","surface-container": "#eeeeef","surface-container-lowest": "#ffffff","on-tertiary": "#ffffff","on-primary": "#ffffff","on-background": "#1a1c1d","surface-bright": "#f9f9fa","primary-container": "#1b1b1b","on-error": "#ffffff","surface-container-highest": "#e2e2e3","on-secondary-fixed": "#1a1b22","surface-dim": "#dadadb","on-error-container": "#93000a","secondary": "#5d5e66","surface": "#f9f9fa","on-surface-variant": "#4c4546","error": "#ba1a1a","surface-tint": "#5e5e5e","on-secondary": "#ffffff","secondary-fixed": "#e3e1ec","primary-fixed": "#e2e2e2","inverse-on-surface": "#f0f1f2","on-primary-fixed": "#1b1b1b","inverse-surface": "#2f3132","on-tertiary-fixed-variant": "#454749","surface-container-high": "#e8e8e9","on-primary-container": "#848484","on-secondary-container": "#63646c","background": "#f9f9fa","outline-variant": "#cfc4c5","on-secondary-fixed-variant": "#46464e","on-tertiary-container": "#838487"
+      },
+      "borderRadius": {"DEFAULT": "0.125rem","lg": "0.25rem","xl": "0.5rem","full": "0.75rem"},
+      "spacing": {"gutter": "24px","xl": "80px","sm": "12px","xs": "4px","lg": "48px","md": "24px","margin-mobile": "16px","base": "8px","margin-desktop": "32px"},
+      "fontFamily": {"headline-lg": ["Hanken Grotesk"],"headline-xl": ["Hanken Grotesk"],"body-sm": ["Inter"],"label-md": ["Inter"],"body-md": ["Inter"],"label-sm": ["Inter"],"headline-lg-mobile": ["Hanken Grotesk"],"body-lg": ["Inter"],"headline-md": ["Hanken Grotesk"]},
+      "fontSize": {"headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],"headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],"body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],"label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],"body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],"label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],"headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],"body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],"headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]}
+    }
+  }
+}
+</script>
+<style>
+.material-symbols-outlined {font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;}
+body {background-color: #f9f9fa;color: #1a1c1d;}
+.custom-scrollbar::-webkit-scrollbar {width: 6px;}
+.custom-scrollbar::-webkit-scrollbar-track {background: transparent;}
+.custom-scrollbar::-webkit-scrollbar-thumb {background: #e2e2e3;border-radius: 10px;}
+</style>
+</head>
+<body class="font-body-md text-on-surface antialiased overflow-hidden h-screen flex">
+
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen py-md px-sm w-64 gap-base bg-surface-bright border-r border-surface-variant">
+  <div class="px-sm mb-lg">
+    <h1 class="font-headline-md text-headline-md font-bold text-primary">CheckMate</h1>
+  </div>
+  
+  <div class="flex items-center gap-sm p-sm mb-md rounded-lg bg-surface-container-low">
+    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary">
+      <span class="material-symbols-outlined">security</span>
+    </div>
+    <div>
+      <p class="font-label-md text-label-md text-primary">Officer On Duty</p>
+      <p class="font-label-sm text-label-sm text-secondary">Terminal A-1</p>
+    </div>
+  </div>
+  
+  <nav class="flex flex-col gap-xs flex-1">
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded" href="dashboard.html">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="font-label-md text-label-md">Dashboard</span>
+    </a>
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded" href="index.html">
+      <span class="material-symbols-outlined">login</span>
+      <span class="font-label-md text-label-md">Check-In</span>
+    </a>
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded" href="schedule.html">
+      <span class="material-symbols-outlined">calendar_today</span>
+      <span class="font-label-md text-label-md">Schedule</span>
+    </a>
+    <a class="flex items-center gap-sm px-md py-sm text-primary font-bold bg-surface-container-high rounded-lg transition-all" href="history.html">
+      <span class="material-symbols-outlined">history</span>
+      <span class="font-label-md text-label-md">History</span>
+    </a>
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded" href="analytics.html">
+      <span class="material-symbols-outlined">bar_chart</span>
+      <span class="font-label-md text-label-md">Analytics</span>
+    </a>
+  </nav>
+  
+  <div class="mt-auto space-y-sm">
+    <button class="w-full py-md bg-primary text-on-primary font-bold rounded flex items-center justify-center gap-sm active:scale-95 transition-transform" onclick="window.location.href='index.html'">
+      <span class="material-symbols-outlined">add</span>
+      <span class="font-label-md text-label-md">New Entry</span>
+    </button>
+    <button onclick="window.location.href='login.html'" class="w-full py-sm text-secondary font-medium rounded flex items-center justify-center gap-sm hover:bg-surface-container transition-all">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="font-label-sm text-label-sm">Logout</span>
+    </button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+  <!-- TopAppBar -->
+  <header class="flex justify-between items-center w-full px-margin-desktop h-16 bg-surface border-b border-surface-variant">
+    <div class="flex items-center gap-md">
+      <span class="font-headline-md text-headline-md font-black tracking-tighter text-primary">LOG HISTORY</span>
+    </div>
+    
+    <div class="flex items-center gap-md">
+      <button class="p-2 hover:bg-surface-container-low transition-colors rounded-lg">
+        <span class="material-symbols-outlined text-primary">shield</span>
+      </button>
+      <button class="p-2 hover:bg-surface-container-low transition-colors rounded-lg" onclick="window.location.href='login.html'">
+        <span class="material-symbols-outlined text-primary">account_circle</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="flex-1 p-margin-desktop overflow-y-auto custom-scrollbar">
+    <div class="max-w-full w-full mx-auto">
+      
+      <!-- Page Header & Filter Section -->
+      <div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div>
+          <p class="font-body-sm text-body-sm text-secondary">Complete audit trail of facility access and movement.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-sm">
+          <div class="relative min-w-[300px]">
+            <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
+            <input id="search-input" class="w-full pl-10 pr-sm py-2 bg-surface-container-lowest border border-outline-variant rounded focus:border-primary focus:ring-0 font-body-sm text-body-sm transition-all" placeholder="Search visitors, hosts, or ID numbers..." type="text"/>
+          </div>
+          <button class="flex items-center gap-xs px-md py-2 border border-primary font-label-md text-label-md font-semibold hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[18px]">filter_list</span>Filters
+          </button>
+          <button class="flex items-center gap-xs px-md py-2 border border-primary font-label-md text-label-md font-semibold hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[18px]">download</span>Export PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Dense Data Table Container -->
+      <div class="bg-surface-container-lowest border border-surface-variant overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left border-collapse min-w-[1000px]">
+            <thead>
+              <tr class="bg-surface-container-low border-b border-surface-variant">
+                <th class="p-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-[240px]">Visitor</th>
+                <th class="p-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Host</th>
+                <th class="p-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Purpose</th>
+                <th class="p-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Entry</th>
+                <th class="p-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Exit</th>
+                <th class="p-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Status</th>
+                <th class="p-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-variant">
+              <!-- Row 1 -->
+              <tr class="hover:bg-surface-bright transition-colors">
+                <td class="p-md">
+                  <div class="flex items-center gap-sm">
+                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+                      <span class="material-symbols-outlined text-secondary">person</span>
+                    </div>
+                    <div>
+                      <p class="font-body-md text-body-md font-bold text-primary">Marcus Holloway</p>
+                      <p class="font-label-sm text-label-sm text-secondary">ID: SV-8829-LH</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">Dr. Sarah Chen</p>
+                  <p class="font-label-sm text-label-sm text-secondary">R&D Lab 4</p>
+                </td>
+                <td class="p-md font-body-sm text-body-sm">Technical Audit</td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">08:45 AM</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Nov 24, 2023</p>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">04:12 PM</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Nov 24, 2023</p>
+                </td>
+                <td class="p-md">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-secondary font-label-sm text-label-sm border border-outline-variant">Departed</span>
+                </td>
+                <td class="p-md text-right">
+                  <button class="material-symbols-outlined text-secondary hover:text-primary transition-colors">more_vert</button>
+                </td>
+              </tr>
+              <!-- Row 2 -->
+              <tr class="hover:bg-surface-bright transition-colors">
+                <td class="p-md">
+                  <div class="flex items-center gap-sm">
+                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+                      <span class="material-symbols-outlined text-secondary">person</span>
+                    </div>
+                    <div>
+                      <p class="font-body-md text-body-md font-bold text-primary">Elena Rodriguez</p>
+                      <p class="font-label-sm text-label-sm text-secondary">ID: SV-9104-XC</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">James Miller</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Exec Floor</p>
+                </td>
+                <td class="p-md font-body-sm text-body-sm">Contract Review</td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">10:15 AM</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Nov 24, 2023</p>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">—</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Active Session</p>
+                </td>
+                <td class="p-md">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm">Checked In</span>
+                </td>
+                <td class="p-md text-right">
+                  <button class="material-symbols-outlined text-secondary hover:text-primary transition-colors">more_vert</button>
+                </td>
+              </tr>
+              <!-- Row 3 - Denied -->
+              <tr class="hover:bg-surface-bright transition-colors bg-error-container/10">
+                <td class="p-md">
+                  <div class="flex items-center gap-sm">
+                    <div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center">
+                      <span class="material-symbols-outlined text-error">person_off</span>
+                    </div>
+                    <div>
+                      <p class="font-body-md text-body-md font-bold text-primary">Unknown Subject</p>
+                      <p class="font-label-sm text-label-sm text-secondary">ID: N/A</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">—</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Unauthorized</p>
+                </td>
+                <td class="p-md font-body-sm text-body-sm">Deliveries</td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">11:30 AM</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Nov 24, 2023</p>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">11:35 AM</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Nov 24, 2023</p>
+                </td>
+                <td class="p-md">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-error text-on-error font-label-sm text-label-sm font-bold">Denied</span>
+                </td>
+                <td class="p-md text-right">
+                  <button class="material-symbols-outlined text-secondary hover:text-primary transition-colors">more_vert</button>
+                </td>
+              </tr>
+              <!-- Row 4 -->
+              <tr class="hover:bg-surface-bright transition-colors">
+                <td class="p-md">
+                  <div class="flex items-center gap-sm">
+                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+                      <span class="material-symbols-outlined text-secondary">person</span>
+                    </div>
+                    <div>
+                      <p class="font-body-md text-body-md font-bold text-primary">Sophia Thorne</p>
+                      <p class="font-label-sm text-label-sm text-secondary">ID: SV-4412-MK</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">Security Hub</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Network Ops</p>
+                </td>
+                <td class="p-md font-body-sm text-body-sm">Maintenance</td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">01:00 PM</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Nov 24, 2023</p>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">—</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Active Session</p>
+                </td>
+                <td class="p-md">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm">Checked In</span>
+                </td>
+                <td class="p-md text-right">
+                  <button class="material-symbols-outlined text-secondary hover:text-primary transition-colors">more_vert</button>
+                </td>
+              </tr>
+              <!-- Row 5 -->
+              <tr class="hover:bg-surface-bright transition-colors">
+                <td class="p-md">
+                  <div class="flex items-center gap-sm">
+                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+                      <span class="material-symbols-outlined text-secondary">person</span>
+                    </div>
+                    <div>
+                      <p class="font-body-md text-body-md font-bold text-primary">Arthur Vance</p>
+                      <p class="font-label-sm text-label-sm text-secondary">ID: SV-5567-RE</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">Legal Team</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Suite 802</p>
+                </td>
+                <td class="p-md font-body-sm text-body-sm">Deposition</td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">02:15 PM</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Nov 23, 2023</p>
+                </td>
+                <td class="p-md">
+                  <p class="font-body-sm text-body-sm">05:40 PM</p>
+                  <p class="font-label-sm text-label-sm text-secondary">Nov 23, 2023</p>
+                </td>
+                <td class="p-md">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-secondary font-label-sm text-label-sm border border-outline-variant">Departed</span>
+                </td>
+                <td class="p-md text-right">
+                  <button class="material-symbols-outlined text-secondary hover:text-primary transition-colors">more_vert</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination Footer -->
+        <div class="px-md py-sm bg-surface-container-low border-t border-surface-variant flex flex-col sm:flex-row items-center justify-between gap-sm">
+          <p class="font-label-sm text-label-sm text-secondary">Showing 1-10 of 1,284 entries</p>
+          <div class="flex items-center gap-xs">
+            <button class="w-8 h-8 flex items-center justify-center border border-outline-variant hover:bg-surface-container transition-colors">
+              <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+            </button>
+            <button class="w-8 h-8 flex items-center justify-center border border-primary bg-primary text-on-primary font-label-sm text-label-sm">1</button>
+            <button class="w-8 h-8 flex items-center justify-center border border-outline-variant hover:bg-surface-container font-label-sm text-label-sm">2</button>
+            <button class="w-8 h-8 flex items-center justify-center border border-outline-variant hover:bg-surface-container font-label-sm text-label-sm">3</button>
+            <span class="px-2 text-secondary">...</span>
+            <button class="w-8 h-8 flex items-center justify-center border border-outline-variant hover:bg-surface-container font-label-sm text-label-sm">128</button>
+            <button class="w-8 h-8 flex items-center justify-center border border-outline-variant hover:bg-surface-container transition-colors">
+              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Overlay (Bottom Floating) -->
+      <div class="fixed bottom-gutter right-gutter flex gap-md">
+        <div class="bg-surface-container-lowest border border-primary p-md shadow-lg flex items-center gap-md">
+          <div class="text-center border-r border-surface-variant pr-md">
+            <p class="font-label-sm text-label-sm text-secondary uppercase">Active Today</p>
+            <p class="font-headline-md text-headline-md font-bold">142</p>
+          </div>
+          <div class="text-center border-r border-surface-variant pr-md">
+            <p class="font-label-sm text-label-sm text-secondary uppercase">Pending Out</p>
+            <p class="font-headline-md text-headline-md font-bold">18</p>
+          </div>
+          <div class="text-center">
+            <p class="font-label-sm text-label-sm text-secondary uppercase">Denied (24h)</p>
+            <p class="font-headline-md text-headline-md font-bold text-error">3</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// Dynamic search highlight simulation
+const searchInput = document.getElementById('search-input');
+searchInput.addEventListener('input', (e) => {
+  const val = e.target.value.toLowerCase();
+  document.querySelectorAll('tbody tr').forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.opacity = text.includes(val) ? '1' : '0.3';
+  });
+});
+</script>
+</body>
+</html>

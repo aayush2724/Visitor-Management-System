@@ -1,173 +1,296 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CheckMate — Secure Access</title>
+<title>CheckMate | Secure Authentication</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Hanken+Grotesk:wght@600;700;800;900&family=Geist:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="css/sentinel.css"/>
-<style>
-  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
-  body { background-color: #0d1515; color: #dce4e5; }
-  .grid-bg {
-    background-image: radial-gradient(rgba(0,240,255,0.06) 1px, transparent 0);
-    background-size: 40px 40px;
-  }
-  @keyframes glow-pulse {
-    0%,100% { opacity:.15; transform:scale(1); }
-    50% { opacity:.3; transform:scale(1.05); }
-  }
-  .glow-orb { animation: glow-pulse 4s ease-in-out infinite; }
-</style>
 <script id="tailwind-config">
 tailwind.config = {
-  darkMode:"class",
-  theme:{ extend:{
-    colors:{
-      "background":"#0d1515","surface":"#0d1515","surface-container-lowest":"#080f10",
-      "surface-container-low":"#151d1e","surface-container":"#192122","surface-container-high":"#232b2c",
-      "surface-container-highest":"#2e3637","surface-variant":"#2e3637",
-      "on-surface":"#dce4e5","on-surface-variant":"#b9cacb","outline":"#849495","outline-variant":"#3b494b",
-      "primary":"#dbfcff","primary-fixed":"#7df4ff","primary-fixed-dim":"#00dbe9","primary-container":"#00f0ff",
-      "on-primary":"#00363a","on-primary-container":"#006970",
-      "secondary":"#4edea3","secondary-fixed-dim":"#4edea3",
-      "error":"#ffb4ab","error-container":"#93000a","on-error-container":"#ffdad6",
-    },
-    borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},
-    spacing:{"xs":"4px","xl":"64px","margin-desktop":"48px","sm":"12px","gutter":"24px","md":"24px","base":"8px","lg":"40px"},
-    fontFamily:{"display-lg":["Hanken Grotesk"],"code-snippet":["Geist"],"label-sm":["Geist"],"body-base":["Inter"],"headline-md":["Hanken Grotesk"]},
-    fontSize:{
-      "display-lg":["48px",{lineHeight:"1.1",letterSpacing:"-0.02em",fontWeight:"700"}],
-      "display-lg-mobile":["36px",{lineHeight:"1.2",fontWeight:"700"}],
-      "label-sm":["12px",{lineHeight:"1",letterSpacing:"0.05em",fontWeight:"500"}],
-      "body-base":["16px",{lineHeight:"1.6",fontWeight:"400"}],
-      "headline-md":["24px",{lineHeight:"1.3",fontWeight:"600"}],
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "primary": "#000000",
+        "on-primary": "#ffffff",
+        "primary-container": "#000000",
+        "on-primary-container": "#ffffff",
+        "secondary": "#5b5f63",
+        "on-secondary": "#ffffff",
+        "secondary-container": "#dde0e5",
+        "on-secondary-container": "#5f6368",
+        "tertiary": "#2e3132",
+        "on-tertiary": "#ffffff",
+        "tertiary-container": "#434654",
+        "on-tertiary-container": "#ffffff",
+        "error": "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+        "background": "#f8f9fa",
+        "on-background": "#191c1d",
+        "surface": "#f8f9fa",
+        "on-surface": "#191c1d",
+        "surface-variant": "#e1e3e4",
+        "on-surface-variant": "#434654",
+        "outline": "#737685",
+        "outline-variant": "#c3c6d6",
+        "inverse-surface": "#2e3132",
+        "inverse-on-surface": "#f0f1f2",
+        "inverse-primary": "#ffffff",
+        "surface-dim": "#d9dadb",
+        "surface-bright": "#f8f9fa",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#f3f4f5",
+        "surface-container": "#edeeef",
+        "surface-container-high": "#e7e8e9",
+        "surface-container-highest": "#e1e3e4"
+      },
+      "borderRadius": {"DEFAULT": "0.125rem","lg": "0.25rem","xl": "0.5rem","full": "0.75rem"},
+      "spacing": {"xs": "4px","xl": "64px","margin": "32px","base": "8px","md": "24px","gutter": "24px","sm": "12px","lg": "40px"},
+      "fontFamily": {"body-lg": ["Hanken Grotesk"],"headline-md": ["Hanken Grotesk"],"display-lg": ["Hanken Grotesk"],"title-lg": ["Hanken Grotesk"],"mono-label": ["JetBrains Mono"],"label-md": ["Hanken Grotesk"],"body-md": ["Hanken Grotesk"],"headline-lg": ["Hanken Grotesk"]}
     }
-  }}
+  }
 }
 </script>
+<style>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.scan-frame-gradient {
+  background: linear-gradient(45deg, transparent 48%, rgba(0, 0, 0, 0.1) 50%, transparent 52%);
+  background-size: 10px 10px;
+}
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+.animate-scan {
+  animation: scan-line 3s linear infinite;
+}
+body {
+  min-height: max(884px, 100dvh);
+  font-family: 'Hanken Grotesk', sans-serif;
+}
+</style>
 </head>
-<body class="font-body-base text-on-surface min-h-screen flex items-center justify-center relative overflow-hidden grid-bg page-shell">
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-hidden">
 
-<div class="scene-layer scene-grid"></div>
-<div class="scene-layer scene-ribbon"></div>
-<div class="scene-orb one"></div>
-<div class="scene-orb two"></div>
-<div class="scene-orb three"></div>
-
-<!-- Glow orbs -->
-<div class="glow-orb absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(0,240,255,.12) 0%,transparent 60%);"></div>
-<div class="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(78,222,163,.06) 0%,transparent 60%);"></div>
-
-<!-- Card -->
-<div class="relative z-10 w-full max-w-[380px] mx-4">
-  <!-- Header -->
-  <div class="text-center mb-lg">
-    <div class="w-16 h-16 rounded-2xl bg-primary-container/10 border border-primary-container/20 flex items-center justify-center mx-auto mb-md" style="box-shadow:0 0 32px rgba(0,240,255,.15);">
-      <span class="material-symbols-outlined text-primary-container text-[32px]" style="font-variation-settings:'FILL' 1;">shield_lock</span>
-    </div>
-    <h1 class="font-display-lg text-display-lg-mobile text-primary tracking-tighter">CheckMate</h1>
-    <p class="font-label-sm uppercase tracking-widest text-on-surface-variant opacity-60 mt-xs">Visitor Management Access</p>
-
-  <div class="orientation-bar mb-md justify-center">
-    <span class="orientation-pill"><strong>secure</strong> admin gate</span>
-    <span class="orientation-pill"><strong>motion</strong> active</span>
+<!-- Top Bar -->
+<header class="w-full top-0 sticky bg-surface border-b border-outline-variant flex items-center justify-between px-margin py-base z-50">
+  <div class="flex items-center gap-sm">
+    <span class="material-symbols-outlined text-primary">shield</span>
+    <span class="font-label-md text-label-md uppercase tracking-widest text-secondary">VISITOR_CONTROL</span>
   </div>
+  <div class="font-headline-md text-headline-md font-bold text-primary">CheckMate</div>
+  <div class="flex items-center gap-base">
+    <div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+    <span class="font-mono-label text-mono-label text-on-surface-variant uppercase">System Active</span>
+  </div>
+</header>
+
+<!-- Main Content: Biometric Interface -->
+<main class="flex-grow flex flex-col items-center justify-center relative p-margin">
+  <!-- Instructional Header -->
+  <div class="text-center mb-xl max-w-xl">
+    <h1 class="font-headline-lg text-headline-lg text-on-background mb-base">SECURE ACCESS AUTHENTICATION</h1>
+    <p class="font-body-lg text-body-lg text-secondary">Administrator credentials required for system access. Place your face in the scan frame to authenticate.</p>
   </div>
 
-  <!-- Login card -->
-  <div class="surface-card surface-card--hero glass-panel rounded-xl p-lg" style="box-shadow:0 16px 48px rgba(0,0,0,.5);">
-    <div id="login-error" class="hidden items-center gap-sm p-sm bg-error/10 border border-error/25 rounded mb-md text-error font-label-sm">
-      <span class="material-symbols-outlined text-[16px]">error</span>
-      <span id="error-text">Invalid credentials. Access denied.</span>
+  <!-- Central Scan Container -->
+  <div class="relative w-full max-w-[520px] aspect-[4/5] bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex items-center justify-center group">
+    <!-- Scan Corner Accents -->
+    <div class="absolute top-md left-md w-12 h-12 border-t-4 border-l-4 border-primary"></div>
+    <div class="absolute top-md right-md w-12 h-12 border-t-4 border-r-4 border-primary"></div>
+    <div class="absolute bottom-md left-md w-12 h-12 border-b-4 border-l-4 border-primary"></div>
+    <div class="absolute bottom-md right-md w-12 h-12 border-b-4 border-r-4 border-primary"></div>
+
+    <!-- Placeholder for Live Camera Feed -->
+    <div class="absolute inset-0 z-0 bg-surface-dim flex items-center justify-center">
+      <div class="w-full h-full bg-gradient-to-br from-surface-container to-surface-container-high flex items-center justify-center">
+        <span class="material-symbols-outlined text-[180px] text-surface-variant opacity-20">verified_user</span>
+      </div>
     </div>
 
-    <form id="login-form" autocomplete="off">
-      <div class="mb-md">
-        <label class="block font-label-sm uppercase tracking-widest text-on-surface-variant mb-sm">Access Code</label>
-        <div class="relative">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">lock</span>
-          <input id="password" type="password" required autocomplete="current-password"
-            class="w-full bg-surface-container border border-outline-variant/30 rounded-lg py-md pl-[44px] pr-[44px] text-on-surface font-body-base text-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all"
-            placeholder="Enter admin password"/>
-          <button type="button" id="toggle-pw" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-all">
-            <span class="material-symbols-outlined text-[18px]" id="eye-icon">visibility</span>
-          </button>
+    <!-- Interactive Scan Overlay -->
+    <div class="absolute inset-0 z-10 pointer-events-none opacity-0 transition-opacity duration-500" id="scan-overlay">
+      <div class="w-full h-[2px] bg-primary shadow-[0_0_15px_rgba(0,0,0,0.8)] animate-scan"></div>
+      <div class="absolute inset-0 scan-frame-gradient"></div>
+    </div>
+
+    <!-- Face Alignment Guide -->
+    <div class="absolute inset-xl border-[1px] border-dashed border-outline/50 rounded-[100%] flex flex-col items-center justify-center pointer-events-none" id="alignment-guide">
+      <div class="w-1/2 h-1/2 border-[1px] border-outline/20 rounded-[100%]"></div>
+    </div>
+
+    <!-- Status HUD -->
+    <div class="absolute bottom-lg left-lg right-lg flex justify-between items-end z-20">
+      <div class="space-y-xs">
+        <div class="flex items-center gap-xs">
+          <span class="material-symbols-outlined text-[16px] text-primary">center_focus_strong</span>
+          <span class="font-mono-label text-mono-label text-primary" id="liveness-status">LIVENESS: PENDING</span>
+        </div>
+        <div class="flex items-center gap-xs">
+          <span class="material-symbols-outlined text-[16px] text-secondary">network_check</span>
+          <span class="font-mono-label text-mono-label text-secondary">LATENCY: 12ms</span>
         </div>
       </div>
-
-      <button id="login-btn" type="submit" class="surface-button w-full py-md bg-primary-container text-on-primary-container font-headline-md uppercase tracking-tighter font-black rounded-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-sm glow-sm">
-        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">login</span>
-        <span id="btn-content">Authenticate</span>
-      </button>
-    </form>
-
-    <div class="mt-lg pt-md border-t border-outline-variant/10 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-all font-label-sm">
-        <span class="material-symbols-outlined text-[14px]">arrow_back</span>
-        Visitor Check-In
-      </a>
-      <span class="font-code-snippet text-[10px] text-on-surface-variant opacity-40">v2.4.9-SECURE</span>
+      <div class="bg-surface-container-high/90 backdrop-blur-sm px-sm py-xs border border-outline-variant">
+        <span class="font-mono-label text-mono-label text-on-surface">ISO/IEC 19794-5</span>
+      </div>
     </div>
   </div>
 
-  <!-- Footer hint -->
-  <p class="text-center text-[10px] text-on-surface-variant opacity-40 mt-md font-code-snippet uppercase tracking-widest">
-    Unauthorized access is strictly prohibited
-  </p>
-</div>
+  <!-- Alternative Auth Method -->
+  <div class="mt-lg text-center">
+    <button class="text-secondary hover:text-primary transition-colors font-label-md text-label-md underline underline-offset-4" id="toggle-password">
+      Use Password Instead
+    </button>
+  </div>
 
-<div class="toast-container" id="toasts"></div>
+  <!-- Primary CTA -->
+  <div class="mt-xl w-full max-w-[520px]">
+    <button class="w-full py-md bg-primary text-on-primary font-title-lg text-title-lg hover:opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-base" id="start-btn">
+      <span class="material-symbols-outlined">android_fingerprint</span>
+      START AUTHENTICATION
+    </button>
+  </div>
+
+  <!-- Password Form (Hidden by default) -->
+  <div id="password-form" class="mt-xl w-full max-w-[520px] hidden">
+    <form id="auth-form" class="space-y-base">
+      <div>
+        <label class="block font-label-md text-label-md text-secondary mb-sm uppercase">Admin Password</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">lock</span>
+          <input id="password-input" type="password" class="w-full pl-10 pr-4 py-md bg-surface-container border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded" placeholder="Enter your password" required/>
+        </div>
+      </div>
+      <button type="submit" class="w-full py-md bg-primary text-on-primary font-title-lg text-title-lg hover:opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-base">
+        <span class="material-symbols-outlined">login</span>
+        AUTHENTICATE
+      </button>
+      <button type="button" class="w-full py-sm text-secondary hover:text-primary transition-colors font-label-md text-label-md underline underline-offset-4" onclick="document.getElementById('toggle-password').click()">
+        Back to Biometric
+      </button>
+    </form>
+  </div>
+</main>
+
+<!-- Footer: Project ID & Tech Metadata -->
+<footer class="w-full px-margin py-md flex flex-col md:flex-row justify-between items-center border-t border-outline-variant bg-surface">
+  <div class="flex gap-md mb-base md:mb-0">
+    <div class="flex flex-col">
+      <span class="font-label-md text-label-md text-outline uppercase tracking-tighter">Terminal Node</span>
+      <span class="font-mono-label text-mono-label text-on-surface">V-ALPHA-09</span>
+    </div>
+    <div class="flex flex-col border-l border-outline-variant pl-md">
+      <span class="font-label-md text-label-md text-outline uppercase tracking-tighter">Auth Engine</span>
+      <span class="font-mono-label text-mono-label text-on-surface">SENTINEL-CORE-4.0</span>
+    </div>
+  </div>
+  <div class="text-right">
+    <span class="font-mono-label text-mono-label text-outline opacity-60">PROJECT_ID: d0434d19-08db-401d-b943-e73e3067bf14</span>
+  </div>
+</footer>
+
+<!-- Micro-interactions Script -->
 <script>
-const form = document.getElementById('login-form');
-const btn = document.getElementById('login-btn');
-const btnContent = document.getElementById('btn-content');
-const errorEl = document.getElementById('login-error');
-const errorText = document.getElementById('error-text');
-const togglePw = document.getElementById('toggle-pw');
-const pwInput = document.getElementById('password');
+const startBtn = document.getElementById('start-btn');
+const scanOverlay = document.getElementById('scan-overlay');
+const livenessStatus = document.getElementById('liveness-status');
+const togglePasswordBtn = document.getElementById('toggle-password');
+const passwordForm = document.getElementById('password-form');
+const authForm = document.getElementById('auth-form');
+let isScanning = false;
 
-togglePw.addEventListener('click', () => {
-  const isText = pwInput.type === 'text';
-  pwInput.type = isText ? 'password' : 'text';
-  document.getElementById('eye-icon').textContent = isText ? 'visibility' : 'visibility_off';
+startBtn.addEventListener('click', () => {
+  if (!isScanning) {
+    isScanning = true;
+    startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    startBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span>INITIALIZING SENSORS...`;
+    scanOverlay.classList.remove('opacity-0');
+    scanOverlay.classList.add('opacity-100');
+    livenessStatus.textContent = 'LIVENESS: SCANNING';
+
+    // Simulate recognition sequence
+    setTimeout(() => {
+      startBtn.innerHTML = `<span class="material-symbols-outlined">face</span>ANALYZING BIOMETRICS...`;
+      livenessStatus.textContent = 'LIVENESS: ANALYZING';
+    }, 1500);
+
+    setTimeout(() => {
+      startBtn.classList.remove('bg-primary');
+      startBtn.classList.add('bg-tertiary-container');
+      startBtn.innerHTML = `<span class="material-symbols-outlined">check_circle</span>IDENTITY VERIFIED`;
+      livenessStatus.textContent = 'LIVENESS: VERIFIED';
+      scanOverlay.classList.remove('opacity-100');
+      scanOverlay.classList.add('opacity-0');
+      
+      // Redirect after verification
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1500);
+    }, 4000);
+  }
 });
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const password = pwInput.value;
-  if (!password) return;
+// Toggle between biometric and password auth
+togglePasswordBtn.addEventListener('click', () => {
+  startBtn.parentElement.classList.toggle('hidden');
+  passwordForm.classList.toggle('hidden');
+});
 
-  btn.disabled = true;
-  btnContent.innerHTML = '<span class="animate-spin inline-block w-4 h-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full mr-xs"></span> Authenticating...';
-  errorEl.classList.add('hidden'); errorEl.classList.remove('flex');
+// Password authentication
+authForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const password = document.getElementById('password-input').value;
+  
+  const submitBtn = authForm.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span>AUTHENTICATING...`;
 
   try {
-    const res = await fetch('/api/admin/login', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ password }),
+    const response = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
     });
-    if (res.ok) {
-      const data = await res.json();
+
+    if (response.ok) {
+      const data = await response.json();
       sessionStorage.setItem('secure_auth', data.token);
-      btnContent.innerHTML = '<span class="material-symbols-outlined text-[16px]" style="font-variation-settings:\'FILL\' 1;">verified</span> Access Granted';
-      btn.style.background = '#4edea3';
-      btn.style.color = '#003824';
-      setTimeout(() => { window.location.href = '/dashboard.html'; }, 500);
+      submitBtn.classList.remove('bg-primary');
+      submitBtn.classList.add('bg-tertiary-container');
+      submitBtn.innerHTML = `<span class="material-symbols-outlined">check_circle</span>ACCESS GRANTED`;
+      
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1500);
     } else {
-      throw new Error('Invalid credentials');
+      throw new Error('Authentication failed');
     }
   } catch (err) {
-    errorText.textContent = 'Invalid password. Access denied.';
-    errorEl.classList.remove('hidden'); errorEl.classList.add('flex');
-    pwInput.value = ''; pwInput.focus();
-    btn.disabled = false;
-    btnContent.innerHTML = '<span class="material-symbols-outlined text-[18px]" style="font-variation-settings:\'FILL\' 1;">login</span> Authenticate';
-    btn.style.background = '';
+    alert('Invalid credentials. Access denied.');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `<span class="material-symbols-outlined">login</span>AUTHENTICATE`;
+    document.getElementById('password-input').value = '';
+    document.getElementById('password-input').focus();
+  }
+});
+
+// Simple mouse tracking for subtle parallax effect on scan guide
+document.addEventListener('mousemove', (e) => {
+  const guide = document.getElementById('alignment-guide');
+  if (guide) {
+    const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+    const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
+    guide.style.transform = `translate(${xAxis}px, ${yAxis}px)`;
   }
 });
 </script>
+
 </body>
 </html>

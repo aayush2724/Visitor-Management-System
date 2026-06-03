@@ -1,246 +1,299 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CheckMate — Command Center</title>
+<title>CheckMate - Dashboard</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Hanken+Grotesk:wght@600;700;800;900&family=Geist:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="css/sentinel.css"/>
 <style>
-  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
-  body { background-color: #0d1515; color: #dce4e5; }
-  input[type="date"] { color-scheme: dark; }
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+body {
+  background-color: #f9f9fa;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d1d6; border-radius: 10px; }
 </style>
 <script id="tailwind-config">
 tailwind.config = {
-  darkMode:"class",
-  theme:{ extend:{
-    colors:{
-      "background":"#0d1515","surface":"#0d1515","surface-container-lowest":"#080f10",
-      "surface-container-low":"#151d1e","surface-container":"#192122","surface-container-high":"#232b2c",
-      "surface-container-highest":"#2e3637","surface-variant":"#2e3637",
-      "on-surface":"#dce4e5","on-surface-variant":"#b9cacb","outline":"#849495","outline-variant":"#3b494b",
-      "primary":"#dbfcff","primary-fixed":"#7df4ff","primary-fixed-dim":"#00dbe9","primary-container":"#00f0ff",
-      "on-primary":"#00363a","on-primary-container":"#006970",
-      "secondary":"#4edea3","secondary-fixed-dim":"#4edea3","on-secondary":"#003824",
-      "tertiary-fixed-dim":"#c0c1ff","tertiary-container":"#d7d6ff",
-      "error":"#ffb4ab","error-container":"#93000a","on-error-container":"#ffdad6",
-    },
-    borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},
-    spacing:{"xs":"4px","xl":"64px","margin-desktop":"48px","sm":"12px","gutter":"24px","md":"24px","base":"8px","lg":"40px"},
-    fontFamily:{"display-lg":["Hanken Grotesk"],"code-snippet":["Geist"],"label-sm":["Geist"],"body-base":["Inter"],"headline-md":["Hanken Grotesk"]},
-    fontSize:{
-      "display-lg":["48px",{lineHeight:"1.1",letterSpacing:"-0.02em",fontWeight:"700"}],
-      "display-lg-mobile":["36px",{lineHeight:"1.2",fontWeight:"700"}],
-      "label-sm":["12px",{lineHeight:"1",letterSpacing:"0.05em",fontWeight:"500"}],
-      "body-base":["16px",{lineHeight:"1.6",fontWeight:"400"}],
-      "headline-md":["24px",{lineHeight:"1.3",fontWeight:"600"}],
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "surface-variant": "#e2e2e3",
+        "tertiary": "#000000",
+        "on-primary-fixed-variant": "#474747",
+        "on-tertiary-fixed": "#1a1c1e",
+        "on-surface": "#1a1c1d",
+        "inverse-primary": "#c6c6c6",
+        "tertiary-container": "#1a1c1e",
+        "tertiary-fixed-dim": "#c6c6c9",
+        "surface-container-low": "#f3f3f4",
+        "secondary-fixed-dim": "#c6c5cf",
+        "primary-fixed-dim": "#c6c6c6",
+        "tertiary-fixed": "#e2e2e5",
+        "secondary-container": "#e3e1ec",
+        "error-container": "#ffdad6",
+        "outline": "#7e7576",
+        "primary": "#000000",
+        "surface-container": "#eeeeef",
+        "surface-container-lowest": "#ffffff",
+        "on-tertiary": "#ffffff",
+        "on-primary": "#ffffff",
+        "on-background": "#1a1c1d",
+        "surface-bright": "#f9f9fa",
+        "primary-container": "#1b1b1b",
+        "on-error": "#ffffff",
+        "surface-container-highest": "#e2e2e3",
+        "on-secondary-fixed": "#1a1b22",
+        "surface-dim": "#dadadb",
+        "on-error-container": "#93000a",
+        "secondary": "#5d5e66",
+        "surface": "#f9f9fa",
+        "on-surface-variant": "#4c4546",
+        "error": "#ba1a1a",
+        "surface-tint": "#5e5e5e",
+        "on-secondary": "#ffffff",
+        "secondary-fixed": "#e3e1ec",
+        "primary-fixed": "#e2e2e2",
+        "inverse-on-surface": "#f0f1f2",
+        "on-primary-fixed": "#1b1b1b",
+        "inverse-surface": "#2f3132",
+        "on-tertiary-fixed-variant": "#454749",
+        "surface-container-high": "#e8e8e9",
+        "on-primary-container": "#848484",
+        "on-secondary-container": "#63646c",
+        "background": "#f9f9fa",
+        "outline-variant": "#cfc4c5",
+        "on-secondary-fixed-variant": "#46464e",
+        "on-tertiary-container": "#838487"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      "spacing": {
+        "gutter": "24px",
+        "xl": "80px",
+        "sm": "12px",
+        "xs": "4px",
+        "lg": "48px",
+        "md": "24px",
+        "margin-mobile": "16px",
+        "base": "8px",
+        "margin-desktop": "32px"
+      },
+      "fontFamily": {
+        "headline-lg": ["Hanken Grotesk"],
+        "headline-xl": ["Hanken Grotesk"],
+        "body-sm": ["Inter"],
+        "label-md": ["Inter"],
+        "body-md": ["Inter"],
+        "label-sm": ["Inter"],
+        "headline-lg-mobile": ["Hanken Grotesk"],
+        "body-lg": ["Inter"],
+        "headline-md": ["Hanken Grotesk"]
+      },
+      "fontSize": {
+        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+      }
     }
-  }}
+  }
 }
 </script>
 </head>
-<body class="font-body-base text-on-surface page-shell">
+<body class="font-body-md text-on-surface antialiased overflow-hidden h-screen flex">
 
-<div class="scene-layer scene-grid"></div>
-<div class="scene-layer scene-ribbon"></div>
-<div class="scene-orb one"></div>
-<div class="scene-orb two"></div>
-<div class="scene-orb three"></div>
-
-<!-- Sidebar -->
-<aside class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-low border-r border-outline-variant/10 flex flex-col py-lg px-md z-50">
-  <div class="mb-xl px-sm">
-    <h1 class="font-display-lg text-headline-md font-black tracking-tighter text-primary">CheckMate</h1>
-    <p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant opacity-60 mt-xs">Terminal 01</p>
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen py-md px-sm w-64 gap-base bg-surface-bright border-r border-surface-variant">
+  <div class="px-sm mb-lg">
+    <h1 class="font-headline-md text-headline-md font-bold text-primary">CheckMate</h1>
   </div>
-  <nav class="flex-1 space-y-xs overflow-y-auto">
-    <a href="/dashboard.html" class="flex items-center gap-md py-sm px-md rounded-lg text-primary font-bold border-l-4 border-secondary bg-surface-container-high">
-      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">dashboard</span>
-      <span class="font-body-base">Dashboard</span>
+  
+  <div class="flex items-center gap-sm p-sm mb-md rounded-lg bg-surface-container-low">
+    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary">
+      <span class="material-symbols-outlined">security</span>
+    </div>
+    <div>
+      <p class="font-label-md text-label-md text-primary">Officer On Duty</p>
+      <p class="font-label-sm text-label-sm text-secondary">Terminal A-1</p>
+    </div>
+  </div>
+  
+  <nav class="flex flex-col gap-xs flex-1">
+    <a class="flex items-center gap-sm px-md py-sm text-primary font-bold bg-surface-container-high rounded-lg transition-all" href="dashboard.html">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="font-label-md text-label-md">Dashboard</span>
     </a>
-    <a href="/" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
-      <span class="material-symbols-outlined group-hover:text-primary transition-colors">fingerprint</span>
-      <span class="font-body-base">Visitor Check-In</span>
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all" href="index.html">
+      <span class="material-symbols-outlined">login</span>
+      <span class="font-label-md text-label-md">Check-In</span>
     </a>
-    <a href="/schedule.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
-      <span class="material-symbols-outlined group-hover:text-primary transition-colors">calendar_add_on</span>
-      <span class="font-body-base">Schedule Visit</span>
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all" href="schedule.html">
+      <span class="material-symbols-outlined">calendar_today</span>
+      <span class="font-label-md text-label-md">Schedule</span>
     </a>
-    <a href="/dashboard.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
-      <span class="material-symbols-outlined group-hover:text-primary transition-colors">assignment</span>
-      <span class="font-body-base">Log History</span>
-    </a>
-    <a href="/analytics.html" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-all duration-200 group">
-      <span class="material-symbols-outlined group-hover:text-primary transition-colors">bar_chart</span>
-      <span class="font-body-base">Analytics</span>
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all" href="analytics.html">
+      <span class="material-symbols-outlined">bar_chart</span>
+      <span class="font-label-md text-label-md">Analytics</span>
     </a>
   </nav>
-  <div class="pt-lg border-t border-outline-variant/10">
-    <button class="w-full py-md px-md mb-lg bg-error-container text-on-error-container font-label-sm uppercase tracking-widest rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-sm">
-      <span class="material-symbols-outlined text-[18px]">security</span>
-      Emergency Lockdown
+  
+  <div class="mt-auto space-y-sm">
+    <button class="w-full py-md bg-primary text-on-primary font-bold rounded flex items-center justify-center gap-sm active:scale-95 transition-transform" onclick="window.location.href='index.html'">
+      <span class="material-symbols-outlined">add</span>
+      <span class="font-label-md text-label-md">New Entry</span>
     </button>
-    <div class="space-y-xs">
-      <a href="#" class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">
-        <span class="material-symbols-outlined">help</span>
-        <span class="font-label-sm">Help</span>
-      </a>
-      <button onclick="logout()" class="w-full flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">
-        <span class="material-symbols-outlined">logout</span>
-        <span class="font-label-sm">Logout</span>
-      </button>
-    </div>
+    <button onclick="logout()" class="w-full py-sm text-secondary font-medium rounded flex items-center justify-center gap-sm hover:bg-surface-container transition-all">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="font-label-sm text-label-sm">Logout</span>
+    </button>
   </div>
 </aside>
 
-<!-- Main -->
-<main class="ml-[280px] min-h-screen bg-surface flex flex-col">
-  <!-- Top Bar -->
-  <header class="h-xl flex justify-between items-center px-margin-desktop bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 sticky top-0 z-40 flex-shrink-0">
-    <div class="flex gap-lg items-center">
-      <span class="font-headline-md text-headline-md font-black text-primary">CheckMate</span>
-      <nav class="hidden lg:flex gap-md">
-        <a href="/dashboard.html#analytics" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all">Analytics</a>
-        <a href="/dashboard.html#alerts" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all">Alerts</a>
-        <a href="/dashboard.html" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-secondary-fixed-dim transition-all">Dashboard</a>
-      </nav>
-    </div>
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+  <!-- TopAppBar -->
+  <header class="flex justify-between items-center w-full px-margin-desktop h-16 bg-surface border-b border-surface-variant">
     <div class="flex items-center gap-md">
-      <div class="flex items-center gap-xs text-secondary font-label-sm">
-        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-        Live Feed
+      <span class="font-headline-md text-headline-md font-black tracking-tighter text-primary">SYSTEM STATUS: NOMINAL</span>
+      <div class="flex items-center gap-xs px-sm py-1 bg-surface-container-highest rounded-full">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        <span class="font-label-sm text-label-sm text-primary">LIVE MONITORING</span>
       </div>
-      <a href="/" class="flex items-center gap-xs px-md py-xs bg-primary-container text-on-primary-container rounded font-label-sm uppercase tracking-widest hover:brightness-110 transition-all glow-sm">
-        <span class="material-symbols-outlined text-[15px]">add</span>
-        New Check-In
-      </a>
-      <button onclick="logout()" class="material-symbols-outlined text-on-surface-variant hover:text-error transition-all p-2 rounded-full hover:bg-surface-variant" title="Sign Out">logout</button>
+    </div>
+    
+    <div class="flex items-center gap-md">
+      <div class="relative group">
+        <input id="search-input" class="bg-surface-container-low border-none rounded-lg px-md py-2 w-64 font-body-sm focus:ring-1 focus:ring-primary" placeholder="Search logs, visitors, assets..." type="text"/>
+        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+      </div>
+      <div class="flex gap-sm">
+        <button class="p-2 hover:bg-surface-container-low transition-colors rounded-lg">
+          <span class="material-symbols-outlined text-primary">shield</span>
+        </button>
+        <button class="p-2 hover:bg-surface-container-low transition-colors rounded-lg" onclick="logout()">
+          <span class="material-symbols-outlined text-primary">account_circle</span>
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- Content -->
-  <div class="overflow-y-auto p-margin-desktop content-stage" style="height: auto; min-height: calc(100vh - 64px);">
-    <div class="max-w-[1440px] w-full mx-auto">
-      <div class="orientation-bar">
-        <span class="orientation-pill"><strong>live</strong> feed sync</span>
-        <span class="orientation-pill"><strong>export</strong> reports</span>
-        <span class="orientation-pill"><strong>alerts</strong> security review</span>
-      </div>
-      <!-- Header -->
-      <div class="flex items-end justify-between mb-lg">
-        <div>
-          <h2 class="font-display-lg text-display-lg tracking-tighter text-primary">Command Center</h2>
-          <p class="text-on-surface-variant opacity-70 mt-xs">Real-time visitor intelligence &amp; access control</p>
-        </div>
-        <a href="/analytics.html" class="surface-button flex items-center gap-xs px-md py-sm border border-outline-variant/30 text-on-surface-variant rounded-lg hover:bg-surface-container hover:text-primary transition-all font-label-sm">
-          <span class="material-symbols-outlined text-[16px]">bar_chart</span>
-          Analytics View
-        </a>
-      </div>
-
-      <!-- Stats grid -->
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-md mb-lg">
-        <div class="surface-card surface-card--dense p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60 flex items-center gap-md">
-          <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-primary text-[18px]">group</span>
-          </div>
+  <div class="flex-1 p-margin-desktop overflow-y-auto scroll-smooth">
+    <div class="max-w-full w-full mx-auto">
+      
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-md mb-lg">
+        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded flex items-center justify-between">
           <div>
-            <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet">Total Registry</p>
-            <p class="font-headline-md text-primary" id="stat-total">—</p>
+            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">TOTAL REGISTRY</p>
+            <p class="font-headline-md text-headline-md text-primary" id="stat-total">—</p>
           </div>
+          <span class="material-symbols-outlined text-secondary opacity-50">group</span>
         </div>
-        <div class="surface-card surface-card--dense p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60 flex items-center gap-md">
-          <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-secondary text-[18px]">how_to_reg</span>
-          </div>
+        
+        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded flex items-center justify-between">
           <div>
-            <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet">On-Site Now</p>
-            <p class="font-headline-md text-secondary" id="stat-active">—</p>
+            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">ON-SITE NOW</p>
+            <p class="font-headline-md text-headline-md text-primary" id="stat-active">—</p>
           </div>
+          <span class="material-symbols-outlined text-primary">how_to_reg</span>
         </div>
-        <div class="surface-card surface-card--dense p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60 flex items-center gap-md">
-          <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-primary-container text-[18px]">task_alt</span>
-          </div>
+        
+        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded flex items-center justify-between">
           <div>
-            <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet">Completed</p>
-            <p class="font-headline-md text-primary-fixed-dim" id="stat-released">—</p>
+            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">COMPLETED</p>
+            <p class="font-headline-md text-headline-md text-primary" id="stat-released">—</p>
           </div>
+          <span class="material-symbols-outlined text-primary">task_alt</span>
         </div>
-        <div class="surface-card surface-card--dense p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60 flex items-center gap-md">
-          <div class="w-10 h-10 rounded-full bg-tertiary-container/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-tertiary-container text-[18px]">pending_actions</span>
-          </div>
+        
+        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded flex items-center justify-between">
           <div>
-            <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet">Pending Exit</p>
-            <p class="font-headline-md text-tertiary-fixed-dim" id="stat-pending">—</p>
+            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">PENDING EXIT</p>
+            <p class="font-headline-md text-headline-md text-primary" id="stat-pending">—</p>
           </div>
+          <span class="material-symbols-outlined text-secondary">pending_actions</span>
         </div>
-        <div class="surface-card surface-card--dense p-md rounded-xl border border-outline-variant/10 bg-surface-container-lowest/60 flex items-center gap-md">
-          <div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-error text-[18px]">flag</span>
-          </div>
+        
+        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded flex items-center justify-between">
           <div>
-            <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-code-snippet">Flagged</p>
-            <p class="font-headline-md text-error" id="stat-flagged">—</p>
+            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">FLAGGED</p>
+            <p class="font-headline-md text-headline-md text-error" id="stat-flagged">—</p>
           </div>
+          <span class="material-symbols-outlined text-error">flag</span>
         </div>
       </div>
 
+      
       <div class="grid grid-cols-12 gap-gutter">
         <!-- Main table column -->
         <div class="col-span-12 xl:col-span-8 space-y-md">
           <!-- Toolbar -->
-          <div class="flex flex-wrap items-center gap-sm">
-            <div class="relative flex items-center bg-surface-container px-md py-xs rounded-full border border-outline-variant/20 flex-1 min-w-[200px] max-w-xs">
-              <span class="material-symbols-outlined text-on-surface-variant mr-xs text-[16px]">search</span>
-              <input id="search-input" type="text" class="bg-transparent border-none outline-none text-on-surface font-label-sm w-full focus:ring-0" placeholder="Search name, badge, phone..."/>
-            </div>
-
-            <div class="flex items-center gap-xs">
-              <input id="date-from" type="date" class="bg-surface-container border border-outline-variant/30 rounded px-sm py-xs text-on-surface font-code-snippet text-[11px] outline-none focus:border-primary-container transition-all"/>
-              <span class="text-on-surface-variant text-[10px]">→</span>
-              <input id="date-to" type="date" class="bg-surface-container border border-outline-variant/30 rounded px-sm py-xs text-on-surface font-code-snippet text-[11px] outline-none focus:border-primary-container transition-all"/>
+          <div class="flex flex-wrap items-center gap-sm bg-surface-container-lowest border border-surface-variant p-md rounded">
+            <div class="flex items-center gap-xs flex-1">
+              <input id="date-from" type="date" class="bg-surface-container border border-surface-variant rounded px-sm py-xs text-on-surface font-body-sm outline-none focus:border-primary transition-all"/>
+              <span class="text-on-surface-variant text-body-sm">→</span>
+              <input id="date-to" type="date" class="bg-surface-container border border-surface-variant rounded px-sm py-xs text-on-surface font-body-sm outline-none focus:border-primary transition-all"/>
               <button id="clear-dates" style="display:none;" class="text-on-surface-variant hover:text-error transition-all font-label-sm ml-xs">✕</button>
             </div>
 
             <div class="relative ml-auto" id="export-menu">
-              <button id="export-btn" class="flex items-center gap-xs px-md py-xs border border-outline-variant/30 text-on-surface-variant rounded hover:bg-surface-container hover:text-primary transition-all font-label-sm">
+              <button id="export-btn" class="flex items-center gap-xs px-md py-sm border border-surface-variant text-on-surface-variant rounded hover:bg-surface-container hover:text-primary transition-all font-label-sm">
                 <span class="material-symbols-outlined text-[15px]">download</span>
                 Export
                 <span class="material-symbols-outlined text-[13px]">expand_more</span>
               </button>
-              <div class="export-dropdown-sentinel" id="export-dropdown">
-                <div class="export-item-s" onclick="downloadExcel('day')"><span class="material-symbols-outlined text-[14px]">today</span>Today's Log</div>
-                <div class="export-item-s" onclick="downloadExcel('week')"><span class="material-symbols-outlined text-[14px]">date_range</span>This Week</div>
-                <div class="export-item-s" onclick="downloadExcel('month')"><span class="material-symbols-outlined text-[14px]">calendar_month</span>This Month</div>
-                <div class="export-item-s" onclick="downloadExcel('all')"><span class="material-symbols-outlined text-[14px]">download_for_offline</span>All Records</div>
+              <div class="export-dropdown-sentinel" id="export-dropdown" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:#fff;border:1px solid #e2e2e3;border-radius:4px;min-width:160px;z-index:50;">
+                <div class="export-item-s px-md py-sm hover:bg-surface-container cursor-pointer" onclick="downloadExcel('day')">
+                  <span class="material-symbols-outlined text-[14px]">today</span> Today's Log
+                </div>
+                <div class="export-item-s px-md py-sm hover:bg-surface-container cursor-pointer" onclick="downloadExcel('week')">
+                  <span class="material-symbols-outlined text-[14px]">date_range</span> This Week
+                </div>
+                <div class="export-item-s px-md py-sm hover:bg-surface-container cursor-pointer" onclick="downloadExcel('month')">
+                  <span class="material-symbols-outlined text-[14px]">calendar_month</span> This Month
+                </div>
+                <div class="export-item-s px-md py-sm hover:bg-surface-container cursor-pointer" onclick="downloadExcel('all')">
+                  <span class="material-symbols-outlined text-[14px]">download_for_offline</span> All Records
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Bulk bar -->
-          <div id="bulk-bar" class="bulk-bar-s">
+          <div id="bulk-bar" class="bulk-bar-s hidden items-center gap-md bg-surface-container-lowest border border-surface-variant p-md rounded">
             <span class="material-symbols-outlined text-[16px]">checklist</span>
             <span><span id="bulk-count">0</span> selected</span>
             <div class="flex gap-xs ml-auto">
-              <button onclick="bulkDeleteSelected()" class="flex items-center gap-xs px-sm py-xs bg-error/10 border border-error/30 text-error rounded font-label-sm hover:bg-error/20 transition-all text-[10px]">
+              <button onclick="bulkDeleteSelected()" class="flex items-center gap-xs px-sm py-xs bg-error-container border border-error text-error rounded font-label-sm hover:brightness-110 transition-all text-[10px]">
                 <span class="material-symbols-outlined text-[13px]">delete</span> Delete
               </button>
-              <button onclick="clearSelection()" class="px-sm py-xs border border-outline-variant/30 text-on-surface-variant rounded font-label-sm hover:bg-surface-container transition-all text-[10px]">Clear</button>
+              <button onclick="clearSelection()" class="px-sm py-xs border border-surface-variant text-on-surface-variant rounded font-label-sm hover:bg-surface-container transition-all text-[10px]">Clear</button>
             </div>
           </div>
 
           <!-- Tabs -->
-          <div class="flex gap-xs bg-surface-container border border-outline-variant/10 rounded-lg p-xs overflow-x-auto">
-            <button class="tab flex items-center gap-xs px-md py-xs rounded font-label-sm uppercase tracking-widest text-on-surface-variant bg-surface-container-high text-primary whitespace-nowrap" data-status="all">
-              All <span class="bg-primary-container/20 text-primary-container px-xs py-[1px] rounded text-[10px] font-bold" id="tab-count-all">0</span>
+          <div class="flex gap-xs bg-surface-container-low border border-surface-variant rounded p-xs overflow-x-auto">
+            <button class="tab flex items-center gap-xs px-md py-xs rounded font-label-sm uppercase tracking-widest text-primary bg-surface-container-high whitespace-nowrap" data-status="all">
+              All <span class="bg-primary text-on-primary px-xs py-[1px] rounded text-[10px] font-bold" id="tab-count-all">0</span>
             </button>
             <button class="tab flex items-center gap-xs px-md py-xs rounded font-label-sm uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-high transition-all whitespace-nowrap" data-status="active">
-              On-Site <span class="bg-secondary/20 text-secondary px-xs py-[1px] rounded text-[10px] font-bold" id="tab-count-active">0</span>
+              On-Site <span class="bg-primary text-on-primary px-xs py-[1px] rounded text-[10px] font-bold" id="tab-count-active">0</span>
             </button>
             <button class="tab flex items-center gap-xs px-md py-xs rounded font-label-sm uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-high transition-all whitespace-nowrap" data-status="released">Completed</button>
             <button class="tab flex items-center gap-xs px-md py-xs rounded font-label-sm uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-high transition-all whitespace-nowrap" data-status="security-pending">Pending Exit</button>
@@ -251,23 +304,23 @@ tailwind.config = {
           </div>
 
           <!-- Table -->
-          <div class="surface-card surface-card--hero glass-panel rounded-xl overflow-hidden">
-            <div class="table-scroll-s">
-              <table>
-                <thead>
+          <div class="bg-surface-container-lowest border border-surface-variant rounded overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-surface-container-low sticky top-0">
                   <tr>
-                    <th style="width:36px;"><input type="checkbox" id="select-all" class="rounded" style="accent-color:#4edea3;cursor:pointer;"/></th>
-                    <th>Visitor</th>
-                    <th>Contact</th>
-                    <th>Dept / Host</th>
-                    <th>Purpose</th>
-                    <th>Timeline</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th class="px-md py-sm text-left" style="width:36px;"><input type="checkbox" id="select-all" class="rounded" style="accent-color:#000;cursor:pointer;"/></th>
+                    <th class="px-md py-sm font-label-md text-label-md text-secondary text-left">VISITOR</th>
+                    <th class="px-md py-sm font-label-md text-label-md text-secondary text-left">CONTACT</th>
+                    <th class="px-md py-sm font-label-md text-label-md text-secondary text-left">DEPT / HOST</th>
+                    <th class="px-md py-sm font-label-md text-label-md text-secondary text-left">PURPOSE</th>
+                    <th class="px-md py-sm font-label-md text-label-md text-secondary text-left">TIMELINE</th>
+                    <th class="px-md py-sm font-label-md text-label-md text-secondary text-left">STATUS</th>
+                    <th class="px-md py-sm font-label-md text-label-md text-secondary text-right">ACTIONS</th>
                   </tr>
                 </thead>
-                <tbody id="visitor-tbody">
-                  <tr><td colspan="8" class="empty-state-s">Loading visitor records...</td></tr>
+                <tbody id="visitor-tbody" class="divide-y divide-surface-variant">
+                  <tr><td colspan="8" class="px-md py-lg text-center text-on-surface-variant">Loading visitor records...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -276,16 +329,16 @@ tailwind.config = {
 
         <!-- Activity feed column -->
         <div class="col-span-12 xl:col-span-4">
-          <div class="surface-card glass-panel rounded-xl overflow-hidden sticky top-4">
-            <div class="bg-surface-container-high px-md py-sm border-b border-outline-variant/10 flex items-center justify-between">
-              <span class="font-code-snippet text-[10px] text-on-surface-variant uppercase tracking-widest">Live Activity Feed</span>
+          <div class="bg-surface-container-lowest border border-surface-variant rounded overflow-hidden sticky top-4">
+            <div class="bg-surface-container-low px-md py-sm border-b border-surface-variant flex items-center justify-between">
+              <span class="font-label-md text-label-md text-primary font-bold uppercase tracking-widest">Live Activity Feed</span>
               <div class="flex items-center gap-xs">
-                <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                 <button onclick="loadActivity()" class="material-symbols-outlined text-[14px] text-on-surface-variant hover:text-primary transition-all">refresh</button>
               </div>
             </div>
-            <div id="activity-feed" class="divide-y divide-outline-variant/5 max-h-[500px] overflow-y-auto">
-              <div class="p-md text-on-surface-variant text-[11px] font-code-snippet uppercase tracking-widest opacity-50">Loading...</div>
+            <div id="activity-feed" class="divide-y divide-surface-variant max-h-[500px] overflow-y-auto">
+              <div class="p-md text-on-surface-variant text-body-sm font-body-md uppercase tracking-widest opacity-50">Loading...</div>
             </div>
           </div>
         </div>
@@ -295,24 +348,24 @@ tailwind.config = {
 </main>
 
 <!-- Flag modal -->
-<div id="flag-modal" class="modal-overlay-s" onclick="if(event.target===this)closeFlagModal()">
-  <div class="modal-s">
+<div id="flag-modal" class="fixed inset-0 bg-primary/20 backdrop-blur-sm flex items-center justify-center z-50 hidden" onclick="if(event.target===this)closeFlagModal()">
+  <div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-lg max-w-md w-full mx-md">
     <div class="flex items-center gap-md mb-lg">
-      <div class="w-10 h-10 rounded-full bg-error/10 border border-error/30 flex items-center justify-center">
+      <div class="w-10 h-10 rounded-full bg-error-container border border-error flex items-center justify-center">
         <span class="material-symbols-outlined text-error text-[18px]">flag</span>
       </div>
       <div>
         <h3 class="font-headline-md text-headline-md text-on-surface">Flag Visitor</h3>
-        <p class="text-[11px] text-on-surface-variant">Mark for security review</p>
+        <p class="font-label-sm text-label-sm text-on-surface-variant">Mark for security review</p>
       </div>
     </div>
     <div class="mb-lg">
       <label class="block font-label-sm uppercase tracking-widest text-on-surface-variant mb-sm">Reason for Flag</label>
-      <textarea id="flag-reason" rows="3" class="w-full bg-surface-container border border-outline-variant/30 rounded-lg py-md px-md text-on-surface text-sm focus:outline-none focus:border-error/50 transition-all resize-none" placeholder="Describe the security concern..."></textarea>
+      <textarea id="flag-reason" rows="3" class="w-full bg-surface-container border border-surface-variant rounded py-md px-md text-on-surface text-sm focus:outline-none focus:border-error transition-all resize-none" placeholder="Describe the security concern..."></textarea>
     </div>
     <div class="flex gap-sm justify-end">
-      <button onclick="closeFlagModal()" class="px-lg py-sm border border-outline-variant/30 text-on-surface-variant rounded font-label-sm hover:bg-surface-container transition-all">Cancel</button>
-      <button onclick="submitFlag()" class="flex items-center gap-xs px-lg py-sm bg-error/10 border border-error/30 text-error rounded font-label-sm hover:bg-error/20 transition-all">
+      <button onclick="closeFlagModal()" class="px-lg py-sm border border-surface-variant text-on-surface-variant rounded font-label-sm hover:bg-surface-container transition-all">Cancel</button>
+      <button onclick="submitFlag()" class="flex items-center gap-xs px-lg py-sm bg-error text-on-error rounded font-label-sm hover:brightness-110 transition-all">
         <span class="material-symbols-outlined text-[15px]" style="font-variation-settings:'FILL' 1;">flag</span>
         Flag Visitor
       </button>
@@ -320,8 +373,7 @@ tailwind.config = {
   </div>
 </div>
 
-<div class="fixed inset-0 pointer-events-none opacity-[0.025] z-[-1]" style="background-image:radial-gradient(#ffffff 1px,transparent 0);background-size:40px 40px;"></div>
-<div class="toast-container" id="toasts"></div>
+<div class="toast-container fixed bottom-md right-md z-50" id="toasts"></div>
 <script src="js/dashboard.js"></script>
 </body>
 </html>

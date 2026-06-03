@@ -1,170 +1,223 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html class="light" lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CheckMate — Visitor Badge</title>
+<title>CheckMate - Verification Pass</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Hanken+Grotesk:wght@600;700;800;900&family=Geist:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<style>
-  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
-  body { background-color: #0d1515; color: #dce4e5; }
-  @media print {
-    body { background: white; }
-    .no-print { display: none !important; }
-    .badge-card { box-shadow: none !important; }
-  }
-</style>
 <script id="tailwind-config">
 tailwind.config = {
-  darkMode:"class",
-  theme:{ extend:{
-    colors:{
-      "background":"#0d1515","surface":"#0d1515","surface-container-lowest":"#080f10",
-      "surface-container-low":"#151d1e","surface-container":"#192122","surface-container-high":"#232b2c",
-      "surface-container-highest":"#2e3637",
-      "on-surface":"#dce4e5","on-surface-variant":"#b9cacb","outline":"#849495","outline-variant":"#3b494b",
-      "primary":"#dbfcff","primary-fixed-dim":"#00dbe9","primary-container":"#00f0ff","on-primary-container":"#006970",
-      "secondary":"#4edea3","secondary-fixed-dim":"#4edea3","on-secondary":"#003824",
-      "error":"#ffb4ab","error-container":"#93000a",
-    },
-    borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},
-    spacing:{"xs":"4px","xl":"64px","sm":"12px","gutter":"24px","md":"24px","base":"8px","lg":"40px"},
-    fontFamily:{"display-lg":["Hanken Grotesk"],"code-snippet":["Geist"],"label-sm":["Geist"],"body-base":["Inter"],"headline-md":["Hanken Grotesk"]},
-    fontSize:{
-      "label-sm":["12px",{lineHeight:"1",letterSpacing:"0.05em",fontWeight:"500"}],
-      "body-base":["16px",{lineHeight:"1.6",fontWeight:"400"}],
-      "headline-md":["24px",{lineHeight:"1.3",fontWeight:"600"}],
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "surface-variant": "#e2e2e3","tertiary": "#000000","on-primary-fixed-variant": "#474747","on-tertiary-fixed": "#1a1c1e","on-surface": "#1a1c1d","inverse-primary": "#c6c6c6","tertiary-container": "#1a1c1e","tertiary-fixed-dim": "#c6c6c9","surface-container-low": "#f3f3f4","secondary-fixed-dim": "#c6c5cf","primary-fixed-dim": "#c6c6c6","tertiary-fixed": "#e2e2e5","secondary-container": "#e3e1ec","error-container": "#ffdad6","outline": "#7e7576","primary": "#000000","surface-container": "#eeeeef","surface-container-lowest": "#ffffff","on-tertiary": "#ffffff","on-primary": "#ffffff","on-background": "#1a1c1d","surface-bright": "#f9f9fa","primary-container": "#1b1b1b","on-error": "#ffffff","surface-container-highest": "#e2e2e3","on-secondary-fixed": "#1a1b22","surface-dim": "#dadadb","on-error-container": "#93000a","secondary": "#5d5e66","surface": "#f9f9fa","on-surface-variant": "#4c4546","error": "#ba1a1a","surface-tint": "#5e5e5e","on-secondary": "#ffffff","secondary-fixed": "#e3e1ec","primary-fixed": "#e2e2e2","inverse-on-surface": "#f0f1f2","on-primary-fixed": "#1b1b1b","inverse-surface": "#2f3132","on-tertiary-fixed-variant": "#454749","surface-container-high": "#e8e8e9","on-primary-container": "#848484","on-secondary-container": "#63646c","background": "#f9f9fa","outline-variant": "#cfc4c5","on-secondary-fixed-variant": "#46464e","on-tertiary-container": "#838487"
+      },
+      "borderRadius": {"DEFAULT": "0.125rem","lg": "0.25rem","xl": "0.5rem","full": "0.75rem"},
+      "spacing": {"gutter": "24px","xl": "80px","sm": "12px","xs": "4px","lg": "48px","md": "24px","margin-mobile": "16px","base": "8px","margin-desktop": "32px"},
+      "fontFamily": {"headline-lg": ["Hanken Grotesk"],"headline-xl": ["Hanken Grotesk"],"body-sm": ["Inter"],"label-md": ["Inter"],"body-md": ["Inter"],"label-sm": ["Inter"],"headline-lg-mobile": ["Hanken Grotesk"],"body-lg": ["Inter"],"headline-md": ["Hanken Grotesk"]},
+      "fontSize": {"headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],"headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],"body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],"label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],"body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],"label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],"headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],"body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],"headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]}
     }
-  }}
+  }
 }
 </script>
+<style>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.scanner-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #000, transparent);
+  width: 100%;
+  position: absolute;
+  animation: scan 3s ease-in-out infinite;
+}
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  50% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+</style>
 </head>
-<body class="font-body-base text-on-surface min-h-screen flex flex-col items-center py-lg px-md" style="background:#0d1515;">
+<body class="bg-background text-on-background min-h-screen flex overflow-hidden">
 
-<!-- Controls -->
-<div class="no-print flex items-center gap-md mb-lg">
-  <button onclick="history.back()" class="flex items-center gap-xs px-md py-sm border border-outline-variant/30 text-on-surface-variant rounded hover:text-primary hover:border-primary transition-all font-label-sm">
-    <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col h-screen py-md px-sm w-64 gap-base bg-surface-bright dark:bg-tertiary-container border-r border-surface-variant dark:border-outline z-50">
+  <div class="mb-lg">
+    <h1 class="font-headline-md text-headline-md font-bold text-primary">CheckMate</h1>
+    <div class="mt-md p-sm bg-surface-container-high rounded-lg flex items-center gap-sm">
+      <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary">
+        <span class="material-symbols-outlined" data-icon="shield">shield</span>
+      </div>
+      <div>
+        <p class="font-label-md text-label-md text-primary">Officer On Duty</p>
+        <p class="font-label-sm text-label-sm text-secondary">Terminal A-1</p>
+      </div>
+    </div>
+  </div>
+  
+  <nav class="flex flex-col gap-xs flex-grow">
+    <a class="flex items-center gap-sm px-md py-sm hover:bg-surface-container transition-all text-secondary font-medium rounded-lg" href="#">
+      <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+      <span class="font-label-md text-label-md">Dashboard</span>
+    </a>
+    <a class="flex items-center gap-sm px-md py-sm text-primary font-bold bg-surface-container-high rounded-lg" href="#">
+      <span class="material-symbols-outlined" data-icon="login" style="font-variation-settings: 'FILL' 1;">login</span>
+      <span class="font-label-md text-label-md">Check-In</span>
+    </a>
+    <a class="flex items-center gap-sm px-md py-sm hover:bg-surface-container transition-all text-secondary font-medium rounded-lg" href="#">
+      <span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+      <span class="font-label-md text-label-md">Schedule</span>
+    </a>
+    <a class="flex items-center gap-sm px-md py-sm hover:bg-surface-container transition-all text-secondary font-medium rounded-lg" href="#">
+      <span class="material-symbols-outlined" data-icon="history">history</span>
+      <span class="font-label-md text-label-md">History</span>
+    </a>
+  </nav>
+  
+  <button class="w-full bg-primary text-on-primary py-md font-label-md text-label-md rounded-lg active:scale-95 transition-transform flex items-center justify-center gap-sm">
+    <span class="material-symbols-outlined" data-icon="add">add</span>New Entry
   </button>
-  <h1 class="font-display-lg text-headline-md text-primary font-black tracking-tighter">CheckMate</h1>
-  <button onclick="window.print()" class="flex items-center gap-xs px-md py-sm bg-primary-container text-on-primary-container rounded font-label-sm hover:brightness-110 transition-all">
-    <span class="material-symbols-outlined text-[16px]">print</span> Print Badge
+</aside>
+
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col relative h-screen bg-surface">
+  <!-- Top Bar -->
+  <header class="flex justify-between items-center w-full px-margin-desktop h-16 border-b border-surface-variant bg-surface">
+    <div class="flex items-center gap-md">
+      <span class="font-headline-md text-headline-md font-black tracking-tighter text-primary">CheckMate</span>
+    </div>
+    <div class="flex items-center gap-lg">
+      <nav class="hidden lg:flex gap-md">
+        <span class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-1">Verification</span>
+        <span class="font-label-md text-label-md text-secondary font-normal hover:bg-surface-container-low transition-colors px-xs">Logs</span>
+        <span class="font-label-md text-label-md text-secondary font-normal hover:bg-surface-container-low transition-colors px-xs">Fleet</span>
+      </nav>
+      <div class="flex items-center gap-sm border-l border-surface-variant pl-lg">
+        <span class="material-symbols-outlined text-primary cursor-pointer" data-icon="shield">shield</span>
+        <span class="material-symbols-outlined text-primary cursor-pointer" data-icon="account_circle">account_circle</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Verification Canvas -->
+  <section class="flex-grow flex flex-col lg:flex-row p-md lg:p-lg gap-md lg:gap-lg overflow-hidden">
+    <!-- Left Panel: Large Visual Result -->
+    <div class="flex-grow flex flex-col items-center justify-center bg-surface-container-lowest border border-surface-variant rounded-xl p-lg relative overflow-hidden group">
+      <div class="scanner-line"></div>
+      
+      <div class="text-center z-10">
+        <div class="inline-flex items-center justify-center w-32 h-32 lg:w-48 lg:h-48 rounded-full border-[6px] border-primary mb-lg animate-pulse">
+          <span class="material-symbols-outlined text-primary text-[64px] lg:text-[96px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+        </div>
+        <h2 class="font-headline-xl text-headline-xl lg:text-[80px] leading-none font-black tracking-tighter text-primary mb-sm">ACCESS GRANTED</h2>
+        <p class="font-headline-md text-headline-md text-secondary tracking-widest uppercase opacity-60">Authentication Verified</p>
+      </div>
+
+      <!-- Footer Status Bar -->
+      <div class="absolute bottom-0 left-0 w-full p-md bg-primary text-on-primary flex flex-col lg:flex-row justify-between items-center gap-sm">
+        <div class="flex items-center gap-md">
+          <span class="material-symbols-outlined animate-spin">settings</span>
+          <p class="font-label-md text-label-md">AUTOMATED GATE SYSTEM: COMMENCING SEQUENCE...</p>
+        </div>
+        <div class="w-full lg:w-96 flex items-center gap-md">
+          <div class="flex-grow h-3 bg-white/20 rounded-full overflow-hidden">
+            <div class="h-full bg-white transition-all duration-700 ease-out" style="width: 62%;"></div>
+          </div>
+          <span class="font-label-md text-label-md font-bold whitespace-nowrap">62% OPEN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Identification Details -->
+    <div class="w-full lg:w-[400px] flex flex-col gap-md">
+      <!-- User Profile Card -->
+      <div class="bg-surface-container-lowest border border-surface-variant rounded-xl overflow-hidden">
+        <div class="h-48 w-full bg-surface-container relative">
+          <img alt="Visitor Portrait" class="w-full h-full object-cover grayscale" data-alt="A sharp, professional headshot of a corporate visitor in a charcoal suit, set against a sterile, minimalist white studio background. The lighting is high-contrast and dramatic, emphasizing the monochrome aesthetic of the brand. The visitor has a serious, neutral expression, projecting professional rigor and reliability in a high-security enterprise environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQwi9gXGH5P7QEmBISkE5BLMVM5KGKDTJmceJE2iCndwoBDeRQdba5UZ3Nx48SleoADK0GzqJmKJ1Esvrh_I_O99ky0g2w6oQe6P2rgpDBZ1Z6KnWtB7ebmvuUGV1ZfV79RE7S88OzFCfD2wX3B_v9cmRKsagpCQqUuz82TGUPeom8bWsfNr_fo1qAiIQl3Wkvcqk0LzSgwK6Qv3ayr0vViJkkikaUaWdWhYnN716mC6XwDrKVxFUHmR8Xxc62giIHq4M3Nlhb0Gar"/>
+          <div class="absolute top-sm right-sm bg-primary text-on-primary px-md py-xs rounded-full font-label-sm text-label-sm font-bold">VISITOR</div>
+        </div>
+        <div class="p-md">
+          <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-xs">Credential Holder</p>
+          <h3 class="font-headline-md text-headline-md text-primary font-bold mb-lg">Marcus Aurelius Thorne</h3>
+          <div class="space-y-md">
+            <div class="flex justify-between items-end border-b border-surface-variant pb-base">
+              <span class="font-label-md text-label-md text-secondary">CLEARANCE LEVEL</span>
+              <span class="font-headline-md text-headline-md text-primary font-black">LEVEL 01</span>
+            </div>
+            <div class="flex justify-between items-end border-b border-surface-variant pb-base">
+              <span class="font-label-md text-label-md text-secondary">EXPIRATION</span>
+              <span class="font-body-md text-body-md text-primary font-bold">18:00 HRS</span>
+            </div>
+            <div class="flex justify-between items-end border-b border-surface-variant pb-base">
+              <span class="font-label-md text-label-md text-secondary">DESTINATION</span>
+              <span class="font-body-md text-body-md text-primary font-bold">CORE WING / T3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Protocol Section -->
+      <div class="bg-surface-container border border-surface-variant rounded-xl p-md flex-grow">
+        <h4 class="font-label-md text-label-md text-primary font-bold mb-md uppercase tracking-widest flex items-center gap-sm">
+          <span class="material-symbols-outlined text-[18px]" data-icon="gavel">gavel</span>Protocol Log
+        </h4>
+        <ul class="space-y-sm">
+          <li class="flex items-start gap-sm">
+            <span class="material-symbols-outlined text-primary text-[18px]" data-icon="verified_user">verified_user</span>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Biometric identity match confirmed via Secure-Link.</p>
+          </li>
+          <li class="flex items-start gap-sm">
+            <span class="material-symbols-outlined text-primary text-[18px]" data-icon="task_alt">task_alt</span>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Non-disclosure agreement digital signature active.</p>
+          </li>
+          <li class="flex items-start gap-sm">
+            <span class="material-symbols-outlined text-primary text-[18px]" data-icon="sensor_door">sensor_door</span>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Entrance G-4 unlocked. Entry event recorded.</p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-sm">
+        <button class="flex-grow bg-primary text-on-primary font-label-md text-label-md py-md rounded-lg active:scale-95 transition-transform">PRINT PASS</button>
+        <button class="flex-grow bg-white border border-primary text-primary font-label-md text-label-md py-md rounded-lg active:scale-95 transition-transform">NOTIFY HOST</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Floating Action (Contextual Overide) -->
+  <button class="fixed bottom-lg right-lg w-16 h-16 bg-primary text-on-primary rounded-full shadow-xl flex items-center justify-center active:scale-90 transition-transform lg:hidden">
+    <span class="material-symbols-outlined text-3xl" data-icon="close">close</span>
   </button>
-</div>
-
-<p id="loading" class="text-on-surface-variant font-code-snippet text-[11px] uppercase tracking-widest">Loading visitor record...</p>
-<p id="error-msg" class="text-error font-code-snippet text-[11px] uppercase tracking-widest" style="display:none;">Visitor not found or badge expired.</p>
-
-<!-- Badge card -->
-<div class="badge-card bg-white rounded-2xl overflow-hidden shadow-2xl" id="badge-card" style="display:none;width:360px;">
-  <!-- Header -->
-  <div class="p-lg flex items-center justify-between" style="background:linear-gradient(135deg,#004f54 0%,#006970 50%,#00363a 100%);">
-    <div>
-      <div class="font-display-lg font-black text-lg tracking-tighter text-white">CheckMate</div>
-      <div class="text-[10px] text-white/70 font-code-snippet uppercase tracking-widest mt-[2px]">Visitor Management System</div>
-    </div>
-    <div class="bg-white/15 text-white px-sm py-xs rounded font-label-sm uppercase tracking-widest text-[10px] border border-white/20" id="b-type">Guest</div>
-  </div>
-
-  <!-- Body -->
-  <div class="p-lg bg-white">
-    <div class="flex gap-md mb-md">
-      <div id="b-photo-wrap" class="flex-shrink-0"></div>
-      <div>
-        <div class="font-display-lg font-black text-xl text-slate-900 leading-tight" id="b-name">—</div>
-        <div class="font-code-snippet text-[11px] text-indigo-600 font-medium mt-[3px]" id="b-badge">—</div>
-        <div class="text-slate-500 text-[12px] mt-[3px]" id="b-dept">—</div>
-      </div>
-    </div>
-
-    <div class="h-px bg-slate-200 my-md"></div>
-
-    <div class="grid grid-cols-2 gap-x-lg gap-y-sm mb-md">
-      <div>
-        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-[2px] font-code-snippet">Host</div>
-        <div class="text-[12px] font-semibold text-slate-800" id="b-host">—</div>
-      </div>
-      <div>
-        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-[2px] font-code-snippet">Purpose</div>
-        <div class="text-[12px] font-semibold text-slate-800" id="b-purpose">—</div>
-      </div>
-      <div>
-        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-[2px] font-code-snippet">Check-In</div>
-        <div class="text-[12px] font-semibold text-slate-800" id="b-checkin">—</div>
-      </div>
-      <div>
-        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-[2px] font-code-snippet">Duration</div>
-        <div class="text-[12px] font-semibold text-slate-800" id="b-duration">—</div>
-      </div>
-    </div>
-
-    <div class="h-px bg-slate-200 my-md"></div>
-
-    <div class="flex gap-md items-center">
-      <img id="b-qr" class="w-20 h-20 rounded-lg border border-slate-200 p-[3px] bg-white flex-shrink-0" style="display:none;" alt="QR"/>
-      <div id="b-qr-ph" class="w-20 h-20 rounded-lg border-2 border-dashed border-slate-200 flex items-center justify-center text-[9px] text-slate-400 text-center font-code-snippet flex-shrink-0">QR N/A</div>
-      <div>
-        <div class="font-bold text-[11px] text-slate-800 mb-[3px]">Scan at exit gate</div>
-        <div class="text-[10px] text-slate-500 leading-relaxed">Present badge to security. QR code enables quick checkout verification.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div class="px-lg py-sm bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-    <div class="text-[9px] text-slate-400 font-code-snippet" id="b-time">—</div>
-    <div class="flex items-center gap-[5px] text-[9px] font-bold text-emerald-600 font-code-snippet">
-      <div class="w-[6px] h-[6px] rounded-full bg-emerald-500"></div>
-      AUTHORIZED
-    </div>
-  </div>
-</div>
+</main>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const id = params.get('id');
-if (!id) {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('error-msg').style.display = 'block';
-} else {
-  fetch(`/api/visitors/${id}`)
-    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-    .then(v => {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('badge-card').style.display = 'block';
-
-      document.getElementById('b-name').textContent = v.full_name;
-      document.getElementById('b-badge').textContent = v.badge_number || 'N/A';
-      document.getElementById('b-dept').textContent = v.department_visiting || '—';
-      document.getElementById('b-host').textContent = v.person_to_visit || '—';
-      document.getElementById('b-purpose').textContent = v.purpose_of_visit || 'General';
-      document.getElementById('b-duration').textContent = v.expected_duration || '—';
-      document.getElementById('b-type').textContent = v.visitor_type || 'Guest';
-
-      const inTime = new Date(v.in_time);
-      document.getElementById('b-checkin').textContent = inTime.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-      document.getElementById('b-time').textContent = inTime.toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'}) + ' · ' + inTime.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-
-      const photoWrap = document.getElementById('b-photo-wrap');
-      if (v.photo_path) {
-        photoWrap.innerHTML = `<img src="${v.photo_path}" class="w-16 h-16 rounded-xl object-cover border border-slate-200" alt="Photo">`;
-      } else {
-        const initials = v.full_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-        photoWrap.innerHTML = `<div class="w-16 h-16 rounded-xl flex items-center justify-center font-black text-2xl text-white" style="background:linear-gradient(135deg,#004f54,#006970);">${initials}</div>`;
-      }
-      if (v.qr_code_path) {
-        const qr = document.getElementById('b-qr');
-        qr.src = v.qr_code_path; qr.style.display = 'block';
-        document.getElementById('b-qr-ph').style.display = 'none';
-      }
-    })
-    .catch(() => {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('error-msg').style.display = 'block';
-    });
-}
+// Micro-interaction for the progress bar
+document.addEventListener('DOMContentLoaded', () => {
+  const progressBar = document.querySelector('.h-full.bg-white');
+  let progress = 62;
+  const progressText = document.querySelector('.whitespace-nowrap');
+  const updateProgress = () => {
+    if (progress < 100) {
+      progress += (Math.random() * 0.5);
+      if (progress > 100) progress = 100;
+      progressBar.style.width = `${progress}%`;
+      progressText.innerText = `${Math.floor(progress)}% OPEN`;
+      requestAnimationFrame(updateProgress);
+    } else {
+      progressText.innerText = 'PROCEED NOW';
+      progressText.classList.add('animate-pulse');
+    }
+  };
+  // Start after a slight delay
+  setTimeout(() => {
+    requestAnimationFrame(updateProgress);
+  }, 1000);
+});
 </script>
+
 </body>
 </html>
