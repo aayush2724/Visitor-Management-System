@@ -3,129 +3,120 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CheckMate - Analytics</title>
+<title>SENTINEL VMS - Analytics</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="css/enhanced-styles.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-body {
-  background-color: #f9f9fa;
-}
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d1d6; border-radius: 10px; }
-</style>
 <script id="tailwind-config">
 tailwind.config = {
   darkMode: "class",
   theme: {
     extend: {
       "colors": {
-        "surface-variant": "#e2e2e3",
-        "tertiary": "#000000",
-        "on-primary-fixed-variant": "#474747",
-        "on-tertiary-fixed": "#1a1c1e",
-        "on-surface": "#1a1c1d",
-        "inverse-primary": "#c6c6c6",
-        "tertiary-container": "#1a1c1e",
-        "tertiary-fixed-dim": "#c6c6c9",
-        "surface-container-low": "#f3f3f4",
-        "secondary-fixed-dim": "#c6c5cf",
-        "primary-fixed-dim": "#c6c6c6",
-        "tertiary-fixed": "#e2e2e5",
-        "secondary-container": "#e3e1ec",
-        "error-container": "#ffdad6",
-        "outline": "#7e7576",
-        "primary": "#000000",
-        "surface-container": "#eeeeef",
-        "surface-container-lowest": "#ffffff",
-        "on-tertiary": "#ffffff",
-        "on-primary": "#ffffff",
-        "on-background": "#1a1c1d",
-        "surface-bright": "#f9f9fa",
-        "primary-container": "#1b1b1b",
-        "on-error": "#ffffff",
-        "surface-container-highest": "#e2e2e3",
-        "on-secondary-fixed": "#1a1b22",
-        "surface-dim": "#dadadb",
-        "on-error-container": "#93000a",
-        "secondary": "#5d5e66",
-        "surface": "#f9f9fa",
-        "on-surface-variant": "#4c4546",
-        "error": "#ba1a1a",
-        "surface-tint": "#5e5e5e",
-        "on-secondary": "#ffffff",
-        "secondary-fixed": "#e3e1ec",
-        "primary-fixed": "#e2e2e2",
-        "inverse-on-surface": "#f0f1f2",
-        "on-primary-fixed": "#1b1b1b",
-        "inverse-surface": "#2f3132",
-        "on-tertiary-fixed-variant": "#454749",
-        "surface-container-high": "#e8e8e9",
-        "on-primary-container": "#848484",
-        "on-secondary-container": "#63646c",
-        "background": "#f9f9fa",
-        "outline-variant": "#cfc4c5",
-        "on-secondary-fixed-variant": "#46464e",
-        "on-tertiary-container": "#838487"
+        "surface-variant": "#e2e2e3","tertiary": "#000000","on-primary-fixed-variant": "#474747","on-tertiary-fixed": "#1a1c1e","on-surface": "#1a1c1d","inverse-primary": "#c6c6c6","tertiary-container": "#1a1c1e","tertiary-fixed-dim": "#c6c6c9","surface-container-low": "#f3f3f4","secondary-fixed-dim": "#c6c5cf","primary-fixed-dim": "#c6c6c6","tertiary-fixed": "#e2e2e5","secondary-container": "#e3e1ec","error-container": "#ffdad6","outline": "#7e7576","primary": "#000000","surface-container": "#eeeeef","surface-container-lowest": "#ffffff","on-tertiary": "#ffffff","on-primary": "#ffffff","on-background": "#1a1c1d","surface-bright": "#f9f9fa","primary-container": "#1b1b1b","on-error": "#ffffff","surface-container-highest": "#e2e2e3","on-secondary-fixed": "#1a1b22","surface-dim": "#dadadb","on-error-container": "#93000a","secondary": "#5d5e66","surface": "#f9f9fa","on-surface-variant": "#4c4546","error": "#ba1a1a","surface-tint": "#5e5e5e","on-secondary": "#ffffff","secondary-fixed": "#e3e1ec","primary-fixed": "#e2e2e2","inverse-on-surface": "#f0f1f2","on-primary-fixed": "#1b1b1b","inverse-surface": "#2f3132","on-tertiary-fixed-variant": "#454749","surface-container-high": "#e8e8e9","on-primary-container": "#848484","on-secondary-container": "#63646c","background": "#f9f9fa","outline-variant": "#cfc4c5","on-secondary-fixed-variant": "#46464e","on-tertiary-container": "#838487"
       },
-      "borderRadius": {
-        "DEFAULT": "0.125rem",
-        "lg": "0.25rem",
-        "xl": "0.5rem",
-        "full": "0.75rem"
-      },
-      "spacing": {
-        "gutter": "24px",
-        "xl": "80px",
-        "sm": "12px",
-        "xs": "4px",
-        "lg": "48px",
-        "md": "24px",
-        "margin-mobile": "16px",
-        "base": "8px",
-        "margin-desktop": "32px"
-      },
-      "fontFamily": {
-        "headline-lg": ["Hanken Grotesk"],
-        "headline-xl": ["Hanken Grotesk"],
-        "body-sm": ["Inter"],
-        "label-md": ["Inter"],
-        "body-md": ["Inter"],
-        "label-sm": ["Inter"],
-        "headline-lg-mobile": ["Hanken Grotesk"],
-        "body-lg": ["Inter"],
-        "headline-md": ["Hanken Grotesk"]
-      },
-      "fontSize": {
-        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
-        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
-        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
-      }
+      "borderRadius": {"DEFAULT": "0.125rem","lg": "0.25rem","xl": "0.5rem","full": "0.75rem"},
+      "spacing": {"gutter": "24px","xl": "80px","sm": "12px","xs": "4px","lg": "48px","md": "24px","margin-mobile": "16px","base": "8px","margin-desktop": "32px"},
+      "fontFamily": {"headline-lg": ["Hanken Grotesk"],"headline-xl": ["Hanken Grotesk"],"body-sm": ["Inter"],"label-md": ["Inter"],"body-md": ["Inter"],"label-sm": ["Inter"],"headline-lg-mobile": ["Hanken Grotesk"],"body-lg": ["Inter"],"headline-md": ["Hanken Grotesk"]},
+      "fontSize": {"headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],"headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],"body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],"label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],"body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],"label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],"headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],"body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],"headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]}
     }
   }
 }
 </script>
+<style>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+body { background-color: #f9f9fa; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d1d6; border-radius: 10px; }
+
+/* Hours heatmap */
+#hours-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3px;
+}
+.hour-cell {
+  height: 28px;
+  border-radius: 2px;
+  position: relative;
+  cursor: default;
+  border: 1px solid #e2e2e3;
+}
+.hour-cell:hover .hc-tip { display: block; }
+.hc-tip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  z-index: 10;
+}
+#hours-labels {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3px;
+  margin-top: 4px;
+}
+.hour-label {
+  font-size: 9px;
+  color: #5d5e66;
+  text-align: center;
+}
+
+/* Repeat visitor list */
+.repeat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e2e3;
+}
+.repeat-item:last-child { border-bottom: none; }
+.repeat-rank {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #e2e2e3;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5d5e66;
+  flex-shrink: 0;
+}
+.repeat-info { flex: 1; }
+.repeat-name { font-size: 13px; font-weight: 600; color: #1a1c1d; }
+.repeat-phone { font-size: 11px; color: #5d5e66; }
+.repeat-count { font-size: 20px; font-weight: 700; color: #000; text-align: right; }
+.repeat-sub { font-size: 9px; color: #5d5e66; text-align: right; text-transform: uppercase; }
+
+/* Toast */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+.toast { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #000; color: #fff; border-radius: 4px; font-size: 13px; animation: toast-in .3s ease; }
+.toast.error { background: #ba1a1a; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(8px); } }
+</style>
 </head>
 <body class="font-body-md text-on-surface antialiased overflow-hidden h-screen flex">
 
 <!-- SideNavBar -->
 <aside class="flex flex-col h-screen py-md px-sm w-64 gap-base bg-surface-bright border-r border-surface-variant">
   <div class="px-sm mb-lg">
-    <h1 class="font-headline-md text-headline-md font-bold text-primary">CheckMate</h1>
+    <h1 class="font-headline-md text-headline-md font-bold text-primary">SENTINEL VMS</h1>
   </div>
-  
+
   <div class="flex items-center gap-sm p-sm mb-md rounded-lg bg-surface-container-low">
     <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary">
       <span class="material-symbols-outlined">security</span>
@@ -135,26 +126,30 @@ tailwind.config = {
       <p class="font-label-sm text-label-sm text-secondary">Terminal A-1</p>
     </div>
   </div>
-  
+
   <nav class="flex flex-col gap-xs flex-1">
-    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded-lg" href="dashboard.html">
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded" href="dashboard.html">
       <span class="material-symbols-outlined">dashboard</span>
       <span class="font-label-md text-label-md">Dashboard</span>
     </a>
-    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded-lg" href="index.html">
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded" href="index.html">
       <span class="material-symbols-outlined">login</span>
       <span class="font-label-md text-label-md">Check-In</span>
     </a>
-    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded-lg" href="schedule.html">
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded" href="schedule.html">
       <span class="material-symbols-outlined">calendar_today</span>
       <span class="font-label-md text-label-md">Schedule</span>
+    </a>
+    <a class="flex items-center gap-sm px-md py-sm text-secondary font-medium hover:bg-surface-container transition-all rounded" href="history.html">
+      <span class="material-symbols-outlined">history</span>
+      <span class="font-label-md text-label-md">History</span>
     </a>
     <a class="flex items-center gap-sm px-md py-sm text-primary font-bold bg-surface-container-high rounded-lg transition-all" href="analytics.html">
       <span class="material-symbols-outlined">bar_chart</span>
       <span class="font-label-md text-label-md">Analytics</span>
     </a>
   </nav>
-  
+
   <div class="mt-auto space-y-sm">
     <button class="w-full py-md bg-primary text-on-primary font-bold rounded flex items-center justify-center gap-sm active:scale-95 transition-transform" onclick="window.location.href='index.html'">
       <span class="material-symbols-outlined">add</span>
@@ -171,166 +166,123 @@ tailwind.config = {
   <!-- TopAppBar -->
   <header class="flex justify-between items-center w-full px-margin-desktop h-16 bg-surface border-b border-surface-variant">
     <div class="flex items-center gap-md">
-      <span class="font-headline-md text-headline-md font-black tracking-tighter text-primary">ANALYTICS & REPORTING</span>
-      <div class="flex items-center gap-xs px-sm py-1 bg-surface-container-highest rounded-full">
-        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        <span class="font-label-sm text-label-sm text-primary">LIVE ANALYTICS</span>
-      </div>
+      <span class="font-headline-md text-headline-md font-black tracking-tighter text-primary">ANALYTICS & REPORTS</span>
     </div>
-    
     <div class="flex items-center gap-md">
-      <div class="relative group">
-        <input id="search-input" class="bg-surface-container-low border-none rounded-lg px-md py-2 w-64 font-body-sm focus:ring-1 focus:ring-primary" placeholder="Search reports, exports..." type="text"/>
-        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
-      </div>
-      <div class="flex gap-sm">
-        <button class="p-2 hover:bg-surface-container-low transition-colors rounded-lg">
-          <span class="material-symbols-outlined text-primary">shield</span>
-        </button>
-        <button class="p-2 hover:bg-surface-container-low transition-colors rounded-lg" onclick="logout()">
-          <span class="material-symbols-outlined text-primary">account_circle</span>
-        </button>
-      </div>
+      <!-- Time window selector -->
+      <select id="trend-days" class="bg-surface-container border border-surface-variant rounded px-sm py-xs text-on-surface font-body-sm outline-none focus:border-primary transition-all cursor-pointer">
+        <option value="7">Last 7 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+      <button onclick="exportReport()" class="flex items-center gap-xs px-md py-sm bg-primary text-on-primary rounded font-label-md hover:opacity-90 transition-all">
+        <span class="material-symbols-outlined text-[15px]">download</span>Export
+      </button>
+      <button class="p-2 hover:bg-surface-container-low transition-colors rounded-lg">
+        <span class="material-symbols-outlined text-primary">shield</span>
+      </button>
     </div>
   </header>
 
   <!-- Content -->
-  <div class="flex-1 p-margin-desktop overflow-y-auto scroll-smooth">
-    <div class="max-w-full w-full mx-auto">
-      
-      <!-- Page Heading -->
-      <div class="mb-lg">
-        <h2 class="font-headline-lg text-headline-lg font-black text-primary mb-sm">Visitor Analytics Dashboard</h2>
-        <p class="font-body-sm text-secondary">Real-time insights and reporting for visitor management patterns</p>
+  <div class="flex-1 p-margin-desktop overflow-y-auto">
+
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-md mb-lg">
+      <div class="bg-surface-container-lowest border border-surface-variant p-md rounded">
+        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-xs">Today</p>
+        <p class="font-headline-lg text-headline-lg text-primary" id="s-today">—</p>
+        <p class="font-label-sm text-label-sm text-secondary mt-xs">visitors checked in</p>
       </div>
-      
-      <!-- Summary Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-md mb-lg">
-        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded-medium card-elevated hover-lift transition-all fade-in stagger-1">
-          <div>
-            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">TODAY'S VISITS</p>
-            <p class="font-headline-md text-headline-md text-primary" id="stat-today">—</p>
-          </div>
-          <span class="material-symbols-outlined text-secondary opacity-50">event</span>
-        </div>
-        
-        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded-medium card-elevated hover-lift transition-all fade-in stagger-2">
-          <div>
-            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">THIS WEEK</p>
-            <p class="font-headline-md text-headline-md text-primary" id="stat-week">—</p>
-          </div>
-          <span class="material-symbols-outlined text-primary">calendar_today</span>
-        </div>
-        
-        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded-medium card-elevated hover-lift transition-all fade-in stagger-3">
-          <div>
-            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">THIS MONTH</p>
-            <p class="font-headline-md text-headline-md text-primary" id="stat-month">—</p>
-          </div>
-          <span class="material-symbols-outlined text-primary">calendar_month</span>
-        </div>
-        
-        <div class="bg-surface-container-lowest border border-surface-variant p-md rounded-medium card-elevated hover-lift transition-all fade-in stagger-4">
-          <div>
-            <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">AVG DURATION</p>
-            <p class="font-headline-md text-headline-md text-primary" id="stat-duration">—</p>
-          </div>
-          <span class="material-symbols-outlined text-secondary">schedule</span>
-        </div>
+      <div class="bg-surface-container-lowest border border-surface-variant p-md rounded">
+        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-xs">This Week</p>
+        <p class="font-headline-lg text-headline-lg text-primary" id="s-week">—</p>
+        <p class="font-label-sm text-label-sm text-secondary mt-xs">this week</p>
       </div>
-      
-      <!-- Charts Grid -->
-      <div class="grid grid-cols-12 gap-gutter mb-lg">
-        <!-- Visit Trends Chart -->
-        <div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-surface-variant rounded p-md">
-          <div class="flex items-center justify-between mb-md">
-            <h3 class="font-headline-md text-headline-md font-bold text-primary">Visit Trends</h3>
-            <select id="trend-range" class="bg-surface-container border border-surface-variant rounded px-sm py-xs font-label-sm focus:outline-none focus:border-primary">
-              <option value="7">Last 7 Days</option>
-              <option value="30" selected>Last 30 Days</option>
-              <option value="90">Last 90 Days</option>
-            </select>
-          </div>
-          <div class="relative h-64">
-            <canvas id="trends-chart"></canvas>
-          </div>
-        </div>
-        
-        <!-- Department Distribution -->
-        <div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-surface-variant rounded p-md">
-          <h3 class="font-headline-md text-headline-md font-bold text-primary mb-md">By Department</h3>
-          <div class="relative h-64 flex items-center justify-center">
-            <canvas id="dept-chart"></canvas>
-          </div>
-        </div>
+      <div class="bg-surface-container-lowest border border-surface-variant p-md rounded">
+        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-xs">This Month</p>
+        <p class="font-headline-lg text-headline-lg text-primary" id="s-month">—</p>
+        <p class="font-label-sm text-label-sm text-secondary mt-xs">this month</p>
       </div>
-      
-      <!-- Secondary Charts -->
-      <div class="grid grid-cols-12 gap-gutter mb-lg">
-        <!-- Visitor Types -->
-        <div class="col-span-12 md:col-span-4 bg-surface-container-lowest border border-surface-variant rounded p-md">
-          <h3 class="font-headline-md text-headline-md font-bold text-primary mb-md">Visitor Types</h3>
-          <div class="relative h-56 flex items-center justify-center">
-            <canvas id="type-chart"></canvas>
-          </div>
-        </div>
-        
-        <!-- Purpose of Visit -->
-        <div class="col-span-12 md:col-span-4 bg-surface-container-lowest border border-surface-variant rounded p-md">
-          <h3 class="font-headline-md text-headline-md font-bold text-primary mb-md">Purpose of Visit</h3>
-          <div class="relative h-56 flex items-center justify-center">
-            <canvas id="purpose-chart"></canvas>
-          </div>
-        </div>
-        
-        <!-- Peak Hours -->
-        <div class="col-span-12 md:col-span-4 bg-surface-container-lowest border border-surface-variant rounded p-md">
-          <h3 class="font-headline-md text-headline-md font-bold text-primary mb-md">Peak Hours</h3>
-          <div class="grid grid-cols-12 gap-xs mt-md">
-            <div id="hours-grid" class="col-span-12 grid grid-cols-12 gap-xs"></div>
-          </div>
-          <div id="hours-labels" class="flex justify-between text-label-sm text-secondary mt-sm px-sm"></div>
-        </div>
-      </div>
-      
-      <!-- Bottom Row: Frequent Visitors + Department Breakdown -->
-      <div class="grid grid-cols-12 gap-gutter">
-        <!-- Frequent Visitors -->
-        <div class="col-span-12 md:col-span-5 bg-surface-container-lowest border border-surface-variant rounded p-md">
-          <div class="flex items-center gap-sm mb-md">
-            <span class="material-symbols-outlined text-primary">trending_up</span>
-            <h3 class="font-headline-md text-headline-md font-bold text-primary">Frequent Visitors</h3>
-          </div>
-          <div id="frequent-list" class="space-y-sm">
-            <div class="text-on-surface-variant text-body-sm opacity-50">Loading...</div>
-          </div>
-        </div>
-        
-        <!-- Department Breakdown Bar Chart -->
-        <div class="col-span-12 md:col-span-7 bg-surface-container-lowest border border-surface-variant rounded p-md">
-          <h3 class="font-headline-md text-headline-md font-bold text-primary mb-md">Department Breakdown</h3>
-          <div class="relative h-64">
-            <canvas id="dept-bar-chart"></canvas>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Export Controls -->
-      <div class="mt-lg flex gap-md justify-end">
-        <button onclick="exportCSV()" class="flex items-center gap-sm px-md py-sm border border-surface-variant text-on-surface-variant rounded font-label-sm hover:bg-surface-container transition-all">
-          <span class="material-symbols-outlined text-[16px]">download</span>
-          Export CSV
-        </button>
-        <button onclick="exportPDF()" class="flex items-center gap-sm px-md py-sm bg-primary text-on-primary rounded font-label-sm hover:opacity-90 transition-all">
-          <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
-          Export PDF
-        </button>
+      <div class="bg-surface-container-lowest border border-surface-variant p-md rounded">
+        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-xs">Avg Duration</p>
+        <p class="font-headline-lg text-headline-lg text-primary" id="s-avg">—</p>
+        <p class="font-label-sm text-label-sm text-secondary mt-xs">minutes per visit</p>
       </div>
     </div>
+
+    <!-- Row 1: Trends + Department donut -->
+    <div class="grid grid-cols-12 gap-gutter mb-gutter">
+      <div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-surface-variant rounded p-md">
+        <div class="flex items-center justify-between mb-md">
+          <h3 class="font-label-md text-label-md text-primary font-bold uppercase tracking-widest">Visit Trends</h3>
+          <span class="font-label-sm text-label-sm text-secondary">Daily walk-ins vs scheduled</span>
+        </div>
+        <canvas id="trends-chart" height="100"></canvas>
+      </div>
+
+      <div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-surface-variant rounded p-md">
+        <h3 class="font-label-md text-label-md text-primary font-bold uppercase tracking-widest mb-md">By Department</h3>
+        <div class="flex items-center justify-center" style="max-height:240px;">
+          <canvas id="dept-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Visitor types + Purpose + Peak hours -->
+    <div class="grid grid-cols-12 gap-gutter mb-gutter">
+      <div class="col-span-12 md:col-span-4 bg-surface-container-lowest border border-surface-variant rounded p-md">
+        <h3 class="font-label-md text-label-md text-primary font-bold uppercase tracking-widest mb-md">Visitor Types</h3>
+        <div class="flex items-center justify-center" style="max-height:220px;">
+          <canvas id="type-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="col-span-12 md:col-span-4 bg-surface-container-lowest border border-surface-variant rounded p-md">
+        <h3 class="font-label-md text-label-md text-primary font-bold uppercase tracking-widest mb-md">Purpose of Visit</h3>
+        <div class="flex items-center justify-center" style="max-height:220px;">
+          <canvas id="purpose-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="col-span-12 md:col-span-4 bg-surface-container-lowest border border-surface-variant rounded p-md">
+        <h3 class="font-label-md text-label-md text-primary font-bold uppercase tracking-widest mb-md">Peak Hours</h3>
+        <div id="hours-grid"></div>
+        <div id="hours-labels"></div>
+      </div>
+    </div>
+
+    <!-- Row 3: Frequent visitors + Department bar -->
+    <div class="grid grid-cols-12 gap-gutter">
+      <div class="col-span-12 md:col-span-5 bg-surface-container-lowest border border-surface-variant rounded p-md">
+        <div class="flex items-center gap-xs mb-md">
+          <span class="material-symbols-outlined text-primary text-[18px]">repeat</span>
+          <h3 class="font-label-md text-label-md text-primary font-bold uppercase tracking-widest">Frequent Visitors</h3>
+        </div>
+        <ul id="repeat-list">
+          <li class="py-md text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest opacity-50">Loading...</li>
+        </ul>
+      </div>
+
+      <div class="col-span-12 md:col-span-7 bg-surface-container-lowest border border-surface-variant rounded p-md">
+        <h3 class="font-label-md text-label-md text-primary font-bold uppercase tracking-widest mb-md">Department Breakdown</h3>
+        <canvas id="dept-bar-chart" height="160"></canvas>
+      </div>
+    </div>
+
   </div>
 </main>
 
-<div class="toast-container fixed bottom-md right-md z-50" id="toasts"></div>
+<div class="toast-container" id="toasts"></div>
 <script src="js/analytics.js"></script>
+<script>
+// Override Chart.js defaults for light theme
+Chart.defaults.color = '#5d5e66';
+Chart.defaults.borderColor = '#e2e2e3';
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.font.size = 11;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="js/animations.js"></script>
 </body>
 </html>
