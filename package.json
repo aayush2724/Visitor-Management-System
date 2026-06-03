@@ -1,7 +1,7 @@
 {
-  "name": "checkmate-visitor-management",
+  "name": "checkmate",
   "version": "1.0.0",
-  "description": "CheckMate Visitor Management System",
+  "description": "CheckMate - Enterprise Visitor Management",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
